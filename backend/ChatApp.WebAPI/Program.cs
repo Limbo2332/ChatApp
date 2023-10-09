@@ -1,4 +1,7 @@
 
+using ChatApp.WebAPI.Extensions;
+using Microsoft.OpenApi.Models;
+
 namespace ChatApp
 {
     public class Program
@@ -8,8 +11,9 @@ namespace ChatApp
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.ConfigureSwagger();
+
+            builder.Services.AddJWTAuthentication(builder.Configuration);
 
             var app = builder.Build();
 
@@ -20,6 +24,9 @@ namespace ChatApp
             }
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllers();
 
