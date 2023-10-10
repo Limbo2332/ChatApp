@@ -1,0 +1,23 @@
+@import 'colors'
+@import 'sizes'
+
+.main
+  padding: 64px 0
+  background-color: $pink
+  &-container
+    max-width: 1100px
+    margin: 0 auto
+    color: $dark
+  &-content
+    max-width: 500px
+    & h1
+      font-size: 64px
+  & .btn
+    width: 60%
+    margin-top: 36px
+
+@media (max-width: $big-tablet)
+  .img
+    display: none
+  .main
+    padding: 24px 8px
