@@ -18,11 +18,19 @@
     &-text
       &:hover, &:active, &:focus
         color: $white-hover
-      @media (max-width: $small-mobile)
-        display: none
+  @media (max-width: $mobile)
+    flex-direction: column
+    text-align: center
+    align-items: center
+    height: 100%
+    padding: 10px
+    gap: 16px
 
 .navbar
   padding: 0
+  &-nav
+    @media (max-width: $mobile)
+      flex-direction: column
 
 .nav-link
   color: $white
@@ -30,3 +38,10 @@
   &:hover, &:active, &:focus
     text-decoration: underline
     text-underline-offset: 8px
+
+@media (max-width: $mobile)
+  .sign-section
+    flex-direction: column
+    width: 80%
+    & .btn
+      width: 100%

@@ -12,16 +12,16 @@
     </div>
   </nav>
   <div
-    class="d-flex align-items-center gap-2"
-    *ngIf="isAuthenticated; else userProfileButton"
+    class="sign-section d-flex align-items-center gap-2"
+    *ngIf="!isAuthenticated; else userProfileButton"
   >
     <button class="btn btn-primary">Sign In</button>
-    <button class="btn btn-warning">Sign Up</button>
+    <button class="btn btn-warning text-white">Sign Up</button>
   </div>
 </header>
 
 <ng-template #userProfileButton>
-  <div class="d-flex align-items-center gap-2">
+  <div class="sign-section d-flex align-items-center gap-2">
     <button class="btn btn-light d-flex align-items-center gap-2">
       <fa-icon [icon]="['far', 'user']"></fa-icon> <span>Profile</span>
     </button>
