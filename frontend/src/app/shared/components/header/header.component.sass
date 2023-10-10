@@ -1,0 +1,35 @@
+@import 'colors'
+@import 'sizes'
+
+.header
+  color: $white
+  text-shadow: $dark 0 0 10px
+  font-size: 20px
+  height: 64px
+  padding: 35px 20px
+  background-color: $bg-color
+  & .logo
+    cursor: pointer
+    &-img
+      height: 32px
+      width: 32px
+      &:hover, &:active, &:focus
+        transform: rotate(-5deg) scale(1.1)
+    &-text
+      &:hover, &:active, &:focus
+        color: $white-hover
+      @media (max-width: $small-mobile)
+        display: none
+
+.navbar
+  padding: 0
+
+.nav-link
+  color: $white
+  cursor: pointer
+  &:hover, &:active, &:focus
+    text-decoration: underline
+    text-underline-offset: 8px
+
+.sign-in .btn
+  height: 36px
