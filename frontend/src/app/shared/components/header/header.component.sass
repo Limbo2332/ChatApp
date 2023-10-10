@@ -1,0 +1,47 @@
+@import 'colors'
+@import 'sizes'
+
+.header
+  color: $white
+  text-shadow: $dark 0 0 10px
+  font-size: 20px
+  height: 64px
+  padding: 35px 20px
+  background-color: $bg-color
+  & .logo
+    cursor: pointer
+    &-img
+      height: 32px
+      width: 32px
+      &:hover, &:active, &:focus
+        transform: rotate(-5deg) scale(1.1)
+    &-text
+      &:hover, &:active, &:focus
+        color: $white-hover
+  @media (max-width: $mobile)
+    flex-direction: column
+    text-align: center
+    align-items: center
+    height: 100%
+    padding: 18px
+    gap: 16px
+
+.navbar
+  padding: 0
+  &-nav
+    @media (max-width: $mobile)
+      flex-direction: column
+
+.nav-link
+  color: $white
+  cursor: pointer
+  &:hover, &:active, &:focus
+    text-decoration: underline
+    text-underline-offset: 8px
+
+@media (max-width: $mobile)
+  .sign-section
+    flex-direction: column
+    width: 80%
+    & .btn
+      width: 100%
