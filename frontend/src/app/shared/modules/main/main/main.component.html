@@ -1,3 +1,4 @@
+<app-header></app-header>
 <main class="main">
   <div class="main-container d-flex align-items-center justify-content-around">
     <div class="img"><img src="assets/chat.png" alt="chat" /></div>
@@ -7,9 +8,10 @@
         Seamless communication, instant messaging, and real-time connection in a
         user-friendly chat application.
       </p>
-      <button class="btn btn-success btn-lg">Start Now</button>
+      <button class="btn btn-success btn-lg" routerLink="/auth/register">
+        Start Now
+      </button>
     </div>
   </div>
-  <app-custom-input [InputId]="'id'"></app-custom-input>
   <!-- TODO: add something with friends  -->
 </main>
