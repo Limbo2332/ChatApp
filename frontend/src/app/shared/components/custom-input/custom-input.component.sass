@@ -1,0 +1,25 @@
+@import 'colors'
+
+input
+  background-color: $input-bg
+  color: $white
+  padding: 12px 18px
+  border-radius: 10px
+
+  &:active,
+  &:focus
+    outline: 3px solid $btn-color
+
+  &.error
+    outline: 3px solid $input-error
+
+  &::placeholder
+    color: $white
+
+.password-icon
+  position: absolute
+  right: 12px
+  bottom: 12px
+  cursor: pointer
+  color: $white
+  user-select: none
