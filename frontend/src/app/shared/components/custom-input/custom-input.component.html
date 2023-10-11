@@ -1,10 +1,13 @@
-<label *ngIf="InputText" for="{{ InputId }}" class="form-label">{{
-  InputText
-}}</label>
-<input
-  type="{{ InputType }}"
-  id="{{ InputId }}"
-  class="form-control"
-  placeholder="{{ InputPlaceholder ?? 'Enter your value' }}"
-  value="{{ StartValue }}"
-/>
+<div class="d-flex flex-column">
+  <label *ngIf="InputText" for="{{ InputId }}" class="form-label">{{
+    InputText
+  }}</label>
+  <input
+    type="{{ InputType }}"
+    id="{{ InputId }}"
+    placeholder="{{ InputPlaceholder ?? 'Enter your value' }}"
+    value="{{ StartValue }}"
+    [style.width]="Width"
+    autocomplete="new-password"
+  />
+</div>

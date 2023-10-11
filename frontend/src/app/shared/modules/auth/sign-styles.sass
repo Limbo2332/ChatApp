@@ -1,2 +1,60 @@
+@import 'colors'
+
+:host
+  display: block
+  position: relative
+  height: 100%
+  background-color: $auth-bg-color
+
 .sign-container
-  margin: 157px auto
+  margin: 0
+  position: absolute
+  top: 40%
+  left: 50%
+  -ms-transform: translate(-50%, -50%)
+  transform: translate(-50%, -50%)
+  min-width: 300px
+
+.description,
+:host ::ng-deep input,
+.submit
+  margin-top: 24px
+
+.forgot-block
+  margin-top: 12px
+
+.forgot
+  color: $dark
+  cursor: pointer
+
+  &:hover,
+  &:active,
+  &:focus
+    text-decoration: underline
+    text-underline-offset: 8px
+
+  &:hover,
+  &:active,
+  &:focus
+    color: $btn-color-hover
+
+.submit
+  width: 100%
+
+  & button
+    padding: 12px 128px
+    background-color: $btn-color
+    color: $input-bg
+    border-radius: 10px
+    font-weight: 600
+
+    &:hover,
+    &:active,
+    &:focus
+      background-color: $btn-color-hover
+
+.auth-bg
+  position: absolute
+  bottom: 0
+  width: 100%
+  height: 100px

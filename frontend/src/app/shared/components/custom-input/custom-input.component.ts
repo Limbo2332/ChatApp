@@ -15,4 +15,6 @@ export class CustomInputComponent {
   @Input() InputPlaceholder?: string;
 
   @Input() StartValue?: string;
+
+  @Input() Width: string = '100%';
 }
