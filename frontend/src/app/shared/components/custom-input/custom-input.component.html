@@ -1,4 +1,4 @@
-<div class="d-flex flex-column">
+<div class="d-flex flex-column position-relative">
   <label *ngIf="InputText" for="{{ InputId }}" class="form-label">{{
     InputText
   }}</label>
@@ -10,4 +10,10 @@
     [style.width]="Width"
     autocomplete="new-password"
   />
+  <fa-icon
+    class="password-icon"
+    *ngIf="canShowPasswordIcon()"
+    [icon]="passwordIcon"
+    (click)="changePasswordView()"
+  ></fa-icon>
 </div>
