@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { authenticatedGuard } from './core/guards/authenticated.guard';
-
 const routes: Routes = [
   {
     path: '',
@@ -18,7 +16,7 @@ const routes: Routes = [
     path: 'chats',
     loadChildren: () =>
       import('./shared/modules/chat/chat.module').then((i) => i.ChatModule),
-    canActivate: [authenticatedGuard],
+    // canActivate: [authenticatedGuard],
   },
   { path: '**', redirectTo: '' },
 ];

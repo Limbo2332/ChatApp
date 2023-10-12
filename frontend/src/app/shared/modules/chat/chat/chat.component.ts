@@ -10,13 +10,13 @@ import { minChatsWidth, minConversationsWidth } from './chat-utils';
 })
 export class ChatComponent {
   chatStyles: object = {
-    'width.px': minChatsWidth,
+    'width.px': minChatsWidth * 3,
     'min-width.px': minChatsWidth,
     'max-width.px': window.innerWidth - minConversationsWidth,
   };
 
   conversationStyles: object = {
-    'width.px': window.innerWidth - minChatsWidth,
+    'width.px': window.innerWidth - minChatsWidth * 3,
     'min-width.px': minConversationsWidth,
     'max-width.px': window.innerWidth - minChatsWidth,
   };

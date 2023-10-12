@@ -1,10 +1,11 @@
 @import 'sizes'
+@import 'colors'
 
 .blocks
   height: calc(100% - 70px)
 
 .chat
-  background-color: red
+  background-color: $auth-bg-color
   position: relative
   @media (max-width: $mobile)
     width: 100% !important
@@ -21,3 +22,46 @@
   right: 0
   @media (max-width: $mobile)
     display: none
+
+.chat-blocks
+  max-height: 100%
+  overflow: hidden
+  scrollbar-gutter: stable
+
+  &::-webkit-scrollbar
+    width: 8px
+
+  &::-webkit-scrollbar-thumb
+    border: 2px solid $auth-bg-color
+
+  &:hover
+    overflow-y: auto
+
+  & .chat-block
+    cursor: pointer
+
+    &-img
+      border-radius: 50%
+      width: 48px
+      height: 48px
+      margin: 8px 16px
+
+    &-text
+      margin-top: 8px
+      width: calc(100% - 80px)
+
+    &-name
+      max-width: 80%
+
+    &-date
+      margin-right: 8px
+
+    &-message
+      color: $grey
+      width: 90%
+
+    &:hover
+      background-color: $grey-hover
+
+.conversation
+  background: url("/assets/conversation-bg.png") center/cover no-repeat
