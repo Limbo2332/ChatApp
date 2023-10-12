@@ -1,0 +1,23 @@
+@import 'sizes'
+
+.blocks
+  height: calc(100% - 70px)
+
+.chat
+  background-color: red
+  position: relative
+  @media (max-width: $mobile)
+    width: 100% !important
+    max-width: 100%
+
+.conversation
+  background-color: green
+  @media (max-width: $mobile)
+    display: none
+
+.resize-handle-right
+  cursor: col-resize
+  width: 5px
+  right: 0
+  @media (max-width: $mobile)
+    display: none

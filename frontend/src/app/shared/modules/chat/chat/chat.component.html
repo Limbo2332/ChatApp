@@ -1,0 +1,17 @@
+<app-header></app-header>
+<div class="blocks d-flex">
+  <div
+    class="chat"
+    mwlResizable
+    [enableGhostResize]="true"
+    [ngStyle]="chatStyles"
+    (resizing)="onChatResizeEnd($event)"
+  >
+    <div
+      class="resize-handle-right position-absolute h-100"
+      mwlResizeHandle
+      [resizeEdges]="{ right: true }"
+    ></div>
+  </div>
+  <div class="conversation" [ngStyle]="conversationStyles"></div>
+</div>
