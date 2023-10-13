@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import {
   FaIconLibrary,
@@ -15,11 +16,18 @@ import { HeaderComponent } from './components/header/header.component';
 
 @NgModule({
   declarations: [HeaderComponent, CustomInputComponent],
-  imports: [CommonModule, FontAwesomeModule, RouterModule, ResizableModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FontAwesomeModule,
+    RouterModule,
+    ResizableModule,
+  ],
   exports: [
     HeaderComponent,
     CustomInputComponent,
     CommonModule,
+    FontAwesomeModule,
     ResizableModule,
   ],
 })

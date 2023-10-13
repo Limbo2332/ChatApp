@@ -23,22 +23,33 @@
   @media (max-width: $mobile)
     display: none
 
-.chat-blocks
-  max-height: 100%
+.chat-blocks,
+.messages
   overflow: hidden
   scrollbar-gutter: stable
-
-  &::-webkit-scrollbar
-    width: 8px
-
-  &::-webkit-scrollbar-thumb
-    border: 2px solid $auth-bg-color
 
   &:hover
     overflow-y: auto
 
+.chat-blocks
+  max-height: 100%
+
   & .chat-block
     cursor: pointer
+
+    &.active
+      background-color: $input-bg !important
+      width: calc(100% + 6px)
+
+      & .chat-block-date,
+      .chat-block-message
+        color: $auth-bg-color
+
+      & .chat-block-name
+        color: $grey-hover
+
+      & .chat-block-date
+        margin-right: 14px
 
     &-img
       border-radius: 50%
@@ -53,15 +64,83 @@
     &-name
       max-width: 80%
 
-    &-date
+    &-date, &-message-count
       margin-right: 8px
 
     &-message
       color: $grey
       width: 90%
 
+      &-count
+        padding: 1px 8px
+        background-color: $grey
+        color: $white
+        border-radius: 50%
+        font-size: 14px
+
     &:hover
       background-color: $grey-hover
 
 .conversation
   background: url("/assets/conversation-bg.png") center/cover no-repeat
+
+  &-member
+    background-color: $white-hover
+
+    &-info
+      width: calc(100% - 80px)
+
+    &-img
+      border-radius: 50%
+      width: 48px
+      height: 48px
+      margin: 8px
+
+.messages
+  padding: 16px
+  max-height: calc(100% - 112px)
+
+.message
+  padding: 8px
+  max-width: 80%
+  width: fit-content
+  position: relative
+
+  &-text
+    margin-right: 8px
+    word-wrap: break-word
+
+  &-date
+    align-self: flex-end
+    color: $grey
+    font-size: 14px
+
+  &::before
+    content: ''
+    position: absolute
+    width: 0
+    height: 0
+    border-bottom: 6px solid
+    border-left: 6px solid transparent
+    border-right: 6px solid transparent
+    bottom: 0
+
+.left-message
+  background-color: $auth-bg-color
+  border-radius: 10px 10px 10px 0
+
+  &::before
+    left: -6px
+    border-bottom-color: $auth-bg-color
+
+.right-message
+  background-color: $pink
+  border-radius: 10px 10px 0 10px
+  align-self: flex-end
+
+  &::before
+    right: -6px
+    border-bottom-color: $pink
+
+.enter-message-input
+  border-radius: 0

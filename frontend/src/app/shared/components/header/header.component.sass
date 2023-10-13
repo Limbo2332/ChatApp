@@ -6,18 +6,22 @@
   text-shadow: $dark 0 0 10px
   font-size: 20px
   height: 64px
-  padding: 35px 20px
+  padding: 35px 24px
   background-color: $bg-color
+
   & .logo
     cursor: pointer
+
     &-img
       height: 32px
       width: 32px
       &:hover, &:active, &:focus
         transform: rotate(-5deg) scale(1.1)
+
     &-text
       &:hover, &:active, &:focus
         color: $white-hover
+
   @media (max-width: $mobile)
     flex-direction: column
     text-align: center
@@ -28,6 +32,7 @@
 
 .navbar
   padding: 0
+
   &-nav
     @media (max-width: $mobile)
       flex-direction: column
@@ -35,6 +40,7 @@
 .nav-link
   color: $white
   cursor: pointer
+
   &:hover, &:active, &:focus
     text-decoration: underline
     text-underline-offset: 8px
@@ -43,5 +49,6 @@
   .sign-section
     flex-direction: column
     width: 80%
+
     & .btn
       width: 100%

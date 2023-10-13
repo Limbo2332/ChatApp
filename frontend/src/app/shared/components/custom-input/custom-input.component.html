@@ -3,12 +3,15 @@
     InputText
   }}</label>
   <input
+    [(ngModel)]="inputValue"
     type="{{ InputType }}"
     id="{{ InputId }}"
     placeholder="{{ InputPlaceholder ?? 'Enter your value' }}"
     value="{{ StartValue }}"
     [style.width]="Width"
+    [style.paddingRight.px]="getPaddingRightForInput()"
     autocomplete="new-password"
+    [ngClass]="customInputClass"
   />
   <fa-icon
     class="password-icon"
@@ -16,4 +19,11 @@
     [icon]="passwordIcon"
     (click)="changePasswordView()"
   ></fa-icon>
+  <fa-icon
+    class="message-icon"
+    *ngIf="canShowMessageIcon()"
+    [icon]="['far', 'envelope']"
+    [size]="'lg'"
+  >
+  </fa-icon>
 </div>

@@ -1,10 +1,13 @@
 @import 'colors'
 
 input
+  padding: 12px 18px
+
+.custom-input
   background-color: $input-bg
   color: $white
-  padding: 12px 18px
   border-radius: 10px
+  width: calc(100% - 24px)
 
   &:active,
   &:focus
@@ -16,10 +19,21 @@ input
   &::placeholder
     color: $white
 
-.password-icon
+.search-input
+  background-color: $white-hover
+
+.password-icon,
+.message-icon
   position: absolute
   right: 12px
   bottom: 12px
   cursor: pointer
-  color: $white
   user-select: none
+  margin-left: 6px
+
+.password-icon
+  color: $white
+
+.message-icon
+  color: $grey
+  right: 24px
