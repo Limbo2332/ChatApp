@@ -1,4 +1,5 @@
 @import 'colors'
+@import 'sizes'
 
 :host
   display: block
@@ -14,6 +15,15 @@
   -ms-transform: translate(-50%, -50%)
   transform: translate(-50%, -50%)
   min-width: 300px
+
+.reset-form
+  max-width: 360px
+
+  @media (max-width: $mobile)
+    max-width: 300px
+
+.description
+  max-width: 300px
 
 .description,
 :host ::ng-deep input,
@@ -49,6 +59,9 @@
     font-weight: 600
     box-shadow: 0 4px 4px $btn-box-shadow-color
 
+    @media (max-width: $mobile)
+      padding: 12px 80px
+
     &:hover,
     &:active,
     &:focus
@@ -59,3 +72,25 @@
   bottom: 0
   width: 100%
   height: 100px
+
+:host ::ng-deep .nsm-dialog-btn-close
+  background-color: $input-error
+  border-radius: 50%
+  color: $white
+  display: flex
+  justify-content: center
+  align-items: center
+  height: 32px
+  width: 32px
+
+  &:hover
+    background-color: $input-error-hover
+
+  & svg
+    display: block
+    height: 16px
+    width: 16px
+
+@media (max-width: $mobile)
+  .reset-header
+    align-items: flex-start !important

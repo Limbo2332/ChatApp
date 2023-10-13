@@ -10,6 +10,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ResizableModule } from 'angular-resizable-element';
+import { NgxSmartModalModule } from 'ngx-smart-modal';
 
 import { CustomInputComponent } from './components/custom-input/custom-input.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -22,6 +23,7 @@ import { HeaderComponent } from './components/header/header.component';
     FontAwesomeModule,
     RouterModule,
     ResizableModule,
+    NgxSmartModalModule.forChild(),
   ],
   exports: [
     HeaderComponent,
@@ -29,6 +31,7 @@ import { HeaderComponent } from './components/header/header.component';
     CommonModule,
     FontAwesomeModule,
     ResizableModule,
+    NgxSmartModalModule,
   ],
 })
 export class SharedModule {
