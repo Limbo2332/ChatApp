@@ -1,19 +1,36 @@
 <div class="d-flex flex-column position-relative">
-  <label *ngIf="InputText" for="{{ InputId }}" class="form-label">{{
+  <label *ngIf="InputText" [for]="InputId" class="form-label">{{
     InputText
   }}</label>
   <input
-    type="{{ InputType }}"
-    id="{{ InputId }}"
-    placeholder="{{ InputPlaceholder ?? 'Enter your value' }}"
-    value="{{ StartValue }}"
+    [(ngModel)]="inputValue"
+    [type]="InputType"
+    [id]="InputId"
+    [placeholder]="InputPlaceholder ?? 'Enter your value'"
+    [value]="StartValue"
     [style.width]="Width"
+    [style.paddingRight.px]="getPaddingRightForInput()"
     autocomplete="new-password"
+    [ngClass]="customInputClass"
   />
   <fa-icon
     class="password-icon"
     *ngIf="canShowPasswordIcon()"
     [icon]="passwordIcon"
     (click)="changePasswordView()"
+  ></fa-icon>
+  <fa-icon
+    class="message-icon"
+    *ngIf="canShowMessageIcon()"
+    [icon]="['far', 'envelope']"
+    [size]="'lg'"
+  >
+  </fa-icon>
+  <fa-icon
+    class="search-icon"
+    *ngIf="canShowCloseSearchButton()"
+    [icon]="['fas', 'xmark']"
+    [size]="'lg'"
+    (click)="clearSearch()"
   ></fa-icon>
 </div>

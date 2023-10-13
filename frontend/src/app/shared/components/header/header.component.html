@@ -6,8 +6,21 @@
   <nav class="navbar navbar-expand">
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-link active" aria-current="page">Home</a>
-        <a class="nav-link">Friends</a>
+        <a
+          *ngIf="!isAuthenticated"
+          class="nav-link"
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="routerLinkActiveOptions"
+          >Home</a
+        >
+        <a
+          *ngIf="isAuthenticated"
+          class="nav-link"
+          routerLink="/chats"
+          routerLinkActive="active"
+          >Chats</a
+        >
       </div>
     </div>
   </nav>
