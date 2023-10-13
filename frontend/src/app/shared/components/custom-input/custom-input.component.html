@@ -1,14 +1,17 @@
 <div class="d-flex flex-column position-relative">
-  <label *ngIf="InputText" for="{{ InputId }}" class="form-label">{{
+  <label *ngIf="InputText" [for]="InputId" class="form-label">{{
     InputText
   }}</label>
   <input
-    type="{{ InputType }}"
-    id="{{ InputId }}"
-    placeholder="{{ InputPlaceholder ?? 'Enter your value' }}"
-    value="{{ StartValue }}"
+    [(ngModel)]="inputValue"
+    [type]="InputType"
+    [id]="InputId"
+    [placeholder]="InputPlaceholder ?? 'Enter your value'"
+    [value]="StartValue"
     [style.width]="Width"
+    [style.paddingRight.px]="getPaddingRightForInput()"
     autocomplete="new-password"
+    [ngClass]="customInputClass"
   />
   <fa-icon
     class="password-icon"

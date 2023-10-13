@@ -1,6 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 
+import {
+  paddingRightWhenDefaultIcon,
+  paddingRightWhenLgIcon,
+  paddingRightWhenNoIcon,
+} from './custom-input.utils';
+
 @Component({
   selector: 'app-custom-input[InputId]',
   templateUrl: './custom-input.component.html',
@@ -18,6 +24,10 @@ export class CustomInputComponent {
   @Input() StartValue?: string;
 
   @Input() Width: string = '100%';
+
+  @Input() customInputClass: string = 'custom-input';
+
+  inputValue: string = '';
 
   passwordIcon: [IconPrefix, IconName] = ['fas', 'eye'];
 

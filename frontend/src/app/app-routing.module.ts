@@ -12,6 +12,12 @@ const routes: Routes = [
     loadChildren: () =>
       import('./shared/modules/auth/auth.module').then((i) => i.AuthModule),
   },
+  {
+    path: 'chats',
+    loadChildren: () =>
+      import('./shared/modules/chat/chat.module').then((i) => i.ChatModule),
+    // canActivate: [authenticatedGuard],
+  },
   { path: '**', redirectTo: '' },
 ];
 
