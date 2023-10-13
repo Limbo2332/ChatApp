@@ -9,16 +9,16 @@
         <a
           *ngIf="!isAuthenticated"
           class="nav-link"
-          routerLink="/"
-          routerLinkActive="active"
+          [routerLink]="'/'"
+          [routerLinkActive]="'active'"
           [routerLinkActiveOptions]="routerLinkActiveOptions"
           >Home</a
         >
         <a
           *ngIf="isAuthenticated"
           class="nav-link"
-          routerLink="/chats"
-          routerLinkActive="active"
+          [routerLink]="'/chats'"
+          [routerLinkActive]="'active'"
           >Chats</a
         >
       </div>
@@ -28,8 +28,10 @@
     class="sign-section d-flex align-items-center gap-2"
     *ngIf="!isAuthenticated; else userProfileButton"
   >
-    <button class="btn btn-primary" routerLink="/auth/login">Sign In</button>
-    <button class="btn btn-warning text-white" routerLink="/auth/register">
+    <button class="btn btn-primary" [routerLink]="'/auth/login'">
+      Sign In
+    </button>
+    <button class="btn btn-warning text-white" [routerLink]="'/auth/register'">
       Sign Up
     </button>
   </div>
