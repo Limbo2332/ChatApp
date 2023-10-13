@@ -16,4 +16,18 @@
     [icon]="passwordIcon"
     (click)="changePasswordView()"
   ></fa-icon>
+  <fa-icon
+    class="message-icon"
+    *ngIf="canShowMessageIcon()"
+    [icon]="['far', 'envelope']"
+    [size]="'lg'"
+  >
+  </fa-icon>
+  <fa-icon
+    class="search-icon"
+    *ngIf="canShowCloseSearchButton()"
+    [icon]="showSearchButton()"
+    [size]="'lg'"
+    (click)="clearSearch()"
+  ></fa-icon>
 </div>

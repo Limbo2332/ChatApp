@@ -36,4 +36,32 @@ export class CustomInputComponent {
       this.InputType === 'password' || this.passwordIcon.includes('eye-slash')
     );
   }
+
+  canShowMessageIcon() {
+    return this.InputId.includes('message') && this.inputValue;
+  }
+
+  canShowCloseSearchButton() {
+    return this.InputId.includes('find');
+  }
+
+  showSearchButton(): [IconPrefix, IconName] {
+    return this.inputValue ? ['fas', 'xmark'] : ['fas', 'plus-circle'];
+  }
+
+  getPaddingRightForInput(): number {
+    if (this.canShowPasswordIcon()) {
+      return paddingRightWhenDefaultIcon;
+    }
+
+    if (this.canShowMessageIcon()) {
+      return paddingRightWhenLgIcon;
+    }
+
+    return paddingRightWhenNoIcon;
+  }
+
+  clearSearch() {
+    this.inputValue = '';
+  }
 }
