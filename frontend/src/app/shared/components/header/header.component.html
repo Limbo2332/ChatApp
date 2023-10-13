@@ -4,7 +4,10 @@
     <p class="logo-text">Chat App</p>
   </div>
   <nav class="navbar navbar-expand">
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div
+      class="collapse navbar-collapse justify-content-center"
+      id="navbarNavAltMarkup"
+    >
       <div class="navbar-nav">
         <a
           *ngIf="!isAuthenticated"
@@ -31,17 +34,37 @@
     <button class="btn btn-primary" [routerLink]="'/auth/login'">
       Sign In
     </button>
-    <button class="btn btn-warning text-white" [routerLink]="'/auth/register'">
-      Sign Up
-    </button>
   </div>
 </header>
 
 <ng-template #userProfileButton>
-  <div class="sign-section d-flex align-items-center gap-2">
-    <button class="btn btn-light d-flex align-items-center gap-2">
-      <fa-icon [icon]="['far', 'user']"></fa-icon> <span>Profile</span>
-    </button>
-    <button class="btn btn-primary">Log Out</button>
+  <div class="sign-section d-flex align-items-center gap-4">
+    <div class="notification">
+      <fa-icon
+        class="notification"
+        [icon]="['fas', 'bell']"
+        [size]="'xl'"
+      ></fa-icon>
+    </div>
+    <div class="dropdown">
+      <a
+        class="dropdown-link"
+        href="#"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <img src="assets/chat.png" alt="user profile picture" />
+      </a>
+
+      <ul class="dropdown-menu">
+        <li>
+          <button class="btn btn-primary dropdown-item">Profile</button>
+        </li>
+        <li>
+          <button class="btn btn-primary dropdown-item">Log Out</button>
+        </li>
+      </ul>
+    </div>
   </div>
 </ng-template>

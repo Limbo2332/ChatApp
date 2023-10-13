@@ -19,16 +19,11 @@
         transform: rotate(-5deg) scale(1.1)
 
     &-text
+      @media (max-width: $mobile)
+        display: none
+
       &:hover, &:active, &:focus
         color: $white-hover
-
-  @media (max-width: $mobile)
-    flex-direction: column
-    text-align: center
-    align-items: center
-    height: auto
-    padding: 18px
-    gap: 16px
 
 .navbar
   padding: 0
@@ -45,10 +40,21 @@
     text-decoration: underline
     text-underline-offset: 8px
 
-@media (max-width: $mobile)
-  .sign-section
-    flex-direction: column
-    width: 80%
+.notification
+  color: $input-bg
 
-    & .btn
-      width: 100%
+.dropdown-link
+  border-radius: 50%
+
+  & img
+    width: 48px
+    height: 48px
+
+.dropdown-menu
+  min-width: auto
+  padding: 0
+  overflow: hidden
+  transform: translate3d(0, 54px, 0) !important
+
+.dropdown-item
+  padding: 8px 16px
