@@ -51,6 +51,10 @@ export class CustomInputComponent {
     return this.InputId.includes('message') && this.inputValue;
   }
 
+  canShowCloseSearchButton() {
+    return this.InputId.includes('find') && this.inputValue;
+  }
+
   getPaddingRightForInput(): number {
     if (this.canShowPasswordIcon()) {
       return paddingRightWhenDefaultIcon;
@@ -61,5 +65,9 @@ export class CustomInputComponent {
     }
 
     return paddingRightWhenNoIcon;
+  }
+
+  clearSearch() {
+    this.inputValue = '';
   }
 }

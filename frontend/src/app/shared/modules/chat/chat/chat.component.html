@@ -12,6 +12,11 @@
       mwlResizeHandle
       [resizeEdges]="{ right: true }"
     ></div>
+    <app-custom-input
+      [InputId]="'find-chat'"
+      [InputPlaceholder]="'Search...'"
+      [customInputClass]="'search-input'"
+    ></app-custom-input>
     <div class="chat-blocks d-flex flex-column">
       <div class="chat-block d-flex">
         <img
@@ -234,12 +239,10 @@
         <p class="message-date">11:02</p>
       </div>
     </div>
-    <div class="enter-message">
-      <app-custom-input
-        [InputId]="'send-message'"
-        [InputPlaceholder]="'Enter message...'"
-        [customInputClass]="'search-input'"
-      ></app-custom-input>
-    </div>
+    <app-custom-input
+      [InputId]="'send-message'"
+      [InputPlaceholder]="'Enter message...'"
+      [customInputClass]="'search-input'"
+    ></app-custom-input>
   </div>
 </div>
