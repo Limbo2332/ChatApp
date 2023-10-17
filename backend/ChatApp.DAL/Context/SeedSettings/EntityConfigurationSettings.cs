@@ -9,7 +9,7 @@
         public static readonly int EmailMaxLength = 60;
 
         public static readonly int PasswordMinLength = 8;
-        public static readonly int PasswordMaxLength = 24;
+        public static readonly int PasswordMaxLength = 36;
 
         public static readonly int MessageMaxLength = 200;
     }

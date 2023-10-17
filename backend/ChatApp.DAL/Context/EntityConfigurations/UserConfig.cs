@@ -18,8 +18,7 @@ namespace ChatApp.DAL.Context.EntityConfigurations
                 .HasMaxLength(EntityConfigurationSettings.EmailMaxLength);
 
             builder.Property(user => user.Password)
-                .IsRequired()
-                .HasMaxLength(EntityConfigurationSettings.PasswordMaxLength);
+                .IsRequired();
 
             builder.HasIndex(user => user.UserName)
                 .IsUnique();

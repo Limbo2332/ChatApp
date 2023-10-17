@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChatApp.Common.Security
 {
@@ -24,6 +25,19 @@ namespace ChatApp.Common.Security
 
                 return salt;
             }
+        }
+
+        public static byte[] GetSeedingBytes(int length = 32)
+        {
+            Random r = new Random(0);
+            var salt = new byte[length];
+
+            for (int i = 0; i < salt.Length; i++)
+                salt[i] = (byte)r.Next(1, 256);
+
+            r.NextBytes(salt);   
+
+            return salt;
         }
     }
 }

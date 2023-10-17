@@ -14,6 +14,7 @@ namespace ChatApp
             builder.Services.ConfigureSwagger();
 
             builder.Services.AddJWTAuthentication(builder.Configuration);
+            builder.Services.ConnectToDatabase(builder.Configuration);
 
             var app = builder.Build();
 

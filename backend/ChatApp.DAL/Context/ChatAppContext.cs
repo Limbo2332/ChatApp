@@ -19,6 +19,8 @@ namespace ChatApp.DAL.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Configure();
+
+            modelBuilder.Seed();
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
