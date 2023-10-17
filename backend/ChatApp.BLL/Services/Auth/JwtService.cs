@@ -46,5 +46,21 @@ namespace ChatApp.BLL.Services.Auth
         {
             return Convert.ToBase64String(SecurityHelper.GetRandomBytes());
         }
+
+        public int GetUserIdFromToken(string accessToken, string signingKey)
+        {
+            var claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(accessToken,
+                new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = false,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey))
+                }, out var securityToken)
+                ?? throw new Exception("access");
+
+            return int.Parse(claimsPrincipal.Claims.First(c => c.Type == "id").Value);
+        }
     }
 }

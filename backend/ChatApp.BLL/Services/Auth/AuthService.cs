@@ -3,21 +3,24 @@ using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.User;
+using ChatApp.DAL.Entities;
 using ChatApp.Common.Security;
 using ChatApp.DAL.Context;
-using ChatApp.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace ChatApp.BLL.Services.Auth
 {
     public class AuthService : BaseService, IAuthService
     {
         private readonly IJwtService _jwtService;
+        private readonly IConfiguration _config;
 
-        public AuthService(IJwtService jwtService, ChatAppContext context, IMapper mapper) 
+        public AuthService(IJwtService jwtService, ChatAppContext context, IMapper mapper, IConfiguration config)
             : base(context, mapper)
         {
             _jwtService = jwtService;
+            _config = config;
         }
 
         public async Task<AuthUserDto> Login(UserLoginDto userDto)
@@ -58,6 +61,39 @@ namespace ChatApp.BLL.Services.Auth
             await _context.SaveChangesAsync();
 
             return _mapper.Map<UserDto>(user);
+        }
+
+        public async Task<AccessTokenDto> RefreshToken(AccessTokenDto tokenDto)
+        {
+            var userId = _jwtService.GetUserIdFromToken(tokenDto.AccessToken, _config["JWT:SigningKey"]!);
+            var userEntity = await _context.Users.FindAsync(userId)
+                ?? throw new Exception(nameof(User));
+
+            var refreshToken = await _context.RefreshTokens
+                .FirstOrDefaultAsync(rt => rt.Token == tokenDto.RefreshToken && rt.UserId == userId);
+
+            if (!refreshToken.IsActive)
+            {
+                throw new Exception("Refresh token expired");
+            }
+
+            var jwtToken = _jwtService.GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);
+            var rToken = _jwtService.GenerateRefreshToken();
+
+            _context.RefreshTokens.Remove(refreshToken);
+            _context.RefreshTokens.Add(new DAL.Entities.RefreshToken
+            {
+                Token = rToken,
+                UserId = userEntity.Id
+            });
+
+            await _context.SaveChangesAsync();
+
+            return new AccessTokenDto()
+            {
+                AccessToken = jwtToken,
+                RefreshToken = rToken
+            };
         }
 
         private async Task<AccessTokenDto> GenerateAccessToken(int userId, string userName, string email)

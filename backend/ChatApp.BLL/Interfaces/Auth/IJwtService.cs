@@ -7,5 +7,7 @@ namespace ChatApp.BLL.Interfaces.Auth
         string GenerateAccessToken(int userId, string userName, string email);
 
         string GenerateRefreshToken();
+
+        int GetUserIdFromToken(string accessToken, string signingKey);
     }
 }

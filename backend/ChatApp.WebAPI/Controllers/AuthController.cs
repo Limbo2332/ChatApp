@@ -1,6 +1,7 @@
 ﻿using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -30,6 +31,13 @@ namespace ChatApp.WebAPI.Controllers
         public async Task<ActionResult<AuthUserDto>> Login(UserLoginDto userDto)
         {
             return Ok(await _authService.Login(userDto));
+        }
+
+        [HttpPost("refresh")]
+        [Authorize]
+        public async Task<ActionResult<AccessTokenDto>> Refresh(AccessTokenDto tokenDto)
+        {
+            return Ok(await _authService.RefreshToken(tokenDto));
         }
     }
 }

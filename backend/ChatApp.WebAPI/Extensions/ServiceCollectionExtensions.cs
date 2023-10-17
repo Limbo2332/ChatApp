@@ -32,7 +32,7 @@ namespace ChatApp.WebAPI.Extensions
 
         public static void AddJWTAuthentication(this IServiceCollection services, IConfiguration config)
         {
-            var validAudience = config.GetRequiredSection("JWT:ProjectName").Value ?? "";
+            var validAudience = config.GetRequiredSection("JWT:Audience").Value ?? "";
             var validIssuer = config.GetRequiredSection("JWT:Issuer").Value ?? "";
             var signingKey = config.GetRequiredSection("JWT:SigningKey").Value ?? "";
 
