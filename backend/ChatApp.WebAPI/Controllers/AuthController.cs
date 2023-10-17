@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 
@@ -38,6 +39,14 @@ namespace ChatApp.WebAPI.Controllers
         public async Task<ActionResult<AccessTokenDto>> Refresh(AccessTokenDto tokenDto)
         {
             return Ok(await _authService.RefreshToken(tokenDto));
+        }
+
+        [HttpPost("removetoken")]
+        [Authorize]
+        public async Task<ActionResult> RemoveRefreshToken(string refreshToken)
+        {
+            await _authService.RemoveRefreshToken(refreshToken);
+            return NoContent();
         }
     }
 }

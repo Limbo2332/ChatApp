@@ -1,4 +1,5 @@
 
+using ChatApp.Common.Middlewares;
 using ChatApp.WebAPI.Extensions;
 
 namespace ChatApp
@@ -34,6 +35,8 @@ namespace ChatApp
             app.MapControllers();
 
             app.UseChatAppContext();
+
+            app.UseMiddleware<UserIdMiddleware>();
 
             app.Run();
         }

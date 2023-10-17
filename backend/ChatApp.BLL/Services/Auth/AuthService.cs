@@ -8,6 +8,7 @@ using ChatApp.Common.Security;
 using ChatApp.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using ChatApp.Common.Logic.Abstract;
 
 namespace ChatApp.BLL.Services.Auth
 {
@@ -15,12 +16,14 @@ namespace ChatApp.BLL.Services.Auth
     {
         private readonly IJwtService _jwtService;
         private readonly IConfiguration _config;
+        private readonly IUserIdGetter _userIdGetter;
 
-        public AuthService(IJwtService jwtService, ChatAppContext context, IMapper mapper, IConfiguration config)
+        public AuthService(IJwtService jwtService, ChatAppContext context, IMapper mapper, IConfiguration config, IUserIdGetter userIdGetter)
             : base(context, mapper)
         {
             _jwtService = jwtService;
             _config = config;
+            _userIdGetter = userIdGetter;
         }
 
         public async Task<AuthUserDto> Login(UserLoginDto userDto)
@@ -70,7 +73,8 @@ namespace ChatApp.BLL.Services.Auth
                 ?? throw new Exception(nameof(User));
 
             var refreshToken = await _context.RefreshTokens
-                .FirstOrDefaultAsync(rt => rt.Token == tokenDto.RefreshToken && rt.UserId == userId);
+                .FirstOrDefaultAsync(rt => rt.Token == tokenDto.RefreshToken && rt.UserId == userId)
+                ?? throw new Exception("Refresh");
 
             if (!refreshToken.IsActive)
             {
@@ -94,6 +98,17 @@ namespace ChatApp.BLL.Services.Auth
                 AccessToken = jwtToken,
                 RefreshToken = rToken
             };
+        }
+
+        public async Task RemoveRefreshToken(string token)
+        {
+            var currentUserId = _userIdGetter.CurrentUserId;
+            var refreshToken = await _context.RefreshTokens
+                .FirstOrDefaultAsync(rt => rt.Token == token && rt.UserId == currentUserId)
+                ?? throw new Exception("refresh");
+
+            _context.RefreshTokens.Remove(refreshToken);
+            await _context.SaveChangesAsync();
         }
 
         private async Task<AccessTokenDto> GenerateAccessToken(int userId, string userName, string email)

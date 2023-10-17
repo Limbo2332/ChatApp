@@ -1,6 +1,8 @@
 ﻿using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.MappingProfiles;
 using ChatApp.BLL.Services.Auth;
+using ChatApp.Common.Logic;
+using ChatApp.Common.Logic.Abstract;
 using ChatApp.DAL.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -78,7 +80,10 @@ namespace ChatApp.WebAPI.Extensions
         {
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
-        }
 
+            services.AddScoped<UserIdStorage>();
+            services.AddTransient<IUserIdSetter>(s => s.GetService<UserIdStorage>());
+            services.AddTransient<IUserIdGetter>(s => s.GetService<UserIdStorage>());
+        }
     }
 }

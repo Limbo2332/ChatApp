@@ -10,5 +10,7 @@ namespace ChatApp.BLL.Interfaces.Auth
         Task<UserDto> Register(UserRegisterDto userDto);
 
         Task<AccessTokenDto> RefreshToken(AccessTokenDto tokenDto);
+
+        Task RemoveRefreshToken(string token);
     }
 }
