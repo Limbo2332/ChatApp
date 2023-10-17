@@ -38,5 +38,10 @@ namespace ChatApp.Common.Security
 
             return salt;
         }
+
+        public static bool ValidatePassword(string password, string hash, string salt)
+        {
+            return HashPassword(password, Convert.FromBase64String(salt)) == hash;
+        }
     }
 }

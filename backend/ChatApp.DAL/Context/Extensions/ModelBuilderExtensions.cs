@@ -53,12 +53,13 @@ namespace ChatApp.DAL.Context.Extensions
                     .ClampLength(EntityConfigurationSettings.EmailMinLength, EntityConfigurationSettings.EmailMaxLength))
                 .RuleFor(user => user.UserName, f => f.Internet.UserName()
                     .ClampLength(EntityConfigurationSettings.UserNameMinLength, EntityConfigurationSettings.UserNameMaxLength))
-                .RuleFor(user => user.Password, f => SecurityHelper.HashPassword(f.Internet.Password()
+                .RuleFor(user => user.Salt, f => Convert.ToBase64String(SecurityHelper.GetSeedingBytes()))
+                .RuleFor(user => user.Password, (f, user) => SecurityHelper.HashPassword(f.Internet.Password()
                     .ClampLength(
                         EntityConfigurationSettings.PasswordMinLength,
                         EntityConfigurationSettings.PasswordMaxLength
                      ),
-                        SecurityHelper.GetSeedingBytes()))
+                         Convert.FromBase64String(user.Salt)))
                 .Generate(UsersCount);
         }
 

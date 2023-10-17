@@ -1,8 +1,12 @@
-﻿using ChatApp.DAL.Context;
+﻿using ChatApp.BLL.Interfaces.Auth;
+using ChatApp.BLL.MappingProfiles;
+using ChatApp.BLL.Services.Auth;
+using ChatApp.DAL.Context;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Reflection;
 using System.Text;
 
 namespace ChatApp.WebAPI.Extensions
@@ -61,5 +65,20 @@ namespace ChatApp.WebAPI.Extensions
                 )
             );
         }
+
+        public static void RegisterAutoMapper(this IServiceCollection services)
+        {
+            services.AddAutoMapper(cfg =>
+            {
+                cfg.AddProfile<UserProfile>();
+            }, Assembly.GetExecutingAssembly());
+        }
+
+        public static void RegisterCustomServices(this IServiceCollection services)
+        {
+            services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IAuthService, AuthService>();
+        }
+
     }
 }

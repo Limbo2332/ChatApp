@@ -15,6 +15,9 @@ namespace ChatApp
             builder.Services.AddJWTAuthentication(builder.Configuration);
             builder.Services.ConnectToDatabase(builder.Configuration);
 
+            builder.Services.RegisterAutoMapper();
+            builder.Services.RegisterCustomServices();
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ChatApp.BLL.Interfaces.Auth;
+using ChatApp.Common.DTO.Auth;
+using ChatApp.Common.DTO.User;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,36 +13,23 @@ namespace ChatApp.WebAPI.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private IConfiguration _config;
+        private readonly IAuthService _authService;
 
-        public AuthController(IConfiguration config)
+        public AuthController(IAuthService authService)
         {
-            _config = config;
+            _authService = authService;
         }
 
         [HttpPost("register")]
-        public IActionResult Register(string username, string email, string password)
+        public async Task<ActionResult<UserDto>> Register(UserRegisterDto userDto)
         {
-            //TODO: check user not exist and change parameters to DTO
-
-            return Ok(GenerateJSONToken(username, email, password));
+            return Created("register", await _authService.Register(userDto));
         }
 
-        private string GenerateJSONToken(string username, string email, string password)
+        [HttpPost("login")]
+        public async Task<ActionResult<AuthUserDto>> Login(UserLoginDto userDto)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"] ?? ""));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new Claim[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(JwtRegisteredClaimNames.Email, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-
-            var token = new JwtSecurityToken(_config["JWT:Issuer"], _config["JWT:Audience"], claims, expires: DateTime.UtcNow.AddMinutes(120), signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Ok(await _authService.Login(userDto));
         }
     }
 }
