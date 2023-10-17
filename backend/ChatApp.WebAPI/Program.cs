@@ -1,6 +1,5 @@
 
 using ChatApp.WebAPI.Extensions;
-using Microsoft.OpenApi.Models;
 
 namespace ChatApp
 {
@@ -14,6 +13,7 @@ namespace ChatApp
             builder.Services.ConfigureSwagger();
 
             builder.Services.AddJWTAuthentication(builder.Configuration);
+            builder.Services.ConnectToDatabase(builder.Configuration);
 
             var app = builder.Build();
 
@@ -29,6 +29,8 @@ namespace ChatApp
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseChatAppContext();
 
             app.Run();
         }

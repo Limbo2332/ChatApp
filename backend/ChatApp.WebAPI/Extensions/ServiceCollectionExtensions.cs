@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using ChatApp.DAL.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -48,6 +50,16 @@ namespace ChatApp.WebAPI.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey))
                 };
             });
+        }
+
+        public static void ConnectToDatabase(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddDbContext<ChatAppContext>(options =>
+                options.UseSqlServer(
+                    config.GetConnectionString("ChatAppConnection"),
+                    options => options.MigrationsAssembly(typeof(ChatAppContext).Assembly.GetName().Name)
+                )
+            );
         }
     }
 }
