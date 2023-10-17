@@ -54,7 +54,7 @@ namespace ChatApp.WebAPI.Extensions
 
         public static void ConnectToDatabase(this IServiceCollection services, IConfiguration config)
         {
-            services.AddDbContext<ChatAppContext>(options => 
+            services.AddDbContext<ChatAppContext>(options =>
                 options.UseSqlServer(
                     config.GetConnectionString("ChatAppConnection"),
                     options => options.MigrationsAssembly(typeof(ChatAppContext).Assembly.GetName().Name)

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Security.Cryptography;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChatApp.Common.Security
 {
@@ -35,7 +34,7 @@ namespace ChatApp.Common.Security
             for (int i = 0; i < salt.Length; i++)
                 salt[i] = (byte)r.Next(1, 256);
 
-            r.NextBytes(salt);   
+            r.NextBytes(salt);
 
             return salt;
         }

@@ -1,6 +1,5 @@
 
 using ChatApp.WebAPI.Extensions;
-using Microsoft.OpenApi.Models;
 
 namespace ChatApp
 {
@@ -30,6 +29,8 @@ namespace ChatApp
             app.UseAuthorization();
 
             app.MapControllers();
+
+            app.UseChatAppContext();
 
             app.Run();
         }

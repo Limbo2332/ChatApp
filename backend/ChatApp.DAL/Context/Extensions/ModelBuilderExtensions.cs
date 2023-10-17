@@ -5,9 +5,7 @@ using ChatApp.Common.Security;
 using ChatApp.DAL.Context.EntityConfigurations;
 using ChatApp.DAL.Context.SeedSettings;
 using ChatApp.DAL.Entities;
-using ChatApp.DAL.Entities.Abstract;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace ChatApp.DAL.Context.Extensions
 {
