@@ -3,7 +3,19 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { IUserRegister } from 'src/app/shared/models/user/user-register';
-import { emailRegex, noSpacesRegex, passwordRegex } from 'src/app/shared/utils/validation/regex-patterns';
+import {
+  emailMaxLength,
+  emailMinLength,
+  passwordMaxLength,
+  passwordMinLength,
+  userNameMaxLength,
+  userNameMinLength,
+} from 'src/app/shared/utils/validation/constants';
+import {
+  emailRegex,
+  noSpacesRegex,
+  passwordRegex,
+} from 'src/app/shared/utils/validation/regex-patterns';
 import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 @Component({
@@ -16,14 +28,20 @@ export class SignUpComponent {
     email: new FormControl('', [
       Validators.required,
       Validators.pattern(emailRegex),
+      Validators.minLength(emailMinLength),
+      Validators.maxLength(emailMaxLength),
     ]),
     username: new FormControl('', [
       Validators.required,
       Validators.pattern(noSpacesRegex),
+      Validators.minLength(userNameMinLength),
+      Validators.maxLength(userNameMaxLength),
     ]),
     password: new FormControl('', [
       Validators.required,
       Validators.pattern(passwordRegex),
+      Validators.minLength(passwordMinLength),
+      Validators.maxLength(passwordMaxLength),
     ]),
   });
 
@@ -41,7 +59,7 @@ export class SignUpComponent {
   }
 
   getValidationErrors() {
-    return getValidationErrors(this.signUpForm);
+    return getValidationErrors(this.signUpForm).slice(0, 2);
   }
 
   register() {
@@ -51,8 +69,13 @@ export class SignUpComponent {
       password: this.signUpForm.controls.password.value!,
     };
 
-    this.authService.register(registerUser).subscribe(() => {
-      this.router.navigateByUrl('/chats');
-    });
+    this.authService.register(registerUser).subscribe(
+      () => {
+        this.router.navigate(['chats']);
+      },
+      (error) => {
+        console.log(error);
+      },
+    );
   }
 }

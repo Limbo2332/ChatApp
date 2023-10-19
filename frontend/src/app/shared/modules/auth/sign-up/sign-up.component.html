@@ -36,7 +36,7 @@
     <div class="submit text-center">
       <button
         type="button"
-        [disabled]="!!getValidationErrors()"
+        [disabled]="getValidationErrors().length || signUpForm.untouched"
         (click)="register()"
       >
         Sign Up

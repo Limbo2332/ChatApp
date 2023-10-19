@@ -10,6 +10,7 @@ namespace ChatApp.Common.Extensions
         {
             return exception switch
             {
+                BadRequestException _ => (HttpStatusCode.BadRequest, ErrorCode.BadRequest),
                 NotFoundException _ => (HttpStatusCode.NotFound, ErrorCode.NotFound),
                 InvalidEmailUsernameOrPasswordException _ => (HttpStatusCode.BadRequest, ErrorCode.InvalidUserNameOrPassword),
                 InvalidTokenException _ => (HttpStatusCode.Unauthorized, ErrorCode.InvalidToken),

@@ -67,7 +67,13 @@
         </ul>
       </div>
       <div class="submit text-center">
-        <button type="button" [disabled]="!!getResetPasswordValidationErrors()">
+        <button
+          type="button"
+          [disabled]="
+            getResetPasswordValidationErrors().length ||
+            resetPasswordForm.untouched
+          "
+        >
           Reset password
         </button>
       </div>
