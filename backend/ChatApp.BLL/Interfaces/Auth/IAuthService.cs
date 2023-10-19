@@ -7,7 +7,7 @@ namespace ChatApp.BLL.Interfaces.Auth
     {
         Task<AuthUserDto> LoginAsync(UserLoginDto userDto);
 
-        Task<UserDto> RegisterAsync(UserRegisterDto userDto);
+        Task<AuthUserDto> RegisterAsync(UserRegisterDto userDto);
 
         Task<AccessTokenDto> RefreshTokenAsync(AccessTokenDto tokenDto);
 

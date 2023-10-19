@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { authenticatedGuard } from './core/guards/authenticated.guard';
+import { unauthenticatedGuard } from './core/guards/unauthenticated.guard';
 
 const routes: Routes = [
   {
@@ -13,6 +14,7 @@ const routes: Routes = [
     path: 'auth',
     loadChildren: () =>
       import('./shared/modules/auth/auth.module').then((i) => i.AuthModule),
+    canActivate: [unauthenticatedGuard],
   },
   {
     path: 'chats',

@@ -1,32 +1,8 @@
 <header class="header d-flex justify-content-between">
-  <div class="logo d-flex align-items-center gap-2">
+  <div class="logo d-flex align-items-center gap-2" [routerLink]="'/'">
     <img src="assets/icon.png" alt="icon" class="d-block logo-img" />
     <p class="logo-text">Chat App</p>
   </div>
-  <nav class="navbar navbar-expand">
-    <div
-      class="collapse navbar-collapse justify-content-center"
-      id="navbarNavAltMarkup"
-    >
-      <div class="navbar-nav">
-        <a
-          *ngIf="!isAuthenticated"
-          class="nav-link"
-          [routerLink]="'/'"
-          [routerLinkActive]="'active'"
-          [routerLinkActiveOptions]="routerLinkActiveOptions"
-          >Home</a
-        >
-        <a
-          *ngIf="isAuthenticated"
-          class="nav-link"
-          [routerLink]="'/chats'"
-          [routerLinkActive]="'active'"
-          >Chats</a
-        >
-      </div>
-    </div>
-  </nav>
   <div
     class="sign-section d-flex align-items-center gap-2"
     *ngIf="!isAuthenticated; else userProfileButton"

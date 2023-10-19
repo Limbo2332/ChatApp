@@ -52,18 +52,25 @@ namespace ChatApp.BLL.Services.Auth
             };
         }
 
-        public async Task<UserDto> RegisterAsync(UserRegisterDto userDto)
+        public async Task<AuthUserDto> RegisterAsync(UserRegisterDto userDto)
         {
-            var user = _mapper.Map<User>(userDto);
+            var userEntity = _mapper.Map<User>(userDto);
             var salt = SecurityHelper.GetRandomBytes();
 
-            user.Salt = Convert.ToBase64String(salt);
-            user.Password = SecurityHelper.HashPassword(userDto.Password, salt);
+            userEntity.Salt = Convert.ToBase64String(salt);
+            userEntity.Password = SecurityHelper.HashPassword(userDto.Password, salt);
 
-            await _context.Users.AddAsync(user);
+            await _context.Users.AddAsync(userEntity);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<UserDto>(user);
+            var token = await GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);
+            var user = _mapper.Map<UserDto>(userEntity);
+
+            return new AuthUserDto
+            {
+                Token = token,
+                User = user
+            };
         }
 
         public async Task<AccessTokenDto> RefreshTokenAsync(AccessTokenDto tokenDto)

@@ -23,7 +23,7 @@ namespace ChatApp.WebAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> RegisterAsync([FromBody] UserRegisterDto userDto)
+        public async Task<ActionResult<AuthUserDto>> RegisterAsync([FromBody] UserRegisterDto userDto)
         {
             return Created("register", await _authService.RegisterAsync(userDto));
         }
