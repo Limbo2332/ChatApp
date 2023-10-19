@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ChatApp.BLL.Interfaces.Auth;
+using ChatApp.Common.DTO.Auth;
+using ChatApp.Common.DTO.User;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 
@@ -10,36 +15,38 @@ namespace ChatApp.WebAPI.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private IConfiguration _config;
+        private readonly IAuthService _authService;
 
-        public AuthController(IConfiguration config)
+        public AuthController(IAuthService authService)
         {
-            _config = config;
+            _authService = authService;
         }
 
         [HttpPost("register")]
-        public IActionResult Register(string username, string email, string password)
+        public async Task<ActionResult<AuthUserDto>> RegisterAsync([FromBody] UserRegisterDto userDto)
         {
-            //TODO: check user not exist and change parameters to DTO
-
-            return Ok(GenerateJSONToken(username, email, password));
+            return Created("register", await _authService.RegisterAsync(userDto));
         }
 
-        private string GenerateJSONToken(string username, string email, string password)
+        [HttpPost("login")]
+        public async Task<ActionResult<AuthUserDto>> LoginAsync([FromBody] UserLoginDto userDto)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"] ?? ""));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            return Ok(await _authService.LoginAsync(userDto));
+        }
 
-            var claims = new Claim[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(JwtRegisteredClaimNames.Email, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
+        [HttpPost("refresh")]
+        [Authorize]
+        public async Task<ActionResult<AccessTokenDto>> RefreshAsync([FromBody] AccessTokenDto tokenDto)
+        {
+            return Ok(await _authService.RefreshTokenAsync(tokenDto));
+        }
 
-            var token = new JwtSecurityToken(_config["JWT:Issuer"], _config["JWT:Audience"], claims, expires: DateTime.UtcNow.AddMinutes(120), signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+        [HttpDelete("removetoken")]
+        [Authorize]
+        public async Task<ActionResult> RemoveRefreshTokenAsync(string refreshToken)
+        {
+            await _authService.RemoveRefreshTokenAsync(refreshToken);
+            return NoContent();
         }
     }
 }

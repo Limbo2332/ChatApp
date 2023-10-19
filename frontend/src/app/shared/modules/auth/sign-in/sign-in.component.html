@@ -7,22 +7,24 @@
     <app-custom-input
       [InputId]="'sign-in-username'"
       [InputPlaceholder]="'Username or Email'"
+      (InputValueChanged)="changeInputValue('emailOrUsername', $event)"
     ></app-custom-input>
     <app-custom-input
       [InputId]="'sign-in-password'"
       [InputType]="'password'"
       [InputPlaceholder]="'Password'"
+      (InputValueChanged)="changeInputValue('password', $event)"
     ></app-custom-input>
     <div class="forgot-block d-flex flex-column align-items-center">
       <a class="forgot d-block" (click)="openResetPasswordModal()"
         >Forgot password?</a
       >
       <a class="forgot d-block mt-2" [routerLink]="'/auth/register'"
-        >Already have an account?</a
+        >No account?</a
       >
     </div>
     <div class="submit text-center">
-      <button type="submit">Sign In</button>
+      <button type="button" (click)="login()">Sign In</button>
     </div>
   </form>
 </div>

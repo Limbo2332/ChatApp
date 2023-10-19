@@ -1,4 +1,5 @@
 
+using ChatApp.Common.Middlewares;
 using ChatApp.WebAPI.Extensions;
 
 namespace ChatApp
@@ -9,11 +10,16 @@ namespace ChatApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors();
+
             builder.Services.AddControllers();
             builder.Services.ConfigureSwagger();
 
             builder.Services.AddJWTAuthentication(builder.Configuration);
             builder.Services.ConnectToDatabase(builder.Configuration);
+
+            builder.Services.RegisterAutoMapper();
+            builder.Services.RegisterCustomServices();
 
             var app = builder.Build();
 
@@ -25,12 +31,19 @@ namespace ChatApp
 
             app.UseHttpsRedirection();
 
+            app.UseCors(opt => opt
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
+
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
 
             app.UseChatAppContext();
+
+            app.UseMiddleware<UserIdMiddleware>();
 
             app.Run();
         }

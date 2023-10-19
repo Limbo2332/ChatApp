@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 
 import {
@@ -21,15 +21,21 @@ export class CustomInputComponent {
 
   @Input() InputPlaceholder?: string;
 
-  @Input() StartValue?: string;
+  @Input() InputValue?: string;
 
   @Input() Width: string = '100%';
 
   @Input() customInputClass: string = 'custom-input';
 
+  @Output() InputValueChanged = new EventEmitter<string>();
+
   inputValue: string = '';
 
   passwordIcon: [IconPrefix, IconName] = ['fas', 'eye'];
+
+  changeInputValue(value: string) {
+    this.InputValueChanged.emit(value);
+  }
 
   changePasswordView() {
     if (this.InputType.toLowerCase() === 'password') {

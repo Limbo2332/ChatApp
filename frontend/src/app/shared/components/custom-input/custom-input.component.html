@@ -7,11 +7,12 @@
     [type]="InputType"
     [id]="InputId"
     [placeholder]="InputPlaceholder ?? 'Enter your value'"
-    [value]="StartValue"
+    [value]="InputValue"
     [style.width]="Width"
     [style.paddingRight.px]="getPaddingRightForInput()"
     autocomplete="new-password"
     [ngClass]="customInputClass"
+    (ngModelChange)="changeInputValue($event)"
   />
   <fa-icon
     class="password-icon"

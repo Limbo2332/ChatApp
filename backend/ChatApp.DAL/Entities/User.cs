@@ -7,6 +7,7 @@ namespace ChatApp.DAL.Entities
         public string Email { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public string Salt { get; set; } = string.Empty;
         public string? ImagePath { get; set; }
 
         public IEnumerable<UserMessages>? UserMessages { get; set; }
