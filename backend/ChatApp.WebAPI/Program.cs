@@ -10,6 +10,8 @@ namespace ChatApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors();
+
             builder.Services.AddControllers();
             builder.Services.ConfigureSwagger();
 
@@ -28,6 +30,11 @@ namespace ChatApp
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors(opt => opt
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowAnyOrigin());
 
             app.UseAuthentication();
             app.UseAuthorization();

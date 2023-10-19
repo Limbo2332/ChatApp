@@ -5,12 +5,12 @@ namespace ChatApp.BLL.Interfaces.Auth
 {
     public interface IAuthService
     {
-        Task<AuthUserDto> Login(UserLoginDto userDto);
+        Task<AuthUserDto> LoginAsync(UserLoginDto userDto);
 
-        Task<UserDto> Register(UserRegisterDto userDto);
+        Task<UserDto> RegisterAsync(UserRegisterDto userDto);
 
-        Task<AccessTokenDto> RefreshToken(AccessTokenDto tokenDto);
+        Task<AccessTokenDto> RefreshTokenAsync(AccessTokenDto tokenDto);
 
-        Task RemoveRefreshToken(string token);
+        Task RemoveRefreshTokenAsync(string token);
     }
 }

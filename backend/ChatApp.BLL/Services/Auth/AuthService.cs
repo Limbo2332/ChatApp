@@ -26,7 +26,7 @@ namespace ChatApp.BLL.Services.Auth
             _userIdGetter = userIdGetter;
         }
 
-        public async Task<AuthUserDto> Login(UserLoginDto userDto)
+        public async Task<AuthUserDto> LoginAsync(UserLoginDto userDto)
         {
             var userEntity = await _context.Users
                 .FirstOrDefaultAsync(user => user.Email == userDto.EmailOrUserName 
@@ -52,7 +52,7 @@ namespace ChatApp.BLL.Services.Auth
             };
         }
 
-        public async Task<UserDto> Register(UserRegisterDto userDto)
+        public async Task<UserDto> RegisterAsync(UserRegisterDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
             var salt = SecurityHelper.GetRandomBytes();
@@ -66,7 +66,7 @@ namespace ChatApp.BLL.Services.Auth
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<AccessTokenDto> RefreshToken(AccessTokenDto tokenDto)
+        public async Task<AccessTokenDto> RefreshTokenAsync(AccessTokenDto tokenDto)
         {
             var userId = _jwtService.GetUserIdFromToken(tokenDto.AccessToken, _config["JWT:SigningKey"]!);
             var userEntity = await _context.Users.FindAsync(userId)
@@ -100,7 +100,7 @@ namespace ChatApp.BLL.Services.Auth
             };
         }
 
-        public async Task RemoveRefreshToken(string token)
+        public async Task RemoveRefreshTokenAsync(string token)
         {
             var currentUserId = _userIdGetter.CurrentUserId;
             var refreshToken = await _context.RefreshTokens

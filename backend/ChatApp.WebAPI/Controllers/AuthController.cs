@@ -23,29 +23,29 @@ namespace ChatApp.WebAPI.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> Register(UserRegisterDto userDto)
+        public async Task<ActionResult<UserDto>> RegisterAsync([FromBody] UserRegisterDto userDto)
         {
-            return Created("register", await _authService.Register(userDto));
+            return Created("register", await _authService.RegisterAsync(userDto));
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AuthUserDto>> Login(UserLoginDto userDto)
+        public async Task<ActionResult<AuthUserDto>> LoginAsync([FromBody] UserLoginDto userDto)
         {
-            return Ok(await _authService.Login(userDto));
+            return Ok(await _authService.LoginAsync(userDto));
         }
 
         [HttpPost("refresh")]
         [Authorize]
-        public async Task<ActionResult<AccessTokenDto>> Refresh(AccessTokenDto tokenDto)
+        public async Task<ActionResult<AccessTokenDto>> RefreshAsync([FromBody] AccessTokenDto tokenDto)
         {
-            return Ok(await _authService.RefreshToken(tokenDto));
+            return Ok(await _authService.RefreshTokenAsync(tokenDto));
         }
 
-        [HttpPost("removetoken")]
+        [HttpDelete("removetoken")]
         [Authorize]
-        public async Task<ActionResult> RemoveRefreshToken(string refreshToken)
+        public async Task<ActionResult> RemoveRefreshTokenAsync(string refreshToken)
         {
-            await _authService.RemoveRefreshToken(refreshToken);
+            await _authService.RemoveRefreshTokenAsync(refreshToken);
             return NoContent();
         }
     }
