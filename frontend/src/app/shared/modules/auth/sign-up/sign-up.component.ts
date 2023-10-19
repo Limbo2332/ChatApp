@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { IUserRegister } from 'src/app/shared/models/user/user-register';
+import { emailRegex, noSpacesRegex, passwordRegex } from 'src/app/shared/utils/validation/regex-patterns';
+import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 @Component({
   selector: 'app-sign-up',
@@ -11,9 +13,18 @@ import { IUserRegister } from 'src/app/shared/models/user/user-register';
 })
 export class SignUpComponent {
   signUpForm = new FormGroup({
-    email: new FormControl(''),
-    username: new FormControl(''),
-    password: new FormControl(''),
+    email: new FormControl('', [
+      Validators.required,
+      Validators.pattern(emailRegex),
+    ]),
+    username: new FormControl('', [
+      Validators.required,
+      Validators.pattern(noSpacesRegex),
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.pattern(passwordRegex),
+    ]),
   });
 
   constructor(
@@ -27,6 +38,10 @@ export class SignUpComponent {
   ) {
     this.signUpForm.controls[formControlName].setValue(value);
     this.signUpForm.controls[formControlName].markAsTouched();
+  }
+
+  getValidationErrors() {
+    return getValidationErrors(this.signUpForm);
   }
 
   register() {

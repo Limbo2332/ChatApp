@@ -21,13 +21,26 @@
       [InputPlaceholder]="'Password'"
       (InputValueChanged)="changeInputValue('password', $event)"
     ></app-custom-input>
+    <div class="validation-errors">
+      <ul>
+        <li *ngFor="let error of getValidationErrors()">
+          {{ error }}
+        </li>
+      </ul>
+    </div>
     <div class="forgot-block d-flex flex-column align-items-center">
       <a class="forgot d-block mt-2" [routerLink]="'/auth/login'"
         >Already registered?</a
       >
     </div>
     <div class="submit text-center">
-      <button type="button" (click)="register()">Sign Up</button>
+      <button
+        type="button"
+        [disabled]="!!getValidationErrors()"
+        (click)="register()"
+      >
+        Sign Up
+      </button>
     </div>
   </form>
 </div>
