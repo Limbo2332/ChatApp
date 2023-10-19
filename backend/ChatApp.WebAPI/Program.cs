@@ -1,4 +1,5 @@
 
+using ChatApp.Common.Filters;
 using ChatApp.Common.Middlewares;
 using ChatApp.WebAPI.Extensions;
 
@@ -12,7 +13,7 @@ namespace ChatApp
 
             builder.Services.AddCors();
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(options => options.Filters.Add(typeof(CustomExceptionFilterAttribute)));
             builder.Services.ConfigureSwagger();
 
             builder.Services.AddJWTAuthentication(builder.Configuration);

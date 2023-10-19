@@ -35,7 +35,6 @@ namespace ChatApp.WebAPI.Controllers
         }
 
         [HttpPost("refresh")]
-        [Authorize]
         public async Task<ActionResult<AccessTokenDto>> RefreshAsync([FromBody] AccessTokenDto tokenDto)
         {
             return Ok(await _authService.RefreshTokenAsync(tokenDto));

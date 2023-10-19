@@ -9,6 +9,7 @@ using ChatApp.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ChatApp.Common.Logic.Abstract;
+using ChatApp.Common.Exceptions;
 
 namespace ChatApp.BLL.Services.Auth
 {
@@ -34,12 +35,12 @@ namespace ChatApp.BLL.Services.Auth
 
             if (userEntity == null)
             {
-                throw new Exception(nameof(User));
+                throw new NotFoundException(nameof(User));
             }
 
             if(!SecurityHelper.ValidatePassword(userDto.Password, userEntity.Password, userEntity.Salt))
             {
-                throw new Exception(nameof(User));
+                throw new NotFoundException(nameof(User), userEntity.Id);
             }
 
             var token = await GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);
@@ -77,15 +78,15 @@ namespace ChatApp.BLL.Services.Auth
         {
             var userId = _jwtService.GetUserIdFromToken(tokenDto.AccessToken, _config["JWT:SigningKey"]!);
             var userEntity = await _context.Users.FindAsync(userId)
-                ?? throw new Exception(nameof(User));
+                ?? throw new NotFoundException(nameof(User));
 
             var refreshToken = await _context.RefreshTokens
                 .FirstOrDefaultAsync(rt => rt.Token == tokenDto.RefreshToken && rt.UserId == userId)
-                ?? throw new Exception("Refresh");
+                ?? throw new InvalidTokenException(nameof(tokenDto.RefreshToken));
 
             if (!refreshToken.IsActive)
             {
-                throw new Exception("Refresh token expired");
+                throw new ExpiredRefreshTokenException();
             }
 
             var jwtToken = _jwtService.GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);
@@ -112,7 +113,7 @@ namespace ChatApp.BLL.Services.Auth
             var currentUserId = _userIdGetter.CurrentUserId;
             var refreshToken = await _context.RefreshTokens
                 .FirstOrDefaultAsync(rt => rt.Token == token && rt.UserId == currentUserId)
-                ?? throw new Exception("refresh");
+                ?? throw new InvalidTokenException(nameof(token));
 
             _context.RefreshTokens.Remove(refreshToken);
             await _context.SaveChangesAsync();

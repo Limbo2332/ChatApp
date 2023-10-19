@@ -1,5 +1,6 @@
 ﻿using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.Common.DTO.Auth;
+using ChatApp.Common.Exceptions;
 using ChatApp.Common.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -58,7 +59,7 @@ namespace ChatApp.BLL.Services.Auth
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey))
                 }, out var securityToken)
-                ?? throw new Exception("access");
+                ?? throw new NotFoundException(nameof(accessToken));
 
             return int.Parse(claimsPrincipal.Claims.First(c => c.Type == "id").Value);
         }
