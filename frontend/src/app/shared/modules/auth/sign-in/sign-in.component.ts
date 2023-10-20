@@ -4,7 +4,11 @@ import { Router } from '@angular/router';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { IUserLogin } from 'src/app/shared/models/user/user-login';
-import { emailRegex, noSpacesRegex, passwordRegex } from 'src/app/shared/utils/validation/regex-patterns';
+import {
+  emailRegex,
+  noSpacesRegex,
+  passwordRegex,
+} from 'src/app/shared/utils/validation/regex-patterns';
 import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 @Component({
@@ -67,13 +71,15 @@ export class SignInComponent {
   }
 
   login() {
-    const userLogin: IUserLogin = {
-      emailOrUserName: this.signInForm.controls.emailOrUsername.value!,
-      password: this.signInForm.controls.password.value!,
-    };
+    if (this.signInForm.valid) {
+      const userLogin: IUserLogin = {
+        emailOrUserName: this.signInForm.controls.emailOrUsername.value!,
+        password: this.signInForm.controls.password.value!,
+      };
 
-    this.authService.login(userLogin).subscribe(() => {
-      this.router.navigate(['/chats']);
-    });
+      this.authService.login(userLogin).subscribe(() => {
+        this.router.navigate(['/chats']);
+      });
+    }
   }
 }

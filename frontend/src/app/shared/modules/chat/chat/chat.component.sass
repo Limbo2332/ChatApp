@@ -11,11 +11,6 @@
     width: 100% !important
     max-width: 100%
 
-.conversation
-  background-color: green
-  @media (max-width: $mobile)
-    display: none
-
 .resize-handle-right
   cursor: col-resize
   width: 5px
@@ -38,15 +33,15 @@
     cursor: pointer
 
     &.active
-      background-color: $input-bg !important
+      background-color: $dark-pink !important
       width: calc(100% + 6px)
 
-      & .chat-block-date,
-      .chat-block-message
-        color: $auth-bg-color
+      // & .chat-block-date,
+      // .chat-block-message
+      //   color: $auth-bg-color
 
-      & .chat-block-name
-        color: $grey-hover
+      // & .chat-block-name
+      //   color: $grey-hover
 
       & .chat-block-date
         margin-right: 14px
@@ -85,7 +80,7 @@
   background: url("/assets/conversation-bg.png") center/cover no-repeat
 
   &-member
-    background-color: $white-hover
+    background-color: $dark-pink
 
     &-info
       width: calc(100% - 96px)
@@ -95,6 +90,9 @@
       width: 48px
       height: 48px
       margin: 8px 8px 8px 16px
+
+  @media (max-width: $mobile)
+    display: none
 
 .messages
   padding: 16px

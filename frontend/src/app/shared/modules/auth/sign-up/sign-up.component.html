@@ -34,13 +34,7 @@
       >
     </div>
     <div class="submit text-center">
-      <button
-        type="button"
-        [disabled]="getValidationErrors().length || signUpForm.untouched"
-        (click)="register()"
-      >
-        Sign Up
-      </button>
+      <button type="button" (click)="register()">Sign Up</button>
     </div>
   </form>
 </div>

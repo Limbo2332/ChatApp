@@ -63,19 +63,21 @@ export class SignUpComponent {
   }
 
   register() {
-    const registerUser: IUserRegister = {
-      email: this.signUpForm.controls.email.value!,
-      userName: this.signUpForm.controls.username.value!,
-      password: this.signUpForm.controls.password.value!,
-    };
+    if (this.signUpForm.valid) {
+      const registerUser: IUserRegister = {
+        email: this.signUpForm.controls.email.value!,
+        userName: this.signUpForm.controls.username.value!,
+        password: this.signUpForm.controls.password.value!,
+      };
 
-    this.authService.register(registerUser).subscribe(
-      () => {
-        this.router.navigate(['chats']);
-      },
-      (error) => {
-        console.log(error);
-      },
-    );
+      this.authService.register(registerUser).subscribe(
+        () => {
+          this.router.navigate(['chats']);
+        },
+        (error) => {
+          console.log(error);
+        },
+      );
+    }
   }
 }
