@@ -13,6 +13,12 @@ namespace ChatApp.DAL.Context.EntityConfigurations
                 .HasForeignKey(userChat => userChat.ChatId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(chat => chat.Messages)
+                .WithOne(message => message.Chat)
+                .HasForeignKey(message => message.ChatId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

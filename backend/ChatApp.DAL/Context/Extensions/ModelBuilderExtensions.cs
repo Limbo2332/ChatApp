@@ -16,7 +16,6 @@ namespace ChatApp.DAL.Context.Extensions
         private static readonly int ChatsCount = 30;
         private static readonly int MessagesCount = 200;
         private static readonly int UserChatsCount = 100;
-        private static readonly int UserMessagesCount = 50;
 
         public static void Configure(this ModelBuilder modelBuilder)
         {
@@ -31,14 +30,11 @@ namespace ChatApp.DAL.Context.Extensions
             var chats = GenerateChats();
             modelBuilder.Entity<Chat>().HasData(chats);
 
-            var messages = GenerateMessages(chats);
+            var messages = GenerateMessages(chats, users);
             modelBuilder.Entity<Message>().HasData(messages);
 
             var userChats = GenerateUserChats(users, chats);
             modelBuilder.Entity<UserChats>().HasData(userChats);
-
-            var userMessages = GenerateUserMessages(userChats.Select(uc => uc.UserId), messages);
-            modelBuilder.Entity<UserMessages>().HasData(userMessages);
         }
 
         private static IEnumerable<User> GenerateUsers()
@@ -74,7 +70,7 @@ namespace ChatApp.DAL.Context.Extensions
                 .Generate(ChatsCount);
         }
 
-        private static IEnumerable<Message> GenerateMessages(IEnumerable<Chat> chats)
+        private static IEnumerable<Message> GenerateMessages(IEnumerable<Chat> chats, IEnumerable<User> users)
         {
             Faker.GlobalUniqueIndex = 0;
 
@@ -85,7 +81,10 @@ namespace ChatApp.DAL.Context.Extensions
                 .RuleFor(message => message.Value, f => f.Lorem.Sentence())
                 .RuleFor(message => message.MessageStatus, f => f.PickRandom<MessageStatus>())
                 .RuleFor(message => message.ChatId, f => f.PickRandom(chats).Id)
-                .Generate(MessagesCount);
+                .RuleFor(message => message.UserId, f => f.PickRandom(users).Id)
+                .Generate(MessagesCount)
+                .GroupBy(message => new { message.ChatId, message.UserId })
+                .SelectMany(group => group);
         }
 
         private static IEnumerable<UserChats> GenerateUserChats(IEnumerable<User> users, IEnumerable<Chat> chats)
@@ -103,20 +102,6 @@ namespace ChatApp.DAL.Context.Extensions
                 .GroupBy(userChart => userChart.ChatId)
                 .Where(group => group.Count() == 2 && group.DistinctBy(g => g.IsSender).Count() == 2)
                 .SelectMany(group => group);
-        }
-
-        private static IEnumerable<UserMessages> GenerateUserMessages(IEnumerable<int> userIds, IEnumerable<Message> messages)
-        {
-            Faker.GlobalUniqueIndex = 0;
-
-            return new Faker<UserMessages>()
-                .UseSeed(SeedDefaults.UserMessagesSeed)
-                .RuleFor(userMessages => userMessages.Id, f => f.IndexGlobal)
-                .RuleFor(userMessages => userMessages.CreatedAt, f => _usedDateTime)
-                .RuleFor(userMessages => userMessages.UserId, f => f.PickRandom(userIds))
-                .RuleFor(userMessages => userMessages.MessageId, f => f.PickRandom(messages).Id)
-                .RuleFor(userMessages => userMessages.IsSender, f => f.Random.Bool())
-                .Generate(UserMessagesCount);
         }
     }
 }

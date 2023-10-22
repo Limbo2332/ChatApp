@@ -14,7 +14,6 @@ namespace ChatApp.DAL.Context
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
         public DbSet<UserChats> UserChats => Set<UserChats>();
-        public DbSet<UserMessages> UserMessages => Set<UserMessages>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

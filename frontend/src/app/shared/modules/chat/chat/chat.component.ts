@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ResizeEvent } from 'angular-resizable-element';
+import { ChatsService } from 'src/app/core/services/chats.service';
+import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
 
 import { minChatsWidth, minConversationsWidth } from './chat-utils';
 
@@ -8,7 +10,7 @@ import { minChatsWidth, minConversationsWidth } from './chat-utils';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.sass'],
 })
-export class ChatComponent {
+export class ChatComponent implements OnInit {
   chatStyles: object = {
     'width.px': minChatsWidth * 3,
     'min-width.px': minChatsWidth,
@@ -20,6 +22,16 @@ export class ChatComponent {
     'min-width.px': minConversationsWidth,
     'max-width.px': window.innerWidth - minChatsWidth,
   };
+
+  chats: IChatPreview[] = [];
+
+  constructor(private chatsService: ChatsService) {}
+
+  ngOnInit(): void {
+    this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
+      this.chats = chats;
+    });
+  }
 
   onChatResizeEnd(event: ResizeEvent) {
     this.chatStyles = {

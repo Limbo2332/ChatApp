@@ -76,12 +76,20 @@ namespace ChatApp.WebAPI.Extensions
             );
         }
 
+        public static void RegisterUserStorageServices(this IServiceCollection services)
+        {
+            services.AddScoped<UserIdStorage>();
+            services.AddTransient<IUserIdSetter>(s => s.GetRequiredService<UserIdStorage>());
+            services.AddTransient<IUserIdGetter>(s => s.GetRequiredService<UserIdStorage>());
+        }
+
         public static void RegisterAutoMapper(this IServiceCollection services)
         {
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<UserProfile>();
-            }, Assembly.GetExecutingAssembly());
+                cfg.AddProfile<ChatsProfile>();
+            }, Assembly.GetAssembly(typeof(UserProfile)));
         }
 
         public static void RegisterCustomServices(this IServiceCollection services)
@@ -89,10 +97,7 @@ namespace ChatApp.WebAPI.Extensions
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserService, UserService>();
-
-            services.AddScoped<UserIdStorage>();
-            services.AddTransient<IUserIdSetter>(s => s.GetRequiredService<UserIdStorage>());
-            services.AddTransient<IUserIdGetter>(s => s.GetRequiredService<UserIdStorage>());
+            services.AddScoped<IChatService, ChatService>();
         }
 
         public static void RegisterValidators(this IServiceCollection services)

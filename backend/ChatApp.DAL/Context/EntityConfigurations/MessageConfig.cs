@@ -15,12 +15,6 @@ namespace ChatApp.DAL.Context.EntityConfigurations
 
             builder.Property(message => message.MessageStatus)
                 .IsRequired();
-
-            builder.HasMany(message => message.UserMessages)
-                .WithOne(userMessage => userMessage.Message)
-                .HasForeignKey(userMessage => userMessage.MessageId)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

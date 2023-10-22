@@ -11,6 +11,8 @@ namespace ChatApp.BLL.MappingProfiles
             CreateMap<UserRegisterDto, User>();
 
             CreateMap<User, UserDto>();
+
+            CreateMap<User, UserPreviewDto>();
         }
     }
 }

@@ -59,7 +59,13 @@ export class AuthService {
       refreshToken: localStorage.getItem(this.refreshTokenKeyName)!,
     };
 
-    return this.http.post<IAccessToken>(`${this.baseUrl}/refresh`, token);
+    return this.http.post<IAccessToken>(`${this.baseUrl}/refresh`, token).pipe(
+      map((resp: IAccessToken) => {
+        this.setTokensInfo(resp);
+
+        return resp;
+      }),
+    );
   }
 
   get isAuthenticated() {

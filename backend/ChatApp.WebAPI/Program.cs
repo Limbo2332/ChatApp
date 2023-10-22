@@ -22,6 +22,7 @@ namespace ChatApp
             builder.Services.ConnectToDatabase(builder.Configuration);
             builder.Services.AddJWTAuthentication(builder.Configuration);
 
+            builder.Services.RegisterUserStorageServices();
             builder.Services.RegisterAutoMapper();
             builder.Services.RegisterCustomServices();
 

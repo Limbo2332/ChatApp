@@ -8,9 +8,10 @@ namespace ChatApp.DAL.Entities
         public string Value { get; set; } = string.Empty;
         public MessageStatus MessageStatus { get; set; }
 
-        public Chat? Chat { get; set; }
+        public Chat Chat { get; set; } = null!;
         public int ChatId { get; set; }
 
-        public IEnumerable<UserMessages>? UserMessages { get; set; }
+        public User User { get; set; } = null!;
+        public int UserId { get; set; }
     }
 }

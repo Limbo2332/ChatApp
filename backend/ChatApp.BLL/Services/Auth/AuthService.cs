@@ -93,7 +93,7 @@ namespace ChatApp.BLL.Services.Auth
             var rToken = _jwtService.GenerateRefreshToken();
 
             _context.RefreshTokens.Remove(refreshToken);
-            _context.RefreshTokens.Add(new DAL.Entities.RefreshToken
+            _context.RefreshTokens.Add(new RefreshToken
             {
                 Token = rToken,
                 UserId = userEntity.Id
