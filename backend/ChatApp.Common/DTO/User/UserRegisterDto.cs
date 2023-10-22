@@ -1,4 +1,4 @@
-﻿namespace ChatApp.Common.DTO.Auth
+﻿namespace ChatApp.Common.DTO.User
 {
     public class UserRegisterDto
     {

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.User;
 using ChatApp.DAL.Entities;
 

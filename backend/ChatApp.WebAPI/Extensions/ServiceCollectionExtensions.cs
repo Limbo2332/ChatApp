@@ -1,10 +1,18 @@
-﻿using ChatApp.BLL.Interfaces.Auth;
+﻿using ChatApp.BLL.Interfaces;
+using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.MappingProfiles;
+using ChatApp.BLL.Services;
 using ChatApp.BLL.Services.Auth;
+using ChatApp.Common.DTO.Auth;
+using ChatApp.Common.DTO.User;
 using ChatApp.Common.Logic;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.DAL.Context;
+using ChatApp.WebAPI.Validators.Auth;
+using ChatApp.WebAPI.Validators.User;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -80,10 +88,18 @@ namespace ChatApp.WebAPI.Extensions
         {
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddScoped<UserIdStorage>();
-            services.AddTransient<IUserIdSetter>(s => s.GetService<UserIdStorage>());
-            services.AddTransient<IUserIdGetter>(s => s.GetService<UserIdStorage>());
+            services.AddTransient<IUserIdSetter>(s => s.GetRequiredService<UserIdStorage>());
+            services.AddTransient<IUserIdGetter>(s => s.GetRequiredService<UserIdStorage>());
+        }
+
+        public static void RegisterValidators(this IServiceCollection services)
+        {
+            services.AddScoped<IValidator<UserRegisterDto>, UserRegisterValidator>();
+            services.AddScoped<IValidator<UserLoginDto>, UserLoginValidator>();
+            services.AddScoped<IValidator<AccessTokenDto>, AccessTokenValidator>();
         }
     }
 }

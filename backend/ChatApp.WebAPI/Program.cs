@@ -1,6 +1,7 @@
-
+using ChatApp.Common.Filters;
 using ChatApp.Common.Middlewares;
 using ChatApp.WebAPI.Extensions;
+using FluentValidation.AspNetCore;
 
 namespace ChatApp
 {
@@ -12,14 +13,22 @@ namespace ChatApp
 
             builder.Services.AddCors();
 
-            builder.Services.AddControllers();
-            builder.Services.ConfigureSwagger();
+            builder.Services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(ValidateFilterAttribute));
+                options.Filters.Add(typeof(CustomExceptionFilterAttribute));
+            });
 
-            builder.Services.AddJWTAuthentication(builder.Configuration);
             builder.Services.ConnectToDatabase(builder.Configuration);
+            builder.Services.AddJWTAuthentication(builder.Configuration);
 
             builder.Services.RegisterAutoMapper();
             builder.Services.RegisterCustomServices();
+
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.RegisterValidators();
+
+            builder.Services.ConfigureSwagger();
 
             var app = builder.Build();
 

@@ -3,16 +3,11 @@ using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
-using System.Security.Claims;
-using System.Text;
 
 namespace ChatApp.WebAPI.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
+    [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -35,7 +30,6 @@ namespace ChatApp.WebAPI.Controllers
         }
 
         [HttpPost("refresh")]
-        [Authorize]
         public async Task<ActionResult<AccessTokenDto>> RefreshAsync([FromBody] AccessTokenDto tokenDto)
         {
             return Ok(await _authService.RefreshTokenAsync(tokenDto));

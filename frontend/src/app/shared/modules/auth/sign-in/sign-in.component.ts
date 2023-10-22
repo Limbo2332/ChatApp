@@ -1,9 +1,21 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { IUserLogin } from 'src/app/shared/models/user/user-login';
+import {
+  emailMaxLength,
+  emailMinLength,
+  passwordMaxLength,
+  passwordMinLength,
+} from 'src/app/shared/utils/validation/constants';
+import {
+  emailRegex,
+  noSpacesRegex,
+  passwordRegex,
+} from 'src/app/shared/utils/validation/regex-patterns';
+import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 @Component({
   selector: 'app-sign-in',
@@ -14,9 +26,28 @@ export class SignInComponent {
   resetModalIdentifier = 'resetModal';
 
   signInForm = new FormGroup({
-    emailOrUsername: new FormControl(''),
-    password: new FormControl(''),
+    emailOrUsername: new FormControl('', [
+      Validators.required,
+      Validators.pattern(noSpacesRegex),
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.pattern(passwordRegex),
+      Validators.minLength(passwordMinLength),
+      Validators.maxLength(passwordMaxLength),
+    ]),
   });
+
+  resetPasswordForm = new FormGroup({
+    email: new FormControl('', [
+      Validators.required,
+      Validators.pattern(emailRegex),
+      Validators.minLength(emailMinLength),
+      Validators.maxLength(emailMaxLength),
+    ]),
+  });
+
+  private validationErrorsFromBackend: string[] = [];
 
   constructor(
     private modalService: NgxSmartModalService,
@@ -32,18 +63,43 @@ export class SignInComponent {
     this.signInForm.controls[formControlName].markAsTouched();
   }
 
+  changeEmailValue(value: string) {
+    this.resetPasswordForm.controls.email.setValue(value);
+    this.resetPasswordForm.controls.email.markAsTouched();
+  }
+
   openResetPasswordModal() {
     this.modalService.getModal(this.resetModalIdentifier).open();
   }
 
-  login() {
-    const userLogin: IUserLogin = {
-      emailOrUserName: this.signInForm.controls.emailOrUsername.value!,
-      password: this.signInForm.controls.password.value!,
-    };
+  getSignInValidationError() {
+    return [
+      ...getValidationErrors(this.signInForm),
+      ...this.validationErrorsFromBackend,
+    ].length > 0
+      ? 'Invalid username of password'
+      : undefined;
+  }
 
-    this.authService.login(userLogin).subscribe(() => {
-      this.router.navigate(['/chats']);
-    });
+  getResetPasswordValidationErrors() {
+    return getValidationErrors(this.resetPasswordForm);
+  }
+
+  login() {
+    if (this.signInForm.valid) {
+      const userLogin: IUserLogin = {
+        emailOrUserName: this.signInForm.controls.emailOrUsername.value!,
+        password: this.signInForm.controls.password.value!,
+      };
+
+      this.authService.login(userLogin).subscribe(
+        () => {
+          this.router.navigate(['/chats']);
+        },
+        (errors: string[]) => {
+          this.validationErrorsFromBackend = errors;
+        },
+      );
+    }
   }
 }

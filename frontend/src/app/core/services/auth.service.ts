@@ -53,6 +53,15 @@ export class AuthService {
     );
   }
 
+  refreshToken() {
+    const token: IAccessToken = {
+      accessToken: localStorage.getItem(this.accessTokenKeyName)!,
+      refreshToken: localStorage.getItem(this.refreshTokenKeyName)!,
+    };
+
+    return this.http.post<IAccessToken>(`${this.baseUrl}/refresh`, token);
+  }
+
   get isAuthenticated() {
     return !!this.user;
   }
@@ -74,7 +83,7 @@ export class AuthService {
     this.userSubject.next(undefined);
   }
 
-  private removeRefreshToken() {
+  removeRefreshToken() {
     const refreshToken = localStorage.getItem(this.refreshTokenKeyName)!;
 
     this.http

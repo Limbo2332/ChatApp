@@ -3,7 +3,7 @@
     <h1>Sign In</h1>
     <p class="description">Sign in and start chating with friends!</p>
   </div>
-  <form>
+  <form id="sign-in-form">
     <app-custom-input
       [InputId]="'sign-in-username'"
       [InputPlaceholder]="'Username or Email'"
@@ -15,6 +15,13 @@
       [InputPlaceholder]="'Password'"
       (InputValueChanged)="changeInputValue('password', $event)"
     ></app-custom-input>
+    <div class="validation-errors">
+      <ul>
+        <li *ngIf="getSignInValidationError()">
+          {{ getSignInValidationError() }}
+        </li>
+      </ul>
+    </div>
     <div class="forgot-block d-flex flex-column align-items-center">
       <a class="forgot d-block" (click)="openResetPasswordModal()"
         >Forgot password?</a
@@ -44,9 +51,17 @@
         [InputId]="'reset-email'"
         [InputPlaceholder]="'Email'"
         [InputType]="'email'"
+        (InputValueChanged)="changeEmailValue($event)"
       ></app-custom-input>
+      <div class="validation-errors">
+        <ul>
+          <li *ngFor="let error of getResetPasswordValidationErrors()">
+            {{ error }}
+          </li>
+        </ul>
+      </div>
       <div class="submit text-center">
-        <button type="submit">Reset password</button>
+        <button type="button">Reset password</button>
       </div>
     </form>
   </div>
