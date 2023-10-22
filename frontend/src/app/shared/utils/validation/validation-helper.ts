@@ -21,6 +21,5 @@ export function getValidationErrors(form: FormGroup): string[] {
     .flatMap(([key, control]) =>
       Object.keys(control.errors || [])
         .filter((errorKey) => controlErrorMessagesMap[key]?.[errorKey])
-        .map((errorKey) => controlErrorMessagesMap[key][errorKey]),
-    );
+        .map((errorKey) => controlErrorMessagesMap[key][errorKey]));
 }
