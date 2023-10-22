@@ -1,4 +1,10 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
 
@@ -27,12 +33,12 @@ export class ErrorInterceptor implements HttpInterceptor {
     }
 
     return next.handle(newReq).pipe(
-      catchError((error) => {
-        if (error instanceof HttpErrorResponse && error.status === 401) {
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
           return this.refreshTokensOn401Request(newReq, next);
         }
 
-        return throwError(() => error);
+        return throwError(error.error.errors);
       }),
     );
   }

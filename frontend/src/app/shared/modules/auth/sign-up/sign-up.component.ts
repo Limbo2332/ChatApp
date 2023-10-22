@@ -45,6 +45,8 @@ export class SignUpComponent {
     ]),
   });
 
+  private validationErrorsFromBackend: string[] = [];
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -59,7 +61,10 @@ export class SignUpComponent {
   }
 
   getValidationErrors() {
-    return getValidationErrors(this.signUpForm).slice(0, 2);
+    return [
+      ...getValidationErrors(this.signUpForm),
+      ...this.validationErrorsFromBackend,
+    ].slice(0, 2);
   }
 
   register() {
@@ -74,8 +79,8 @@ export class SignUpComponent {
         () => {
           this.router.navigate(['chats']);
         },
-        (error) => {
-          console.log(error);
+        (errors: string[]) => {
+          this.validationErrorsFromBackend = errors;
         },
       );
     }

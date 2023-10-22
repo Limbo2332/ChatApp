@@ -5,6 +5,12 @@ import { NgxSmartModalService } from 'ngx-smart-modal';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { IUserLogin } from 'src/app/shared/models/user/user-login';
 import {
+  emailMaxLength,
+  emailMinLength,
+  passwordMaxLength,
+  passwordMinLength,
+} from 'src/app/shared/utils/validation/constants';
+import {
   emailRegex,
   noSpacesRegex,
   passwordRegex,
@@ -27,6 +33,8 @@ export class SignInComponent {
     password: new FormControl('', [
       Validators.required,
       Validators.pattern(passwordRegex),
+      Validators.minLength(passwordMinLength),
+      Validators.maxLength(passwordMaxLength),
     ]),
   });
 
@@ -34,8 +42,12 @@ export class SignInComponent {
     email: new FormControl('', [
       Validators.required,
       Validators.pattern(emailRegex),
+      Validators.minLength(emailMinLength),
+      Validators.maxLength(emailMaxLength),
     ]),
   });
+
+  private validationErrorsFromBackend: string[] = [];
 
   constructor(
     private modalService: NgxSmartModalService,
@@ -61,7 +73,10 @@ export class SignInComponent {
   }
 
   getSignInValidationError() {
-    return getValidationErrors(this.signInForm).length > 0
+    return [
+      ...getValidationErrors(this.signInForm),
+      ...this.validationErrorsFromBackend,
+    ].length > 0
       ? 'Invalid username of password'
       : undefined;
   }
@@ -77,9 +92,14 @@ export class SignInComponent {
         password: this.signInForm.controls.password.value!,
       };
 
-      this.authService.login(userLogin).subscribe(() => {
-        this.router.navigate(['/chats']);
-      });
+      this.authService.login(userLogin).subscribe(
+        () => {
+          this.router.navigate(['/chats']);
+        },
+        (errors: string[]) => {
+          this.validationErrorsFromBackend = errors;
+        },
+      );
     }
   }
 }

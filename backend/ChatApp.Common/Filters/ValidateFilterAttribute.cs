@@ -6,7 +6,7 @@ namespace ChatApp.Common.Filters
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class ValidateFilterAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnResultExecuting(ResultExecutingContext context)
         {
             if (!context.ModelState.IsValid)
             {

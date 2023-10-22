@@ -13,7 +13,8 @@ namespace ChatApp
 
             builder.Services.AddCors();
 
-            builder.Services.AddControllers(options => {
+            builder.Services.AddControllers(options =>
+            {
                 options.Filters.Add(typeof(ValidateFilterAttribute));
                 options.Filters.Add(typeof(CustomExceptionFilterAttribute));
             });
@@ -23,9 +24,9 @@ namespace ChatApp
 
             builder.Services.RegisterAutoMapper();
             builder.Services.RegisterCustomServices();
-            builder.Services.RegisterValidators();
 
             builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.RegisterValidators();
 
             builder.Services.ConfigureSwagger();
 
