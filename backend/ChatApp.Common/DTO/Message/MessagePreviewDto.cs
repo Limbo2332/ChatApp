@@ -1,6 +1,6 @@
 ﻿namespace ChatApp.Common.DTO.Message
 {
-    public class LastMessagePreviewDto
+    public class MessagePreviewDto
     {
         public bool IsMine { get; set; }
 

@@ -9,9 +9,9 @@ namespace ChatApp.BLL.MappingProfiles
     {
         public ChatsProfile()
         {
-            CreateMap<Message, LastMessagePreviewDto>()
+            CreateMap<Message, MessagePreviewDto>()
                 .ForMember(dest => dest.SentAt, src => src.MapFrom(msg => msg.CreatedAt))
-                .ForMember(dest => dest.IsMine, src => src.MapFrom<LastMessagePreviewResolver>());
+                .ForMember(dest => dest.IsMine, src => src.MapFrom<MessagePreviewResolver>());
         }
     }
 }

@@ -1,0 +1,44 @@
+<ng-container *ngIf="conversation; else conversationBlock">
+  <div class="conversation-member d-flex w-100">
+    <img
+      [src]="conversation.interlocutor.imagePath ?? defaultImagePath"
+      alt="avatar"
+      class="conversation-member-img d-block"
+    />
+    <div
+      class="conversation-member-info d-flex align-items-center justify-content-between gap-2"
+    >
+      <p class="conversation-member-name">
+        {{ conversation.interlocutor.userName }}
+      </p>
+      <fa-icon
+        class="d-block"
+        [icon]="['fas', 'ellipsis-vertical']"
+        [size]="'xl'"
+      ></fa-icon>
+    </div>
+  </div>
+  <div class="messages d-flex flex-column-reverse gap-2">
+    <div
+      class="message left-message d-flex flex-column"
+      *ngFor="let message of conversation.messages"
+      [ngClass]="message.isMine ? 'right-message' : 'left-message'"
+    >
+      <p class="message-text">
+        {{ message.value }}
+      </p>
+      <p class="message-date">{{ toDatePreview(message.sentAt) }}</p>
+    </div>
+  </div>
+  <app-custom-input
+    [InputId]="'send-message'"
+    [InputPlaceholder]="'Enter message...'"
+    [customInputClass]="'search-input'"
+  ></app-custom-input>
+</ng-container>
+
+<ng-template #conversationBlock>
+  <div class="d-flex justify-content-center align-items-center h-100">
+    <p>Select chat to start conversation</p>
+  </div>
+</ng-template>

@@ -12,33 +12,43 @@ import { minChatsWidth, minConversationsWidth } from '../chat-utils';
 })
 export class ChatsComponent implements OnInit {
   chatStyles: object = {
-    'width.px': minChatsWidth * 3,
+    'width.px': minChatsWidth * 2,
     'min-width.px': minChatsWidth,
     'max-width.px': window.innerWidth - minConversationsWidth,
   };
 
   conversationStyles: object = {
-    'width.px': window.innerWidth - minChatsWidth * 3,
+    'width.px': window.innerWidth - minChatsWidth * 2,
     'min-width.px': minConversationsWidth,
     'max-width.px': window.innerWidth - minChatsWidth,
   };
 
   chats: IChatPreview[] = [];
 
+  selectedChatId?: number;
+
+  private activeChatName = 'activeChat';
+
   constructor(private chatsService: ChatsService) {}
 
   ngOnInit(): void {
+    this.removeActiveChat();
     this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
       this.chats = chats;
     });
   }
 
   selectChat(chatId: number) {
-    localStorage.setItem('activeChat', chatId.toString());
+    localStorage.setItem(this.activeChatName, chatId.toString());
+    this.selectedChatId = chatId;
   }
 
   isActiveChat(chatId: number) {
-    return localStorage.getItem('activeChat') === chatId.toString();
+    return localStorage.getItem(this.activeChatName) === chatId.toString();
+  }
+
+  removeActiveChat() {
+    return localStorage.removeItem(this.activeChatName);
   }
 
   onChatResizeEnd(event: ResizeEvent) {

@@ -1,4 +1,4 @@
-export const minChatsWidth = 200;
+export const minChatsWidth = 300;
 export const minConversationsWidth = 300;
 
 export const defaultImagePath = 'assets/default-image.png';
@@ -13,9 +13,16 @@ export function toDatePreview(dateString: Date): string {
 
   const daysDifference = Math.floor(dateDifference / (1000 * 60 * 60 * 24));
 
-  if (daysDifference >= 1) {
+  if (daysDifference >= 7) {
     return date.toLocaleDateString();
   }
 
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (daysDifference >= 1) {
+    return date.toLocaleDateString(['en-US'], { weekday: 'long' });
+  }
+
+  return date.toLocaleTimeString(['en-US'], {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }

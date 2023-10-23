@@ -5,16 +5,16 @@ using ChatApp.DAL.Entities;
 
 namespace ChatApp.BLL.MappingProfiles.Resolvers
 {
-    public class LastMessagePreviewResolver : IValueResolver<Message, LastMessagePreviewDto, bool>
+    public class MessagePreviewResolver : IValueResolver<Message, MessagePreviewDto, bool>
     {
         private readonly IUserIdGetter _userIdGetter;
 
-        public LastMessagePreviewResolver(IUserIdGetter userIdGetter)
+        public MessagePreviewResolver(IUserIdGetter userIdGetter)
         {
             _userIdGetter = userIdGetter;
         }
 
-        public bool Resolve(Message source, LastMessagePreviewDto destination, bool destMember, ResolutionContext context)
+        public bool Resolve(Message source, MessagePreviewDto destination, bool destMember, ResolutionContext context)
         {
             return source.UserId == _userIdGetter.CurrentUserId;
         }
