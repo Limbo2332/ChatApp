@@ -9,9 +9,17 @@
       <p class="chat-block-name text-overflow">
         {{ chat.interlocutor.userName }}
       </p>
-      <p class="chat-block-date">
-        {{ toDatePreview(chat.lastMessage.sentAt) }}
-      </p>
+      <div class="d-flex gap-1">
+        <fa-icon
+          *ngIf="chat.lastMessage.isMine"
+          class="chat-block-icon"
+          [icon]="['fas', 'check']"
+          [size]="'xs'"
+        ></fa-icon>
+        <p class="chat-block-date">
+          {{ toDatePreview(chat.lastMessage.sentAt) }}
+        </p>
+      </div>
     </div>
     <p class="chat-block-message text-overflow">
       {{ chat.lastMessage.value }}

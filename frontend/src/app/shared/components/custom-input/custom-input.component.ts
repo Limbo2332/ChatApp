@@ -1,6 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
+import { debounceTime, Subject } from 'rxjs';
 
+import { DebounceTime } from '../../utils/debounce-time';
 import {
   paddingRightWhenDefaultIcon,
   paddingRightWhenLgIcon,
@@ -12,7 +14,7 @@ import {
   templateUrl: './custom-input.component.html',
   styleUrls: ['./custom-input.component.sass'],
 })
-export class CustomInputComponent {
+export class CustomInputComponent implements OnInit {
   @Input() InputId: string = 'text';
 
   @Input() InputText?: string;
@@ -33,8 +35,18 @@ export class CustomInputComponent {
 
   passwordIcon: [IconPrefix, IconName] = ['fas', 'eye'];
 
+  private valueChanged = new Subject<string>();
+
+  ngOnInit(): void {
+    this.valueChanged
+      .pipe(debounceTime(DebounceTime))
+      .subscribe((value: string) => {
+        this.InputValueChanged.emit(value);
+      });
+  }
+
   changeInputValue(value: string) {
-    this.InputValueChanged.emit(value);
+    this.valueChanged.next(value);
   }
 
   changePasswordView() {
