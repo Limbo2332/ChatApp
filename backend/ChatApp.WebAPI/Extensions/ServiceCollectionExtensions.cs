@@ -4,11 +4,13 @@ using ChatApp.BLL.MappingProfiles;
 using ChatApp.BLL.Services;
 using ChatApp.BLL.Services.Auth;
 using ChatApp.Common.DTO.Auth;
+using ChatApp.Common.DTO.Message;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Logic;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.DAL.Context;
 using ChatApp.WebAPI.Validators.Auth;
+using ChatApp.WebAPI.Validators.Chat;
 using ChatApp.WebAPI.Validators.User;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -105,6 +107,7 @@ namespace ChatApp.WebAPI.Extensions
             services.AddScoped<IValidator<UserRegisterDto>, UserRegisterValidator>();
             services.AddScoped<IValidator<UserLoginDto>, UserLoginValidator>();
             services.AddScoped<IValidator<AccessTokenDto>, AccessTokenValidator>();
+            services.AddScoped<IValidator<NewMessageDto>, NewMessageValidator>();
         }
     }
 }

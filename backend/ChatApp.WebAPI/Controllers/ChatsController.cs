@@ -1,6 +1,7 @@
 ﻿using ChatApp.BLL.Interfaces;
 using ChatApp.Common.DTO.Chat;
 using ChatApp.Common.DTO.Conversation;
+using ChatApp.Common.DTO.Message;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +29,14 @@ namespace ChatApp.WebAPI.Controllers
         public async Task<ActionResult<ChatConversationDto>> GetChatConversationAsync(int chatId)
         {
             return Ok(await _chatService.GetConversationAsync(chatId));
+        }
+
+        [HttpPost("message")]
+        public async Task<ActionResult<MessagePreviewDto>> AddMessage(NewMessageDto newMessage)
+        {
+            var messagePreview = await _chatService.AddMessageAsync(newMessage);
+
+            return Created("message", messagePreview);
         }
     }
 }

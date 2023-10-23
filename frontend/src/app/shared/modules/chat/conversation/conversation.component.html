@@ -21,7 +21,7 @@
   <div class="messages d-flex flex-column-reverse gap-2">
     <div
       class="message left-message d-flex flex-column"
-      *ngFor="let message of conversation.messages"
+      *ngFor="let message of conversation.messages; trackBy: identify"
       [ngClass]="message.isMine ? 'right-message' : 'left-message'"
     >
       <p class="message-text">
@@ -34,6 +34,7 @@
     [InputId]="'send-message'"
     [InputPlaceholder]="'Enter message...'"
     [customInputClass]="'search-input'"
+    (MessageSent)="sendMessage($event)"
   ></app-custom-input>
 </ng-container>
 

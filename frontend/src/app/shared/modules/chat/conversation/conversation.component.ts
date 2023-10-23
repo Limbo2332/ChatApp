@@ -1,6 +1,8 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ChatsService } from 'src/app/core/services/chats.service';
 import { IChatConversation } from 'src/app/shared/models/conversation/chat-conversation';
+import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
+import { INewMessage } from 'src/app/shared/models/messages/new-message';
 
 import { defaultImagePath, toDatePreview } from '../chat-utils';
 
@@ -13,6 +15,8 @@ export class ConversationComponent implements OnChanges {
   @Input() chatId?: number;
 
   conversation?: IChatConversation;
+
+  newMessageValue?: string;
 
   defaultImagePath = defaultImagePath;
 
@@ -28,5 +32,21 @@ export class ConversationComponent implements OnChanges {
           this.conversation = conversation;
         });
     }
+  }
+
+  identify(index: number, item: IMessagePreview) {
+    return item.sentAt;
+  }
+
+  sendMessage(value: string) {
+    const newMessage: INewMessage = {
+      value,
+      chatId: this.chatId!,
+    };
+
+    this.chatsService.addMessage(newMessage).subscribe((message) => {
+      this.conversation!.messages = [message, ...this.conversation!.messages];
+      this.newMessageValue = '';
+    });
   }
 }

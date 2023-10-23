@@ -25,26 +25,30 @@ namespace ChatApp.BLL.Services
         public async Task<List<ChatPreviewDto>> GetChatsAsync()
         {
             int currentUserId = _userIdGetter.CurrentUserId;
-                
-            return await _context.UserChats
+
+            var chats = await _context.UserChats
                 .Include(userChat => userChat.Chat)
                     .ThenInclude(chat => chat.Messages)
                 .Include(userChat => userChat.User)
                     .ThenInclude(user => user.Messages)
-                .GroupBy(userChat => userChat.ChatId)
+                .GroupBy(userChat => userChat.Chat)
                 .Where(group => group.Any(userChat => userChat.UserId == currentUserId))
                 .Select(group => new ChatPreviewDto
                 {
-                    Id = group.Key,
+                    Id = group.Key.Id,
                     Interlocutor = _mapper.Map<UserPreviewDto>(
                         group.First(userChat => userChat.UserId != currentUserId).User),
                     LastMessage = _mapper.Map<MessagePreviewDto>(
-                        group.First(userChat => userChat.ChatId == group.Key).Chat.Messages
+                        group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .OrderByDescending(message => message.CreatedAt)
                              .First()
                     )
                 })
                 .ToListAsync();
+
+            return chats
+                .OrderByDescending(chat => chat.LastMessage.SentAt)
+                .ToList();
         }
 
         public async Task<ChatConversationDto> GetConversationAsync(int chatId)
@@ -71,6 +75,16 @@ namespace ChatApp.BLL.Services
                 })
                 .FirstOrDefaultAsync(chat => chat.ChatId == chatId)
                 ?? throw new NotFoundException(nameof(Chat));
+        }
+
+        public async Task<MessagePreviewDto> AddMessageAsync(NewMessageDto newMessage)
+        {
+            var message = _mapper.Map<Message>(newMessage);
+
+            await _context.Messages.AddAsync(message);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<MessagePreviewDto>(message);
         }
     }
 }

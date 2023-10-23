@@ -12,6 +12,9 @@ namespace ChatApp.BLL.MappingProfiles
             CreateMap<Message, MessagePreviewDto>()
                 .ForMember(dest => dest.SentAt, src => src.MapFrom(msg => msg.CreatedAt))
                 .ForMember(dest => dest.IsMine, src => src.MapFrom<MessagePreviewResolver>());
+
+            CreateMap<NewMessageDto, Message>()
+                .ForMember(dest => dest.UserId, src => src.MapFrom<CurrentUserResolver>());
         }
     }
 }

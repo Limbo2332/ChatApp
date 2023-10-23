@@ -32,7 +32,7 @@ namespace ChatApp.DAL.Context
 
             foreach (var newEntry in newEntries)
             {
-                newEntry!.CreatedAt = DateTime.UtcNow;
+                newEntry!.CreatedAt = DateTime.Now;
             }
 
             return base.SaveChangesAsync(cancellationToken);

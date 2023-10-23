@@ -3,6 +3,7 @@ import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 import { debounceTime, Subject } from 'rxjs';
 
 import { DebounceTime } from '../../utils/debounce-time';
+import { newMessageMaxLength } from '../../utils/validation/constants';
 import {
   paddingRightWhenDefaultIcon,
   paddingRightWhenLgIcon,
@@ -31,6 +32,8 @@ export class CustomInputComponent implements OnInit {
 
   @Output() InputValueChanged = new EventEmitter<string>();
 
+  @Output() MessageSent = new EventEmitter<string>();
+
   inputValue: string = '';
 
   passwordIcon: [IconPrefix, IconName] = ['fas', 'eye'];
@@ -45,6 +48,16 @@ export class CustomInputComponent implements OnInit {
       });
   }
 
+  sendMessage() {
+    if (
+      this.inputValue !== '' &&
+      this.inputValue.length < newMessageMaxLength
+    ) {
+      this.MessageSent.emit(this.inputValue);
+      this.inputValue = '';
+    }
+  }
+
   changeInputValue(value: string) {
     this.valueChanged.next(value);
   }
@@ -57,6 +70,10 @@ export class CustomInputComponent implements OnInit {
       this.passwordIcon = ['fas', 'eye'];
       this.InputType = 'password';
     }
+  }
+
+  canClickEnterToSendMessage() {
+    return this.InputId === 'send-message' && this.inputValue !== '';
   }
 
   canShowPasswordIcon() {

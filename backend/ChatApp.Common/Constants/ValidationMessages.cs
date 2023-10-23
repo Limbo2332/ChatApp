@@ -56,5 +56,13 @@
         public const string InvalidUserNameOrEmailMessage = "Invalid username of password";
 
         #endregion
+
+        #region NewMessage
+
+        public const string NewMessageIsEmptyMessage = "Message cannot be empty";
+        public const string NewMessageMaxLengthMessage = "Message is too long";
+        public const string ChatIsNullMessage = "Chat id is required";
+
+        #endregion
     }
 }
