@@ -20,13 +20,15 @@
     <div class="chat-blocks d-flex flex-column">
       <div class="chat-block d-flex" *ngFor="let chat of chats">
         <img
-          [src]="chat.interlocutor.imagePath"
+          [src]="chat.interlocutor.imagePath ?? defaultImagePath"
           alt="avatar"
           class="chat-block-img d-block"
         />
         <div class="chat-block-text d-flex flex-column">
           <div class="d-flex justify-content-between gap-2">
-            <p class="chat-block-name text-overflow">{{ chat.interlocutor.userName }}</p>
+            <p class="chat-block-name text-overflow">
+              {{ chat.interlocutor.userName }}
+            </p>
             <p class="chat-block-date">{{ chat.lastMessage.sentAt }}</p>
           </div>
           <p class="chat-block-message text-overflow">
