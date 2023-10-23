@@ -1,0 +1,249 @@
+<app-header></app-header>
+<div class="blocks d-flex">
+  <div
+    class="chat"
+    mwlResizable
+    [enableGhostResize]="true"
+    [ngStyle]="chatStyles"
+    (resizing)="onChatResizeEnd($event)"
+  >
+    <div
+      class="resize-handle-right position-absolute h-100"
+      mwlResizeHandle
+      [resizeEdges]="{ right: true }"
+    ></div>
+    <app-custom-input
+      [InputId]="'find-chat'"
+      [InputPlaceholder]="'Search...'"
+      [customInputClass]="'search-input'"
+    ></app-custom-input>
+    <div class="chat-blocks d-flex flex-column" *ngFor="let chat of chats">
+      <app-chat [chat]="chat"></app-chat>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-message text-overflow">Hello, world!</p>
+            <p class="chat-block-message-count">2</p>
+          </div>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block active d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+      <div class="chat-block d-flex">
+        <img
+          src="assets/chat.png"
+          alt="avatar"
+          class="chat-block-img d-block"
+        />
+        <div class="chat-block-text d-flex flex-column">
+          <div class="d-flex justify-content-between gap-2">
+            <p class="chat-block-name text-overflow">Soneta</p>
+            <p class="chat-block-date">24.02</p>
+          </div>
+          <p class="chat-block-message text-overflow">Hello, world!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="conversation" [ngStyle]="conversationStyles">
+    <div class="conversation-member d-flex w-100">
+      <img
+        src="assets/chat.png"
+        alt="avatar"
+        class="conversation-member-img d-block"
+      />
+      <div
+        class="conversation-member-info d-flex align-items-center justify-content-between gap-2"
+      >
+        <p class="conversation-member-name">Soneta</p>
+        <fa-icon
+          class="d-block"
+          [icon]="['fas', 'ellipsis-vertical']"
+          [size]="'xl'"
+        ></fa-icon>
+      </div>
+    </div>
+    <div class="messages d-flex flex-column-reverse gap-2">
+      <div class="message left-message d-flex flex-column">
+        <p class="message-text">
+          messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage
+        </p>
+        <p class="message-date">11:02</p>
+      </div>
+      <div class="message left-message d-flex flex-column">
+        <p class="message-text">
+          messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage
+        </p>
+        <p class="message-date">11:02</p>
+      </div>
+      <div class="message left-message d-flex flex-column">
+        <p class="message-text">
+          messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage
+        </p>
+        <p class="message-date">11:02</p>
+      </div>
+      <div class="message left-message d-flex flex-column">
+        <p class="message-text">
+          messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage
+        </p>
+        <p class="message-date">11:02</p>
+      </div>
+      <div class="message left-message d-flex flex-column">
+        <p class="message-text">
+          messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage
+        </p>
+        <p class="message-date">11:02</p>
+      </div>
+      <div class="message left-message d-flex flex-column">
+        <p class="message-text">
+          messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage
+        </p>
+        <p class="message-date">11:02</p>
+      </div>
+      <div class="message right-message d-flex flex-column">
+        <p class="message-text">
+          messagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessagemessage
+        </p>
+        <p class="message-date">11:02</p>
+      </div>
+    </div>
+    <app-custom-input
+      [InputId]="'send-message'"
+      [InputPlaceholder]="'Enter message...'"
+      [customInputClass]="'search-input'"
+    ></app-custom-input>
+  </div>
+</div>

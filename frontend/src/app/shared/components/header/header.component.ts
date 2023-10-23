@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 
 import { IUser } from '../../models/user/user';
-import { defaultImagePath } from '../../modules/chat/chat/chat-utils';
+import { defaultImagePath } from '../../modules/chat/chat-utils';
 import { routerLinkActiveOptions } from './header-utils';
 
 @Component({
