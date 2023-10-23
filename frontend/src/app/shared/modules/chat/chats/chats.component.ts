@@ -33,6 +33,14 @@ export class ChatsComponent implements OnInit {
     });
   }
 
+  selectChat(chatId: number) {
+    localStorage.setItem('activeChat', chatId.toString());
+  }
+
+  isActiveChat(chatId: number) {
+    return localStorage.getItem('activeChat') === chatId.toString();
+  }
+
   onChatResizeEnd(event: ResizeEvent) {
     this.chatStyles = {
       ...this.chatStyles,

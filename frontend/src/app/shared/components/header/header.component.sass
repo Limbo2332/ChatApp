@@ -11,6 +11,7 @@
 
   & .logo
     cursor: pointer
+    user-select: none
 
     &-img
       height: 32px
@@ -19,26 +20,13 @@
         transform: rotate(-5deg) scale(1.1)
 
     &-text
+      user-select: none
+
       @media (max-width: $mobile)
         display: none
 
       &:hover, &:active, &:focus
         color: $white-hover
-
-.navbar
-  padding: 0
-
-  &-nav
-    @media (max-width: $mobile)
-      flex-direction: column
-
-.nav-link
-  color: $white
-  cursor: pointer
-
-  &:hover, &:active, &:focus
-    text-decoration: underline
-    text-underline-offset: 8px
 
 .notification
   color: $input-bg

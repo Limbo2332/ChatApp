@@ -5,6 +5,8 @@ namespace ChatApp.Common.DTO.Chat
 {
     public class ChatPreviewDto
     {
+        public int Id { get; set; }
+
         public UserPreviewDto Interlocutor { get; set; } = null!;
 
         public LastMessagePreviewDto LastMessage { get; set; } = null!;

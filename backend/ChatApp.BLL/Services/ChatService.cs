@@ -32,6 +32,7 @@ namespace ChatApp.BLL.Services
                 .Where(group => group.Any(userChat => userChat.UserId == currentUserId))
                 .Select(group => new ChatPreviewDto
                 {
+                    Id = group.Key,
                     Interlocutor = _mapper.Map<UserPreviewDto>(
                         group.First(userChat => userChat.UserId != currentUserId).User),
                     LastMessage = _mapper.Map<LastMessagePreviewDto>(

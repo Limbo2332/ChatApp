@@ -1,4 +1,4 @@
-<div class="chat-block d-flex">
+<div class="chat-block d-flex" [ngClass]="{ active: isActive }">
   <img
     [src]="chat.interlocutor.imagePath ?? defaultImagePath"
     alt="avatar"

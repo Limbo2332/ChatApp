@@ -11,6 +11,8 @@ import { defaultImagePath, toDatePreview } from '../chat-utils';
 export class ChatComponent {
   @Input() chat: IChatPreview;
 
+  @Input() isActive: boolean;
+
   defaultImagePath = defaultImagePath;
 
   toDatePreview = toDatePreview;
