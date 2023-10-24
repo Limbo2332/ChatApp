@@ -44,9 +44,10 @@ export class AuthService {
   }
 
   register(user: IUserRegister) {
-    return this.http.post<IUser>(`${this.baseUrl}/register`, user).pipe(
-      map((resp: IUser) => {
-        this.setUserInfo(resp);
+    return this.http.post<IAuthUser>(`${this.baseUrl}/register`, user).pipe(
+      map((resp: IAuthUser) => {
+        this.setUserInfo(resp.user);
+        this.setTokensInfo(resp.token);
 
         return resp;
       }),

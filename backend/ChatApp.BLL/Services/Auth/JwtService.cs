@@ -11,7 +11,7 @@ namespace ChatApp.BLL.Services.Auth
 {
     public class JwtService : IJwtService
     {
-        private const int ACCESS_TOKEN_EXPIRES_IN_MINUTES = 120;
+        private const int ACCESS_TOKEN_EXPIRES_IN_MINUTES = 1;
         private readonly IConfiguration _config;
 
         public JwtService(IConfiguration config)
@@ -36,7 +36,7 @@ namespace ChatApp.BLL.Services.Auth
                 _config["JWT:Issuer"],
                 _config["JWT:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(ACCESS_TOKEN_EXPIRES_IN_MINUTES),
+                expires: DateTime.Now.AddMinutes(ACCESS_TOKEN_EXPIRES_IN_MINUTES),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
