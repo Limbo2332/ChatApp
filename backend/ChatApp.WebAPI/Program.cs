@@ -12,7 +12,13 @@ namespace ChatApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddCors();
+            builder.Services.AddCors(options => options.AddPolicy("ChatPolicy", builder =>
+            {
+                builder.AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .WithOrigins("http://localhost:4200")
+                       .AllowCredentials();
+            }));
 
             builder.Services.AddControllers(options =>
             {
@@ -44,10 +50,7 @@ namespace ChatApp
 
             app.UseHttpsRedirection();
 
-            app.UseCors(opt => opt
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin());
+            app.UseCors("ChatPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();

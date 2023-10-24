@@ -85,7 +85,7 @@ namespace ChatApp.BLL.Services
             await _context.Messages.AddAsync(message);
             await _context.SaveChangesAsync();
 
-            await _hubContext.Clients.Group(message.UserId.ToString()).SendNewMessage(message);
+            await SendNotificationToInterlocutor(message);
 
             return _mapper.Map<MessagePreviewDto>(message);
         }
@@ -125,9 +125,19 @@ namespace ChatApp.BLL.Services
                 LastMessage = message
             };
 
-            await _hubContext.Clients.Group(interlocutor.Id.ToString()).CreateNewChat(chatPreview);
+            await _hubContext.Clients.Group(interlocutor.Id.ToString()).CreateNewChatAsync(chatPreview);
 
             return chatPreview;
+        }
+
+        private async Task SendNotificationToInterlocutor(Message message)
+        {
+            var userChat = await _context.UserChats
+                .FirstAsync(userChat => userChat.ChatId == message.ChatId && userChat.UserId != message.UserId);
+
+            var messagePreview = _mapper.Map<MessagePreviewDto>(message);
+
+            await _hubContext.Clients.Group(userChat.UserId.ToString()).SendNewMessageAsync(messagePreview);
         }
 
         private async Task<bool> FindCommonChatsAsync(int interlocutorId)
