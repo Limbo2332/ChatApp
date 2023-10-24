@@ -112,7 +112,6 @@ namespace ChatApp.BLL.Services
                 Value = newChat.NewMessage,
                 ChatId = chat.Id,
                 UserId = currentUserId,
-                MessageStatus = Common.Enums.MessageStatus.Sent,
             };
 
             await CreateUserChatsAsync(chat.Id, interlocutor.Id);

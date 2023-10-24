@@ -78,9 +78,9 @@ namespace ChatApp.DAL.Context.Extensions
                 .RuleFor(message => message.Id, f => f.IndexGlobal)
                 .RuleFor(message => message.CreatedAt, f => _usedDateTime)
                 .RuleFor(message => message.Value, f => f.Lorem.Sentence())
-                .RuleFor(message => message.MessageStatus, f => f.PickRandom<MessageStatus>())
                 .RuleFor(message => message.UserId, f => f.PickRandom(users).Id)
                 .RuleFor(message => message.ChatId, f => f.PickRandom(chats).Id)
+                .RuleFor(message => message.IsRead, f => true)
                 .Generate(MessagesCount);
         }
 
