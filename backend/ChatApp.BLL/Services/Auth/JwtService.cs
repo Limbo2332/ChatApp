@@ -11,7 +11,7 @@ namespace ChatApp.BLL.Services.Auth
 {
     public class JwtService : IJwtService
     {
-        private const int ACCESS_TOKEN_EXPIRES_IN_MINUTES = 1;
+        private const int ACCESS_TOKEN_EXPIRES_IN_MINUTES = 120;
         private readonly IConfiguration _config;
 
         public JwtService(IConfiguration config)
