@@ -26,9 +26,9 @@ namespace ChatApp.DAL.Context.EntityConfigurations
             builder.HasIndex(user => user.Email)
                 .IsUnique();
 
-            builder.HasMany(user => user.UserMessages)
-                .WithOne(userMessage => userMessage.User)
-                .HasForeignKey(userMessage => userMessage.UserId)
+            builder.HasMany(user => user.Messages)
+                .WithOne(message => message.User)
+                .HasForeignKey(message => message.UserId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 

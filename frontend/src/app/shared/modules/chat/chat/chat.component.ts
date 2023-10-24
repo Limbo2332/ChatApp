@@ -1,35 +1,19 @@
-import { Component } from '@angular/core';
-import { ResizeEvent } from 'angular-resizable-element';
+import { Component, Input } from '@angular/core';
+import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
 
-import { minChatsWidth, minConversationsWidth } from './chat-utils';
+import { defaultImagePath, toDatePreview } from '../chat-utils';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.sass'],
+  styleUrls: ['../chats.component.sass'],
 })
 export class ChatComponent {
-  chatStyles: object = {
-    'width.px': minChatsWidth * 3,
-    'min-width.px': minChatsWidth,
-    'max-width.px': window.innerWidth - minConversationsWidth,
-  };
+  @Input() chat: IChatPreview;
 
-  conversationStyles: object = {
-    'width.px': window.innerWidth - minChatsWidth * 3,
-    'min-width.px': minConversationsWidth,
-    'max-width.px': window.innerWidth - minChatsWidth,
-  };
+  @Input() isActive: boolean;
 
-  onChatResizeEnd(event: ResizeEvent) {
-    this.chatStyles = {
-      ...this.chatStyles,
-      'width.px': event.rectangle.width,
-    };
+  defaultImagePath = defaultImagePath;
 
-    this.conversationStyles = {
-      ...this.conversationStyles,
-      'width.px': window.innerWidth - (event.rectangle.width ?? 0),
-    };
-  }
+  toDatePreview = toDatePreview;
 }

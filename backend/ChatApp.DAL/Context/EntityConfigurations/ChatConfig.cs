@@ -8,7 +8,13 @@ namespace ChatApp.DAL.Context.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Chat> builder)
         {
-            builder.HasMany(chat => chat.UserChats)
+            builder.HasMany(chat => chat.Messages)
+                .WithOne(message => message.Chat)
+                .HasForeignKey(message => message.ChatId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(user => user.UserChats)
                 .WithOne(userChat => userChat.Chat)
                 .HasForeignKey(userChat => userChat.ChatId)
                 .IsRequired()

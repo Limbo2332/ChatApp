@@ -10,7 +10,7 @@ namespace ChatApp.DAL.Entities
         public string Salt { get; set; } = string.Empty;
         public string? ImagePath { get; set; }
 
-        public IEnumerable<UserMessages>? UserMessages { get; set; }
-        public IEnumerable<UserChats>? UserChats { get; set; }
+        public IEnumerable<Message> Messages { get; set; } = null!;
+        public IEnumerable<UserChats> UserChats { get; set; } = null!;
     }
 }

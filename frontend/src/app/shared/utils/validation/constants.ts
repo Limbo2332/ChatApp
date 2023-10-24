@@ -6,3 +6,5 @@ export const emailMaxLength = 60;
 
 export const passwordMinLength = 8;
 export const passwordMaxLength = 36;
+
+export const newMessageMaxLength = 200;

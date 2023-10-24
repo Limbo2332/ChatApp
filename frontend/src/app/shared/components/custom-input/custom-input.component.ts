@@ -1,18 +1,17 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
+import { debounceTime, Observable, Subject } from 'rxjs';
 
-import {
-  paddingRightWhenDefaultIcon,
-  paddingRightWhenLgIcon,
-  paddingRightWhenNoIcon,
-} from './custom-input.utils';
+import { DebounceTime } from '../../utils/debounce-time';
+import { newMessageMaxLength } from '../../utils/validation/constants';
+import { paddingRightWhenDefaultIcon, paddingRightWhenLgIcon, paddingRightWhenNoIcon } from './custom-input.utils';
 
 @Component({
   selector: 'app-custom-input[InputId]',
   templateUrl: './custom-input.component.html',
   styleUrls: ['./custom-input.component.sass'],
 })
-export class CustomInputComponent {
+export class CustomInputComponent implements OnInit {
   @Input() InputId: string = 'text';
 
   @Input() InputText?: string;
@@ -27,14 +26,49 @@ export class CustomInputComponent {
 
   @Input() customInputClass: string = 'custom-input';
 
+  @Input() clearSubjectEvent?: Observable<void>;
+
   @Output() InputValueChanged = new EventEmitter<string>();
+
+  @Output() MessageSent = new EventEmitter<string>();
+
+  @Output() NewChatButtonClicked = new EventEmitter<void>();
 
   inputValue: string = '';
 
   passwordIcon: [IconPrefix, IconName] = ['fas', 'eye'];
 
+  searchIcon: [IconPrefix, IconName] = ['fas', 'plus-circle'];
+
+  private valueChanged = new Subject<string>();
+
+  ngOnInit(): void {
+    this.valueChanged
+      .pipe(debounceTime(DebounceTime))
+      .subscribe((value: string) => {
+        this.InputValueChanged.emit(value);
+      });
+
+    if (this.clearSubjectEvent) {
+      this.clearSubjectEvent.subscribe(() => {
+        this.inputValue = '';
+      });
+    }
+  }
+
+  sendMessage() {
+    if (this.inputValue && this.inputValue.length < newMessageMaxLength) {
+      this.MessageSent.emit(this.inputValue);
+      this.inputValue = '';
+    }
+  }
+
   changeInputValue(value: string) {
-    this.InputValueChanged.emit(value);
+    this.valueChanged.next(value);
+
+    if (this.canShowCloseSearchButton()) {
+      this.searchIcon = value ? ['fas', 'xmark'] : ['fas', 'plus-circle'];
+    }
   }
 
   changePasswordView() {
@@ -47,6 +81,10 @@ export class CustomInputComponent {
     }
   }
 
+  canClickEnterToSendMessage() {
+    return this.InputId === 'send-message' && this.inputValue !== '';
+  }
+
   canShowPasswordIcon() {
     return (
       this.InputType === 'password' || this.passwordIcon.includes('eye-slash')
@@ -54,15 +92,11 @@ export class CustomInputComponent {
   }
 
   canShowMessageIcon() {
-    return this.InputId.includes('message') && this.inputValue;
+    return this.InputId.includes('send') && this.inputValue;
   }
 
   canShowCloseSearchButton() {
     return this.InputId.includes('find');
-  }
-
-  showSearchButton(): [IconPrefix, IconName] {
-    return this.inputValue ? ['fas', 'xmark'] : ['fas', 'plus-circle'];
   }
 
   getPaddingRightForInput(): number {
@@ -77,7 +111,12 @@ export class CustomInputComponent {
     return paddingRightWhenNoIcon;
   }
 
-  clearSearch() {
-    this.inputValue = '';
+  onSearchIconClicked() {
+    if (this.searchIcon[1] === 'xmark') {
+      this.inputValue = '';
+      this.changeInputValue(this.inputValue);
+    } else {
+      this.NewChatButtonClicked.emit();
+    }
   }
 }

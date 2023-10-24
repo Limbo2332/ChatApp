@@ -1,0 +1,38 @@
+<app-header></app-header>
+<div class="blocks d-flex">
+  <div
+    class="chat"
+    mwlResizable
+    [enableGhostResize]="true"
+    [ngStyle]="chatStyles"
+    (resizing)="onChatResizeEnd($event)"
+  >
+    <div
+      class="resize-handle-right position-absolute h-100"
+      mwlResizeHandle
+      [resizeEdges]="{ right: true }"
+    ></div>
+    <app-custom-input
+      [InputId]="'find-chat'"
+      [InputPlaceholder]="'Search...'"
+      [customInputClass]="'search-input'"
+      (NewChatButtonClicked)="openNewChatModal()"
+    ></app-custom-input>
+    <div class="chat-blocks d-flex flex-column">
+      <ng-container *ngFor="let chat of chats">
+        <app-chat
+          [chat]="chat"
+          [isActive]="isActiveChat(chat.id)"
+          (click)="selectChat(chat.id)"
+        ></app-chat
+      ></ng-container>
+    </div>
+  </div>
+  <div class="conversation" [ngStyle]="conversationStyles">
+    <app-conversation
+      [chatId]="selectedChatId"
+      (newMessageSent)="onNewMessage($event)"
+    ></app-conversation>
+  </div>
+</div>
+<app-new-chat-modal (NewChatAdded)="onNewChat($event)"></app-new-chat-modal>

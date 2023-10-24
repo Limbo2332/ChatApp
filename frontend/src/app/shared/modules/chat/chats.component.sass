@@ -29,52 +29,49 @@
 .chat-blocks
   max-height: calc(100% - 48px)
 
-  & .chat-block
-    cursor: pointer
+.chat-block
+  cursor: pointer
+  width: calc(100% + 5px)
 
-    &.active
-      background-color: $dark-pink !important
-      width: calc(100% + 6px)
+  &.active
+    background-color: $dark-pink !important
+    width: calc(100% + 5px)
 
-      // & .chat-block-date,
-      // .chat-block-message
-      //   color: $auth-bg-color
+  & .chat-block-date
+    margin-right: 14px
 
-      // & .chat-block-name
-      //   color: $grey-hover
+  &-img
+    border-radius: 50%
+    width: 48px
+    height: 48px
+    margin: 8px 16px
 
-      & .chat-block-date
-        margin-right: 14px
+  &-text
+    margin-top: 8px
+    width: calc(100% - 80px)
 
-    &-img
+  &-name
+    max-width: 80%
+
+  &-date, &-message-count
+    margin-right: 12px
+
+  &-icon
+    color: $input-bg
+
+  &-message
+    color: $grey
+    width: 90%
+
+    &-count
+      padding: 1px 8px
+      background-color: $grey
+      color: $white
       border-radius: 50%
-      width: 48px
-      height: 48px
-      margin: 8px 16px
+      font-size: 14px
 
-    &-text
-      margin-top: 8px
-      width: calc(100% - 80px)
-
-    &-name
-      max-width: 80%
-
-    &-date, &-message-count
-      margin-right: 8px
-
-    &-message
-      color: $grey
-      width: 90%
-
-      &-count
-        padding: 1px 8px
-        background-color: $grey
-        color: $white
-        border-radius: 50%
-        font-size: 14px
-
-    &:hover
-      background-color: $grey-hover
+  &:hover
+    background-color: $grey-hover
 
 .conversation
   background: url("/assets/conversation-bg.png") center/cover no-repeat
@@ -91,11 +88,17 @@
       height: 48px
       margin: 8px 8px 8px 16px
 
+  &-text
+    color: $dark
+    font-size: 18px
+    font-weight: 600
+
   @media (max-width: $mobile)
     display: none
 
 .messages
   padding: 16px
+  min-height: calc(100% - 112px)
   max-height: calc(100% - 112px)
 
 .message

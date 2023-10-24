@@ -1,5 +1,4 @@
 ﻿using ChatApp.BLL.Interfaces.Auth;
-using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.Exceptions;
 using ChatApp.Common.Security;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +36,7 @@ namespace ChatApp.BLL.Services.Auth
                 _config["JWT:Issuer"],
                 _config["JWT:Audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(ACCESS_TOKEN_EXPIRES_IN_MINUTES),
+                expires: DateTime.Now.AddMinutes(ACCESS_TOKEN_EXPIRES_IN_MINUTES),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

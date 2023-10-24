@@ -44,9 +44,10 @@ export class AuthService {
   }
 
   register(user: IUserRegister) {
-    return this.http.post<IUser>(`${this.baseUrl}/register`, user).pipe(
-      map((resp: IUser) => {
-        this.setUserInfo(resp);
+    return this.http.post<IAuthUser>(`${this.baseUrl}/register`, user).pipe(
+      map((resp: IAuthUser) => {
+        this.setUserInfo(resp.user);
+        this.setTokensInfo(resp.token);
 
         return resp;
       }),
@@ -59,7 +60,13 @@ export class AuthService {
       refreshToken: localStorage.getItem(this.refreshTokenKeyName)!,
     };
 
-    return this.http.post<IAccessToken>(`${this.baseUrl}/refresh`, token);
+    return this.http.post<IAccessToken>(`${this.baseUrl}/refresh`, token).pipe(
+      map((resp: IAccessToken) => {
+        this.setTokensInfo(resp);
+
+        return resp;
+      }),
+    );
   }
 
   get isAuthenticated() {

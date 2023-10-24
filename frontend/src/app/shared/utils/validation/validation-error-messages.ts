@@ -15,7 +15,7 @@ export const emailValidationErrors: ValidationErrorsMessages = {
   maxlength: `Email must not exceed ${emailMaxLength} symbols`,
 };
 
-export const usernameValidationErrors: ValidationErrorsMessages = {
+export const userNameValidationErrors: ValidationErrorsMessages = {
   required: 'Username is required',
   pattern: 'Username must not start or end with spaces',
   minlength: `Username must have at least ${userNameMinLength} symbols`,
@@ -41,4 +41,9 @@ export const passwordValidationErrors: ValidationErrorsMessages = {
     'Password must have at least 1 number, 1 lowercase, 1 uppercase and 1 special character',
   minlength: `Password must have at least ${passwordMinLength} symbols`,
   maxlength: `Password must not exceed ${passwordMaxLength} symbols`,
+};
+
+export const newMessageValidationErrors: ValidationErrorsMessages = {
+  required: 'Message cannot be empty',
+  maxlength: 'Message is too long',
 };

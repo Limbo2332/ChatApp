@@ -8,8 +8,7 @@ namespace ChatApp.DAL.Context.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<UserChats> builder)
         {
-            builder.Property(userChat => userChat.IsSender)
-                .IsRequired();
+            builder.HasKey(userChat => new { userChat.UserId, userChat.ChatId });
         }
     }
 }

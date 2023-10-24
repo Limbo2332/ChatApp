@@ -4,15 +4,17 @@ using ChatApp.BLL.MappingProfiles;
 using ChatApp.BLL.Services;
 using ChatApp.BLL.Services.Auth;
 using ChatApp.Common.DTO.Auth;
+using ChatApp.Common.DTO.Chat;
+using ChatApp.Common.DTO.Message;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Logic;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.DAL.Context;
 using ChatApp.WebAPI.Validators.Auth;
+using ChatApp.WebAPI.Validators.Chat;
 using ChatApp.WebAPI.Validators.User;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -76,12 +78,20 @@ namespace ChatApp.WebAPI.Extensions
             );
         }
 
+        public static void RegisterUserStorageServices(this IServiceCollection services)
+        {
+            services.AddScoped<UserIdStorage>();
+            services.AddTransient<IUserIdSetter>(s => s.GetRequiredService<UserIdStorage>());
+            services.AddTransient<IUserIdGetter>(s => s.GetRequiredService<UserIdStorage>());
+        }
+
         public static void RegisterAutoMapper(this IServiceCollection services)
         {
             services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<UserProfile>();
-            }, Assembly.GetExecutingAssembly());
+                cfg.AddProfile<ChatsProfile>();
+            }, Assembly.GetAssembly(typeof(UserProfile)));
         }
 
         public static void RegisterCustomServices(this IServiceCollection services)
@@ -89,10 +99,7 @@ namespace ChatApp.WebAPI.Extensions
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserService, UserService>();
-
-            services.AddScoped<UserIdStorage>();
-            services.AddTransient<IUserIdSetter>(s => s.GetRequiredService<UserIdStorage>());
-            services.AddTransient<IUserIdGetter>(s => s.GetRequiredService<UserIdStorage>());
+            services.AddScoped<IChatService, ChatService>();
         }
 
         public static void RegisterValidators(this IServiceCollection services)
@@ -100,6 +107,8 @@ namespace ChatApp.WebAPI.Extensions
             services.AddScoped<IValidator<UserRegisterDto>, UserRegisterValidator>();
             services.AddScoped<IValidator<UserLoginDto>, UserLoginValidator>();
             services.AddScoped<IValidator<AccessTokenDto>, AccessTokenValidator>();
+            services.AddScoped<IValidator<NewMessageDto>, NewMessageValidator>();
+            services.AddScoped<IValidator<NewChatDto>, NewChatValidator>();
         }
     }
 }

@@ -30,9 +30,11 @@
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
-        <img src="assets/chat.png" alt="user profile picture" />
+        <img
+          [src]="user?.imagePath ?? defaultImagePath"
+          alt="user profile picture"
+        />
       </a>
-
       <ul class="dropdown-menu">
         <li>
           <button class="btn btn-primary dropdown-item">Profile</button>

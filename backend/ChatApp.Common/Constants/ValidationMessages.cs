@@ -16,7 +16,7 @@
         public const string EmailWithWrongFormatMessage = "Email is in incorrect format";
         public const string EmailIsNotUniqueMessage = "This email is already registered";
 
-        public static string EmailWithWrongMinimumLengthMessage(int length) 
+        public static string EmailWithWrongMinimumLengthMessage(int length)
             => $"Email must have at least {length} symbols";
 
         public static string EmailWithWrongMaximumLengthMessage(int length)
@@ -54,6 +54,14 @@
         #region Email or UserName
 
         public const string InvalidUserNameOrEmailMessage = "Invalid username of password";
+
+        #endregion
+
+        #region NewMessage
+
+        public const string NewMessageIsEmptyMessage = "Message cannot be empty";
+        public const string NewMessageMaxLengthMessage = "Message is too long";
+        public const string ChatIsNullMessage = "Chat id is required";
 
         #endregion
     }
