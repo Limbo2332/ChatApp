@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services.Abstract;
+using ChatApp.Common.Logic.Abstract;
 using ChatApp.DAL.Context;
 
 namespace ChatApp.BLL.Services
 {
     public class UserService : BaseService, IUserService
     {
-        public UserService(ChatAppContext context, IMapper mapper) : base(context, mapper)
+        public UserService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter)
+            : base(context, mapper, userIdGetter)
         {
         }
 

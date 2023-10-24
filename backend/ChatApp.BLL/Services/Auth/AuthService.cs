@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ChatApp.BLL.Hubs;
 using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Auth;
@@ -8,6 +9,7 @@ using ChatApp.Common.Logic.Abstract;
 using ChatApp.Common.Security;
 using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -17,14 +19,12 @@ namespace ChatApp.BLL.Services.Auth
     {
         private readonly IJwtService _jwtService;
         private readonly IConfiguration _config;
-        private readonly IUserIdGetter _userIdGetter;
 
-        public AuthService(IJwtService jwtService, ChatAppContext context, IMapper mapper, IConfiguration config, IUserIdGetter userIdGetter)
-            : base(context, mapper)
+        public AuthService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter, IJwtService jwtService, IConfiguration config) 
+            : base(context, mapper, userIdGetter)
         {
             _jwtService = jwtService;
             _config = config;
-            _userIdGetter = userIdGetter;
         }
 
         public async Task<AuthUserDto> LoginAsync(UserLoginDto userDto)

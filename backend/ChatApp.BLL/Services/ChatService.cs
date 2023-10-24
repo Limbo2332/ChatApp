@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using ChatApp.BLL.Hubs;
+using ChatApp.BLL.Hubs.Clients;
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Chat;
@@ -9,17 +11,19 @@ using ChatApp.Common.Exceptions;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp.BLL.Services
 {
     public class ChatService : BaseService, IChatService
     {
-        private readonly IUserIdGetter _userIdGetter;
+        private readonly IHubContext<ChatHub, IChatHubClient> _hubContext;
 
-        public ChatService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter) : base(context, mapper)
+        public ChatService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter, IHubContext<ChatHub, IChatHubClient> hubContext) 
+            : base(context, mapper, userIdGetter)
         {
-            _userIdGetter = userIdGetter;
+            _hubContext = hubContext;
         }
 
         public async Task<List<ChatPreviewDto>> GetChatsAsync()
@@ -81,6 +85,8 @@ namespace ChatApp.BLL.Services
             await _context.Messages.AddAsync(message);
             await _context.SaveChangesAsync();
 
+            await _hubContext.Clients.Group(message.UserId.ToString()).SendNewMessage(message);
+
             return _mapper.Map<MessagePreviewDto>(message);
         }
 
@@ -112,12 +118,16 @@ namespace ChatApp.BLL.Services
 
             await CreateUserChatsAsync(chat.Id, interlocutor.Id);
 
-            return new ChatPreviewDto
+            var chatPreview = new ChatPreviewDto
             {
                 Id = chat.Id,
                 Interlocutor = _mapper.Map<UserPreviewDto>(interlocutor),
                 LastMessage = message
             };
+
+            await _hubContext.Clients.Group(interlocutor.Id.ToString()).CreateNewChat(chatPreview);
+
+            return chatPreview;
         }
 
         private async Task<bool> FindCommonChatsAsync(int interlocutorId)

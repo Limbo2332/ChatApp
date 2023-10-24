@@ -1,3 +1,4 @@
+using ChatApp.BLL.Hubs;
 using ChatApp.Common.Filters;
 using ChatApp.Common.Middlewares;
 using ChatApp.WebAPI.Extensions;
@@ -29,6 +30,8 @@ namespace ChatApp
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.RegisterValidators();
 
+            builder.Services.AddSignalR();
+
             builder.Services.ConfigureSwagger();
 
             var app = builder.Build();
@@ -54,6 +57,8 @@ namespace ChatApp
             app.UseChatAppContext();
 
             app.UseMiddleware<UserIdMiddleware>();
+
+            app.MapHub<ChatHub>("/chatHub");
 
             app.Run();
         }
