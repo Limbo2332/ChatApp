@@ -2,7 +2,6 @@
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.DAL.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp.BLL.Services
 {

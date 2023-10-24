@@ -16,8 +16,8 @@ namespace ChatApp.Common.Middlewares
         {
             var claimsUserId = context.User.Claims.FirstOrDefault(x => x.Type == "id")?.Value;
 
-            if (claimsUserId is not null && int.TryParse(claimsUserId, out int userId)) 
-            { 
+            if (claimsUserId is not null && int.TryParse(claimsUserId, out int userId))
+            {
                 userIdSetter.SetUserId(userId);
             }
 

@@ -4,29 +4,18 @@ import { Router } from '@angular/router';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { IUserLogin } from 'src/app/shared/models/user/user-login';
-import {
-  emailMaxLength,
-  emailMinLength,
-  passwordMaxLength,
-  passwordMinLength,
-} from 'src/app/shared/utils/validation/constants';
-import {
-  emailRegex,
-  noSpacesRegex,
-  passwordRegex,
-} from 'src/app/shared/utils/validation/regex-patterns';
+import { passwordMaxLength, passwordMinLength } from 'src/app/shared/utils/validation/constants';
+import { noSpacesRegex, passwordRegex } from 'src/app/shared/utils/validation/regex-patterns';
 import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 @Component({
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
-  styleUrls: ['../sign-styles.sass'],
+  styleUrls: ['../sign-styles.sass', '../../../../../styles/modal.sass'],
 })
 export class SignInComponent {
-  resetModalIdentifier = 'resetModal';
-
   signInForm = new FormGroup({
-    emailOrUsername: new FormControl('', [
+    emailOrUserName: new FormControl('', [
       Validators.required,
       Validators.pattern(noSpacesRegex),
     ]),
@@ -38,14 +27,7 @@ export class SignInComponent {
     ]),
   });
 
-  resetPasswordForm = new FormGroup({
-    email: new FormControl('', [
-      Validators.required,
-      Validators.pattern(emailRegex),
-      Validators.minLength(emailMinLength),
-      Validators.maxLength(emailMaxLength),
-    ]),
-  });
+  private resetModalIdentifier = 'resetModal';
 
   private validationErrorsFromBackend: string[] = [];
 
@@ -56,20 +38,15 @@ export class SignInComponent {
   ) {}
 
   changeInputValue(
-    formControlName: 'emailOrUsername' | 'password',
+    formControlName: 'emailOrUserName' | 'password',
     value: string,
   ) {
     this.signInForm.controls[formControlName].setValue(value);
     this.signInForm.controls[formControlName].markAsTouched();
   }
 
-  changeEmailValue(value: string) {
-    this.resetPasswordForm.controls.email.setValue(value);
-    this.resetPasswordForm.controls.email.markAsTouched();
-  }
-
   openResetPasswordModal() {
-    this.modalService.getModal(this.resetModalIdentifier).open();
+    this.modalService.open(this.resetModalIdentifier);
   }
 
   getSignInValidationError() {
@@ -81,14 +58,10 @@ export class SignInComponent {
       : undefined;
   }
 
-  getResetPasswordValidationErrors() {
-    return getValidationErrors(this.resetPasswordForm);
-  }
-
   login() {
     if (this.signInForm.valid) {
       const userLogin: IUserLogin = {
-        emailOrUserName: this.signInForm.controls.emailOrUsername.value!,
+        emailOrUserName: this.signInForm.controls.emailOrUserName.value!,
         password: this.signInForm.controls.password.value!,
       };
 

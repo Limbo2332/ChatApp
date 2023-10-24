@@ -3,13 +3,13 @@ using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.User;
-using ChatApp.DAL.Entities;
+using ChatApp.Common.Exceptions;
+using ChatApp.Common.Logic.Abstract;
 using ChatApp.Common.Security;
 using ChatApp.DAL.Context;
+using ChatApp.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using ChatApp.Common.Logic.Abstract;
-using ChatApp.Common.Exceptions;
 
 namespace ChatApp.BLL.Services.Auth
 {
@@ -30,7 +30,7 @@ namespace ChatApp.BLL.Services.Auth
         public async Task<AuthUserDto> LoginAsync(UserLoginDto userDto)
         {
             var userEntity = await _context.Users
-                .FirstOrDefaultAsync(user => user.Email == userDto.EmailOrUserName 
+                .FirstOrDefaultAsync(user => user.Email == userDto.EmailOrUserName
                     || user.UserName == userDto.EmailOrUserName);
 
             if (userEntity == null)
@@ -38,7 +38,7 @@ namespace ChatApp.BLL.Services.Auth
                 throw new NotFoundException(nameof(User));
             }
 
-            if(!SecurityHelper.ValidatePassword(userDto.Password, userEntity.Password, userEntity.Salt))
+            if (!SecurityHelper.ValidatePassword(userDto.Password, userEntity.Password, userEntity.Salt))
             {
                 throw new NotFoundException(nameof(User), userEntity.Id);
             }

@@ -4,15 +4,17 @@ import { ValidationErrorsMessages } from './validation-error';
 import {
   emailOrUsernameValidationErrors,
   emailValidationErrors,
+  newMessageValidationErrors,
   passwordValidationErrors,
-  usernameValidationErrors,
+  userNameValidationErrors,
 } from './validation-error-messages';
 
 const controlErrorMessagesMap: { [key: string]: ValidationErrorsMessages } = {
   email: emailValidationErrors,
-  username: usernameValidationErrors,
-  emailOrUsername: emailOrUsernameValidationErrors,
+  userName: userNameValidationErrors,
+  emailOrUserName: emailOrUsernameValidationErrors,
   password: passwordValidationErrors,
+  message: newMessageValidationErrors,
 };
 
 export function getValidationErrors(form: FormGroup): string[] {

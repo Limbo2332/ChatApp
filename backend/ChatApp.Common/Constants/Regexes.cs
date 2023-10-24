@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace ChatApp.Common.Constants
+﻿namespace ChatApp.Common.Constants
 {
     public static class Regexes
     {

@@ -11,17 +11,13 @@ import {
   userNameMaxLength,
   userNameMinLength,
 } from 'src/app/shared/utils/validation/constants';
-import {
-  emailRegex,
-  noSpacesRegex,
-  passwordRegex,
-} from 'src/app/shared/utils/validation/regex-patterns';
+import { emailRegex, noSpacesRegex, passwordRegex } from 'src/app/shared/utils/validation/regex-patterns';
 import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 @Component({
   selector: 'app-sign-up',
   templateUrl: './sign-up.component.html',
-  styleUrls: ['../sign-styles.sass'],
+  styleUrls: ['../sign-styles.sass', '../../../../../styles/modal.sass'],
 })
 export class SignUpComponent {
   signUpForm = new FormGroup({
@@ -31,7 +27,7 @@ export class SignUpComponent {
       Validators.minLength(emailMinLength),
       Validators.maxLength(emailMaxLength),
     ]),
-    username: new FormControl('', [
+    userName: new FormControl('', [
       Validators.required,
       Validators.pattern(noSpacesRegex),
       Validators.minLength(userNameMinLength),
@@ -53,7 +49,7 @@ export class SignUpComponent {
   ) {}
 
   changeInputValue(
-    formControlName: 'email' | 'username' | 'password',
+    formControlName: 'email' | 'userName' | 'password',
     value: string,
   ) {
     this.signUpForm.controls[formControlName].setValue(value);
@@ -71,7 +67,7 @@ export class SignUpComponent {
     if (this.signUpForm.valid) {
       const registerUser: IUserRegister = {
         email: this.signUpForm.controls.email.value!,
-        userName: this.signUpForm.controls.username.value!,
+        userName: this.signUpForm.controls.userName.value!,
         password: this.signUpForm.controls.password.value!,
       };
 

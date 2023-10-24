@@ -16,7 +16,7 @@
         public const string EmailWithWrongFormatMessage = "Email is in incorrect format";
         public const string EmailIsNotUniqueMessage = "This email is already registered";
 
-        public static string EmailWithWrongMinimumLengthMessage(int length) 
+        public static string EmailWithWrongMinimumLengthMessage(int length)
             => $"Email must have at least {length} symbols";
 
         public static string EmailWithWrongMaximumLengthMessage(int length)

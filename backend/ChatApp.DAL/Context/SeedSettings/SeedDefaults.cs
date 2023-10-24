@@ -9,7 +9,5 @@
         public static readonly int MessageSeed = 1011;
 
         public static readonly int UserChatsSeed = 1100;
-
-        public static readonly int UserMessagesSeed = 1101;
     }
 }

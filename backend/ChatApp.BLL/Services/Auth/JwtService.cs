@@ -1,5 +1,4 @@
 ﻿using ChatApp.BLL.Interfaces.Auth;
-using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.Exceptions;
 using ChatApp.Common.Security;
 using Microsoft.Extensions.Configuration;

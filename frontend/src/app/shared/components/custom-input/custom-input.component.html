@@ -32,8 +32,8 @@
   <fa-icon
     class="search-icon"
     *ngIf="canShowCloseSearchButton()"
-    [icon]="showSearchButton()"
+    [icon]="searchIcon"
     [size]="'lg'"
-    (click)="clearSearch()"
+    (click)="onSearchIconClicked()"
   ></fa-icon>
 </div>

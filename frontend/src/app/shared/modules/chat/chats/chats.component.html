@@ -16,16 +16,23 @@
       [InputId]="'find-chat'"
       [InputPlaceholder]="'Search...'"
       [customInputClass]="'search-input'"
+      (NewChatButtonClicked)="openNewChatModal()"
     ></app-custom-input>
-    <div class="chat-blocks d-flex flex-column" *ngFor="let chat of chats">
-      <app-chat
-        [chat]="chat"
-        [isActive]="isActiveChat(chat.id)"
-        (click)="selectChat(chat.id)"
-      ></app-chat>
+    <div class="chat-blocks d-flex flex-column">
+      <ng-container *ngFor="let chat of chats">
+        <app-chat
+          [chat]="chat"
+          [isActive]="isActiveChat(chat.id)"
+          (click)="selectChat(chat.id)"
+        ></app-chat
+      ></ng-container>
     </div>
   </div>
   <div class="conversation" [ngStyle]="conversationStyles">
-    <app-conversation [chatId]="selectedChatId"></app-conversation>
+    <app-conversation
+      [chatId]="selectedChatId"
+      (newMessageSent)="onNewMessage($event)"
+    ></app-conversation>
   </div>
 </div>
+<app-new-chat-modal (NewChatAdded)="onNewChat($event)"></app-new-chat-modal>

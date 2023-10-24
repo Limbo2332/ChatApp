@@ -2,6 +2,6 @@
 {
     public class ExpiredRefreshTokenException : Exception
     {
-        public ExpiredRefreshTokenException(): base("Refresh token expired.") { }
+        public ExpiredRefreshTokenException() : base("Refresh token expired.") { }
     }
 }

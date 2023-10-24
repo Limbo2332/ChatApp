@@ -32,11 +32,19 @@ namespace ChatApp.WebAPI.Controllers
         }
 
         [HttpPost("message")]
-        public async Task<ActionResult<MessagePreviewDto>> AddMessage(NewMessageDto newMessage)
+        public async Task<ActionResult<MessagePreviewDto>> AddMessageAsync(NewMessageDto newMessage)
         {
             var messagePreview = await _chatService.AddMessageAsync(newMessage);
 
             return Created("message", messagePreview);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ChatPreviewDto>> AddChatAsync(NewChatDto newChat)
+        {
+            var chatPreview = await _chatService.AddNewChatWithAsync(newChat);
+
+            return Created("chat", chatPreview);
         }
     }
 }

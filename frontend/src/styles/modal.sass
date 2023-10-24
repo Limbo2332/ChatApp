@@ -1,0 +1,70 @@
+@import 'colors'
+@import 'sizes'
+
+:host
+  display: flex
+  justify-content: center
+
+.form
+  max-width: 360px
+
+  @media (max-width: $mobile)
+    max-width: 300px
+
+.description
+  max-width: 300px
+
+.description,
+:host ::ng-deep input,
+.submit
+  margin-top: 24px
+
+.submit
+  width: 100%
+
+  & button
+    padding: 12px 116px
+    background-color: $btn-color
+    color: $white
+    border-radius: 10px
+    font-weight: 600
+    box-shadow: 0 4px 4px $btn-box-shadow-color
+
+    @media (max-width: $mobile)
+      padding: 12px 80px
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:disabled
+      background-color: $btn-hover-color
+
+:host ::ng-deep .nsm-dialog-btn-close
+  background-color: $input-error
+  border-radius: 50%
+  color: $white
+  display: flex
+  justify-content: center
+  align-items: center
+  height: 32px
+  width: 32px
+
+  &:hover
+    background-color: $input-error-hover
+
+  & svg
+    display: block
+    height: 16px
+    width: 16px
+
+.validation-errors
+  margin-top: 16px
+  color: $input-error
+  max-width: 300px
+
+  & ul
+    padding-left: 20px
+
+@media (max-width: $mobile)
+  .header
+    align-items: flex-start !important

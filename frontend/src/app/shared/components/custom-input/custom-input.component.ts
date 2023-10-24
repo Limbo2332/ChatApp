@@ -1,14 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
-import { debounceTime, Subject } from 'rxjs';
+import { debounceTime, Observable, Subject } from 'rxjs';
 
 import { DebounceTime } from '../../utils/debounce-time';
 import { newMessageMaxLength } from '../../utils/validation/constants';
-import {
-  paddingRightWhenDefaultIcon,
-  paddingRightWhenLgIcon,
-  paddingRightWhenNoIcon,
-} from './custom-input.utils';
+import { paddingRightWhenDefaultIcon, paddingRightWhenLgIcon, paddingRightWhenNoIcon } from './custom-input.utils';
 
 @Component({
   selector: 'app-custom-input[InputId]',
@@ -30,13 +26,19 @@ export class CustomInputComponent implements OnInit {
 
   @Input() customInputClass: string = 'custom-input';
 
+  @Input() clearSubjectEvent?: Observable<void>;
+
   @Output() InputValueChanged = new EventEmitter<string>();
 
   @Output() MessageSent = new EventEmitter<string>();
 
+  @Output() NewChatButtonClicked = new EventEmitter<void>();
+
   inputValue: string = '';
 
   passwordIcon: [IconPrefix, IconName] = ['fas', 'eye'];
+
+  searchIcon: [IconPrefix, IconName] = ['fas', 'plus-circle'];
 
   private valueChanged = new Subject<string>();
 
@@ -46,13 +48,16 @@ export class CustomInputComponent implements OnInit {
       .subscribe((value: string) => {
         this.InputValueChanged.emit(value);
       });
+
+    if (this.clearSubjectEvent) {
+      this.clearSubjectEvent.subscribe(() => {
+        this.inputValue = '';
+      });
+    }
   }
 
   sendMessage() {
-    if (
-      this.inputValue !== '' &&
-      this.inputValue.length < newMessageMaxLength
-    ) {
+    if (this.inputValue && this.inputValue.length < newMessageMaxLength) {
       this.MessageSent.emit(this.inputValue);
       this.inputValue = '';
     }
@@ -60,6 +65,10 @@ export class CustomInputComponent implements OnInit {
 
   changeInputValue(value: string) {
     this.valueChanged.next(value);
+
+    if (this.canShowCloseSearchButton()) {
+      this.searchIcon = value ? ['fas', 'xmark'] : ['fas', 'plus-circle'];
+    }
   }
 
   changePasswordView() {
@@ -83,15 +92,11 @@ export class CustomInputComponent implements OnInit {
   }
 
   canShowMessageIcon() {
-    return this.InputId.includes('message') && this.inputValue;
+    return this.InputId.includes('send') && this.inputValue;
   }
 
   canShowCloseSearchButton() {
     return this.InputId.includes('find');
-  }
-
-  showSearchButton(): [IconPrefix, IconName] {
-    return this.inputValue ? ['fas', 'xmark'] : ['fas', 'plus-circle'];
   }
 
   getPaddingRightForInput(): number {
@@ -106,7 +111,12 @@ export class CustomInputComponent implements OnInit {
     return paddingRightWhenNoIcon;
   }
 
-  clearSearch() {
-    this.inputValue = '';
+  onSearchIconClicked() {
+    if (this.searchIcon[1] === 'xmark') {
+      this.inputValue = '';
+      this.changeInputValue(this.inputValue);
+    } else {
+      this.NewChatButtonClicked.emit();
+    }
   }
 }

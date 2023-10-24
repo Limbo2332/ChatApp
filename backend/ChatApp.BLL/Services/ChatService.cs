@@ -27,17 +27,16 @@ namespace ChatApp.BLL.Services
             int currentUserId = _userIdGetter.CurrentUserId;
 
             var chats = await _context.UserChats
+                .Include(userChat => userChat.User)
                 .Include(userChat => userChat.Chat)
                     .ThenInclude(chat => chat.Messages)
-                .Include(userChat => userChat.User)
-                    .ThenInclude(user => user.Messages)
                 .GroupBy(userChat => userChat.Chat)
                 .Where(group => group.Any(userChat => userChat.UserId == currentUserId))
                 .Select(group => new ChatPreviewDto
                 {
                     Id = group.Key.Id,
                     Interlocutor = _mapper.Map<UserPreviewDto>(
-                        group.First(userChat => userChat.UserId != currentUserId).User),
+                        group.First(userChat => userChat.ChatId == group.Key.Id && userChat.UserId != currentUserId).User),
                     LastMessage = _mapper.Map<MessagePreviewDto>(
                         group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .OrderByDescending(message => message.CreatedAt)
@@ -56,19 +55,17 @@ namespace ChatApp.BLL.Services
             int currentUserId = _userIdGetter.CurrentUserId;
 
             return await _context.UserChats
+                .Include(userChat => userChat.User)
                 .Include(userChat => userChat.Chat)
                     .ThenInclude(chat => chat.Messages)
-                .Include(userChat => userChat.User)
-                    .ThenInclude(user => user.Messages)
-                .GroupBy(userChat => userChat.ChatId)
-                .Where(group => group.Any(userChat => userChat.UserId == currentUserId))
+                .GroupBy(userChat => userChat.Chat)
                 .Select(group => new ChatConversationDto
                 {
-                    ChatId = group.Key,
+                    ChatId = group.Key.Id,
                     Interlocutor = _mapper.Map<UserPreviewDto>(
                         group.First(userChat => userChat.UserId != currentUserId).User),
                     Messages = _mapper.Map<IEnumerable<MessagePreviewDto>>(
-                        group.First(userChat => userChat.ChatId == group.Key).Chat.Messages
+                        group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .OrderByDescending(message => message.CreatedAt)
                              .ToList()
                     )
@@ -85,6 +82,85 @@ namespace ChatApp.BLL.Services
             await _context.SaveChangesAsync();
 
             return _mapper.Map<MessagePreviewDto>(message);
+        }
+
+        public async Task<ChatPreviewDto> AddNewChatWithAsync(NewChatDto newChat)
+        {
+            int currentUserId = _userIdGetter.CurrentUserId;
+
+            var interlocutor = await _context.Users
+                .FirstOrDefaultAsync(user => user.UserName.ToLower() == newChat.UserName.ToLower())
+                ?? throw new BadRequestException($"User with username {newChat.UserName} doesn't exist");
+
+            if (await FindCommonChatsAsync(interlocutor.Id))
+            {
+                throw new BadRequestException("This chat is already created");
+            }
+
+            var chat = new Chat();
+
+            await _context.AddAsync(chat);
+            await _context.SaveChangesAsync();
+
+            var newMessage = new NewMessageDto
+            {
+                Value = newChat.NewMessage,
+                ChatId = chat.Id
+            };
+
+            var message = await AddMessageAsync(newMessage);
+
+            await CreateUserChatsAsync(chat.Id, interlocutor.Id);
+
+            return new ChatPreviewDto
+            {
+                Id = chat.Id,
+                Interlocutor = _mapper.Map<UserPreviewDto>(interlocutor),
+                LastMessage = message
+            };
+        }
+
+        private async Task<bool> FindCommonChatsAsync(int interlocutorId)
+        {
+            int currentUserId = _userIdGetter.CurrentUserId;
+
+            var myUserChats = await _context.UserChats
+                .Include(userChat => userChat.Chat)
+                .Where(userChat => userChat.UserId == currentUserId)
+                .Select(userChat => userChat.Chat)
+                .ToListAsync();
+
+            var interlocutorChats = await _context.UserChats
+                .Include(userChat => userChat.Chat)
+                .Where(userChat => userChat.UserId == interlocutorId)
+                .Select(userChat => userChat.Chat)
+                .ToListAsync();
+
+            var commonChats = myUserChats
+                .Intersect(interlocutorChats)
+                .ToList();
+
+            return commonChats.Any();
+        }
+
+        private async Task CreateUserChatsAsync(int chatId, int interlocutorId)
+        {
+            int currentUserId = _userIdGetter.CurrentUserId;
+
+            var myUserChat = new UserChats
+            {
+                ChatId = chatId,
+                UserId = currentUserId,
+            };
+
+            var interLocutorUserChat = new UserChats
+            {
+                ChatId = chatId,
+                UserId = interlocutorId,
+            };
+
+            await _context.UserChats.AddRangeAsync(myUserChat, interLocutorUserChat);
+            await _context.SaveChangesAsync();
         }
     }
 }

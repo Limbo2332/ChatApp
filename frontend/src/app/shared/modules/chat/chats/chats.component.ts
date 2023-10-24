@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ResizeEvent } from 'angular-resizable-element';
+import { NgxSmartModalService } from 'ngx-smart-modal';
 import { ChatsService } from 'src/app/core/services/chats.service';
 import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
+import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
 
 import { minChatsWidth, minConversationsWidth } from '../chat-utils';
 
@@ -27,9 +29,14 @@ export class ChatsComponent implements OnInit {
 
   selectedChatId?: number;
 
+  private newChatIdentifier: string = 'newChat';
+
   private activeChatName = 'activeChat';
 
-  constructor(private chatsService: ChatsService) {}
+  constructor(
+    private modalService: NgxSmartModalService,
+    private chatsService: ChatsService,
+  ) {}
 
   ngOnInit(): void {
     this.removeActiveChat();
@@ -61,5 +68,22 @@ export class ChatsComponent implements OnInit {
       ...this.conversationStyles,
       'width.px': window.innerWidth - (event.rectangle.width ?? 0),
     };
+  }
+
+  onNewMessage(message: IMessagePreview) {
+    const updatedChat = this.chats.find(
+      (chat) => chat.id === this.selectedChatId!,
+    )!;
+
+    updatedChat.lastMessage = message;
+  }
+
+  onNewChat(chat: IChatPreview) {
+    this.chats = [chat, ...this.chats];
+    this.modalService.close(this.newChatIdentifier);
+  }
+
+  openNewChatModal() {
+    this.modalService.open(this.newChatIdentifier);
   }
 }
