@@ -3,6 +3,7 @@ import { ResizeEvent } from 'angular-resizable-element';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { ChatHubService } from 'src/app/core/services/chat-hub.service';
 import { ChatsService } from 'src/app/core/services/chats.service';
+import { EventService } from 'src/app/core/services/event.service';
 import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
 import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
 
@@ -38,14 +39,28 @@ export class ChatsComponent implements OnInit {
     private modalService: NgxSmartModalService,
     private chatsService: ChatsService,
     private chatHubService: ChatHubService,
+    private eventService: EventService,
   ) {}
 
   ngOnInit(): void {
     this.removeActiveChat();
+
     this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
       this.chats = chats;
       this.chatHubService.startConnection();
     });
+
+    this.eventService.newChatCreatedEvent$.subscribe(
+      (newChat: IChatPreview) => {
+        this.onNewChat(newChat);
+      },
+    );
+
+    this.eventService.newMessageSentEvent$.subscribe(
+      (message: IMessagePreview) => {
+        this.onNewMessage(message);
+      },
+    );
   }
 
   selectChat(chatId: number) {
@@ -74,11 +89,11 @@ export class ChatsComponent implements OnInit {
   }
 
   onNewMessage(message: IMessagePreview) {
-    const updatedChat = this.chats.find(
-      (chat) => chat.id === this.selectedChatId!,
-    )!;
+    const updatedChat = this.chats.find((chat) => chat.id === message.chatId)!;
 
     updatedChat.lastMessage = message;
+
+    this.chats = [...new Set([updatedChat, ...this.chats])];
   }
 
   onNewChat(chat: IChatPreview) {

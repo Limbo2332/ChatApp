@@ -1,12 +1,16 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgxSmartModalService } from 'ngx-smart-modal';
-import { Subject } from 'rxjs';
 import { ChatsService } from 'src/app/core/services/chats.service';
+import { EventService } from 'src/app/core/services/event.service';
 
 import { IChatPreview } from '../../models/chats/chat-preview';
 import { INewChat } from '../../models/chats/new-chat';
-import { newMessageMaxLength, userNameMaxLength, userNameMinLength } from '../../utils/validation/constants';
+import {
+  newMessageMaxLength,
+  userNameMaxLength,
+  userNameMinLength,
+} from '../../utils/validation/constants';
 import { noSpacesRegex } from '../../utils/validation/regex-patterns';
 import { getValidationErrors } from '../../utils/validation/validation-helper';
 
@@ -17,8 +21,6 @@ import { getValidationErrors } from '../../utils/validation/validation-helper';
 })
 export class NewChatModalComponent {
   @Output() NewChatAdded = new EventEmitter<IChatPreview>();
-
-  clearSubject = new Subject<void>();
 
   newChatIdentifier: string = 'newChat';
 
@@ -40,6 +42,7 @@ export class NewChatModalComponent {
   constructor(
     private chatsService: ChatsService,
     private modalService: NgxSmartModalService,
+    private eventService: EventService,
   ) {}
 
   changeInputValue(formControlName: 'userName' | 'message', value: string) {
@@ -76,7 +79,7 @@ export class NewChatModalComponent {
     this.modalService
       .get(this.newChatIdentifier)
       .onCloseFinished.subscribe(() => {
-        this.clearSubject.next();
+        this.eventService.clearInput();
       });
   }
 }

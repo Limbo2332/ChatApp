@@ -6,6 +6,7 @@ import { IUser } from 'src/app/shared/models/user/user';
 import { environment } from 'src/environments/environment';
 
 import { AuthService } from './auth.service';
+import { EventService } from './event.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,10 @@ import { AuthService } from './auth.service';
 export class ChatHubService {
   private currentUser: IUser;
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private eventService: EventService,
+  ) {
     this.authService.getUser().subscribe((user: IUser) => {
       this.currentUser = user;
     });
@@ -33,11 +37,11 @@ export class ChatHubService {
     );
 
     connection.on('sendNewMessageAsync', (message: IMessagePreview) => {
-      console.log(message);
+      this.eventService.sendNewMessage(message);
     });
 
     connection.on('createNewChatAsync', (chat: IChatPreview) => {
-      console.log(chat);
+      this.eventService.createNewChat(chat);
     });
   }
 }

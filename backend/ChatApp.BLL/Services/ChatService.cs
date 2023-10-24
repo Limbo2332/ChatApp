@@ -82,12 +82,11 @@ namespace ChatApp.BLL.Services
         {
             var message = _mapper.Map<Message>(newMessage);
 
-            await _context.Messages.AddAsync(message);
-            await _context.SaveChangesAsync();
+            var messagePreview = await CreateNewMessageAsync(message);
 
             await SendNotificationToInterlocutor(message);
 
-            return _mapper.Map<MessagePreviewDto>(message);
+            return messagePreview;
         }
 
         public async Task<ChatPreviewDto> AddNewChatWithAsync(NewChatDto newChat)
@@ -105,16 +104,16 @@ namespace ChatApp.BLL.Services
 
             var chat = new Chat();
 
-            await _context.AddAsync(chat);
+            await _context.Chats.AddAsync(chat);
             await _context.SaveChangesAsync();
 
-            var newMessage = new NewMessageDto
+            var message = new Message
             {
                 Value = newChat.NewMessage,
-                ChatId = chat.Id
+                ChatId = chat.Id,
+                UserId = currentUserId,
+                MessageStatus = Common.Enums.MessageStatus.Sent,
             };
-
-            var message = await AddMessageAsync(newMessage);
 
             await CreateUserChatsAsync(chat.Id, interlocutor.Id);
 
@@ -122,12 +121,24 @@ namespace ChatApp.BLL.Services
             {
                 Id = chat.Id,
                 Interlocutor = _mapper.Map<UserPreviewDto>(interlocutor),
-                LastMessage = message
+                LastMessage = await CreateNewMessageAsync(message),
             };
+
+            chatPreview.LastMessage.IsMine = !chatPreview.LastMessage.IsMine;
 
             await _hubContext.Clients.Group(interlocutor.Id.ToString()).CreateNewChatAsync(chatPreview);
 
+            chatPreview.LastMessage.IsMine = !chatPreview.LastMessage.IsMine;
+
             return chatPreview;
+        }
+
+        private async Task<MessagePreviewDto> CreateNewMessageAsync(Message message)
+        {
+            await _context.Messages.AddAsync(message);
+            await _context.SaveChangesAsync();
+
+            return _mapper.Map<MessagePreviewDto>(message);
         }
 
         private async Task SendNotificationToInterlocutor(Message message)
@@ -136,6 +147,8 @@ namespace ChatApp.BLL.Services
                 .FirstAsync(userChat => userChat.ChatId == message.ChatId && userChat.UserId != message.UserId);
 
             var messagePreview = _mapper.Map<MessagePreviewDto>(message);
+
+            messagePreview.IsMine = !messagePreview.IsMine; 
 
             await _hubContext.Clients.Group(userChat.UserId.ToString()).SendNewMessageAsync(messagePreview);
         }
