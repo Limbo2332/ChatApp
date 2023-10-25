@@ -20,14 +20,30 @@
   </div>
   <div class="messages d-flex flex-column-reverse gap-2">
     <div
-      class="message left-message d-flex flex-column"
+      class="message text-overflow d-flex flex-column"
       *ngFor="let message of conversation.messages; trackBy: identify"
       [ngClass]="message.isMine ? 'right-message' : 'left-message'"
+      [@fadeInRightOnEnter]="message.isMine"
+      [@fadeInLeftOnEnter]="!message.isMine"
     >
       <p class="message-text">
         {{ message.value }}
       </p>
-      <p class="message-date">{{ toDatePreview(message.sentAt) }}</p>
+      <div class="d-flex justify-content-end align-items-center gap-2">
+        <p class="message-date">{{ toDatePreview(message.sentAt) }}</p>
+        <fa-icon
+          *ngIf="message.isMine && !message.isRead"
+          class="chat-block-icon"
+          [icon]="['fas', 'check']"
+          [size]="'sm'"
+        ></fa-icon>
+        <fa-icon
+          *ngIf="message.isMine && message.isRead"
+          class="chat-block-icon"
+          [icon]="['fas', 'check-double']"
+          [size]="'sm'"
+        ></fa-icon>
+      </div>
     </div>
   </div>
   <app-custom-input
@@ -40,6 +56,8 @@
 
 <ng-template #conversationBlock>
   <div class="d-flex justify-content-center align-items-center h-100">
-    <p class="conversation-text">Select chat to start conversation</p>
+    <p class="conversation-text text-center">
+      Select or create new chat to start conversation
+    </p>
   </div>
 </ng-template>

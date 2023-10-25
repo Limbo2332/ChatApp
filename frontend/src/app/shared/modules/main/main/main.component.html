@@ -8,10 +8,38 @@
         Seamless communication, instant messaging, and real-time connection in a
         user-friendly chat application.
       </p>
-      <button class="btn btn-success btn-lg" [routerLink]="'/auth/register'">
+      <button
+        class="btn btn-success btn-lg main-btn"
+        [routerLink]="'/auth/register'"
+      >
         Start Now
       </button>
     </div>
   </div>
-  <!-- TODO: add something with chats  -->
 </main>
+<div
+  class="second-container d-flex flex-column align-items-center justify-content-center gap-2"
+>
+  <div class="d-flex flex-column gap-1 text-center">
+    <h2>Walk through the world with us</h2>
+    <p>Find new acquaintances and explore the world of chats!</p>
+  </div>
+
+  <button
+    class="btn btn-success btn-lg main-btn"
+    [routerLink]="'/auth/register'"
+  >
+    Start Now
+  </button>
+</div>
+<footer
+  class="footer d-flex flex-column justify-content-center align-items-center"
+>
+  <div class="waves">
+    <div class="wave" id="wave1"></div>
+    <div class="wave" id="wave2"></div>
+    <div class="wave" id="wave3"></div>
+    <div class="wave" id="wave4"></div>
+  </div>
+  <p>&copy;2023 Oleksii Vorobiov | All Rights Reserved</p>
+</footer>

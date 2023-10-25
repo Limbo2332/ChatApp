@@ -1,10 +1,15 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
-import { debounceTime, Observable, Subject } from 'rxjs';
+import { debounceTime, Subject } from 'rxjs';
+import { EventService } from 'src/app/core/services/event.service';
 
 import { DebounceTime } from '../../utils/debounce-time';
 import { newMessageMaxLength } from '../../utils/validation/constants';
-import { paddingRightWhenDefaultIcon, paddingRightWhenLgIcon, paddingRightWhenNoIcon } from './custom-input.utils';
+import {
+  paddingRightWhenDefaultIcon,
+  paddingRightWhenLgIcon,
+  paddingRightWhenNoIcon,
+} from './custom-input.utils';
 
 @Component({
   selector: 'app-custom-input[InputId]',
@@ -26,8 +31,6 @@ export class CustomInputComponent implements OnInit {
 
   @Input() customInputClass: string = 'custom-input';
 
-  @Input() clearSubjectEvent?: Observable<void>;
-
   @Output() InputValueChanged = new EventEmitter<string>();
 
   @Output() MessageSent = new EventEmitter<string>();
@@ -42,6 +45,8 @@ export class CustomInputComponent implements OnInit {
 
   private valueChanged = new Subject<string>();
 
+  constructor(private eventService: EventService) {}
+
   ngOnInit(): void {
     this.valueChanged
       .pipe(debounceTime(DebounceTime))
@@ -49,11 +54,9 @@ export class CustomInputComponent implements OnInit {
         this.InputValueChanged.emit(value);
       });
 
-    if (this.clearSubjectEvent) {
-      this.clearSubjectEvent.subscribe(() => {
-        this.inputValue = '';
-      });
-    }
+    this.eventService.inputClearedEvent$.subscribe(() => {
+      this.inputValue = '';
+    });
   }
 
   sendMessage() {

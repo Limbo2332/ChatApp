@@ -10,13 +10,11 @@
       <app-custom-input
         [InputId]="'chat-username'"
         [InputPlaceholder]="'UserName'"
-        [clearSubjectEvent]="clearSubject.asObservable()"
         (InputValueChanged)="changeInputValue('userName', $event)"
       ></app-custom-input>
       <app-custom-input
         [InputId]="'chat-new-message'"
         [InputPlaceholder]="'Message'"
-        [clearSubjectEvent]="clearSubject.asObservable()"
         (InputValueChanged)="changeInputValue('message', $event)"
       ></app-custom-input>
       <div class="validation-errors">

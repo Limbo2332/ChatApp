@@ -31,6 +31,12 @@ namespace ChatApp.WebAPI.Controllers
             return Ok(await _chatService.GetConversationAsync(chatId));
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<List<ChatPreviewDto>>> GetChatsByNameOrLastMessageAsync([FromQuery] string nameOrLastMessage)
+        {
+            return Ok(await _chatService.GetChatsByNameOrLastMessageAsync(nameOrLastMessage));
+        }
+
         [HttpPost("message")]
         public async Task<ActionResult<MessagePreviewDto>> AddMessageAsync(NewMessageDto newMessage)
         {
@@ -45,6 +51,14 @@ namespace ChatApp.WebAPI.Controllers
             var chatPreview = await _chatService.AddNewChatWithAsync(newChat);
 
             return Created("chat", chatPreview);
+        }
+
+        [HttpPatch("messages")]
+        public async Task<ActionResult> ReadMessagesAsync(ChatReadDto chat)
+        {
+            await _chatService.ReadMessagesAsync(chat);
+
+            return Ok();
         }
     }
 }

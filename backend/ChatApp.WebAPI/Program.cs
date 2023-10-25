@@ -1,3 +1,4 @@
+using ChatApp.BLL.Hubs;
 using ChatApp.Common.Filters;
 using ChatApp.Common.Middlewares;
 using ChatApp.WebAPI.Extensions;
@@ -11,7 +12,13 @@ namespace ChatApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddCors();
+            builder.Services.AddCors(options => options.AddPolicy("ChatPolicy", builder =>
+            {
+                builder.AllowAnyMethod()
+                       .AllowAnyHeader()
+                       .WithOrigins("http://localhost:4200")
+                       .AllowCredentials();
+            }));
 
             builder.Services.AddControllers(options =>
             {
@@ -29,6 +36,8 @@ namespace ChatApp
             builder.Services.AddFluentValidationAutoValidation();
             builder.Services.RegisterValidators();
 
+            builder.Services.AddSignalR();
+
             builder.Services.ConfigureSwagger();
 
             var app = builder.Build();
@@ -41,10 +50,7 @@ namespace ChatApp
 
             app.UseHttpsRedirection();
 
-            app.UseCors(opt => opt
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowAnyOrigin());
+            app.UseCors("ChatPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -54,6 +60,8 @@ namespace ChatApp
             app.UseChatAppContext();
 
             app.UseMiddleware<UserIdMiddleware>();
+
+            app.MapHub<ChatHub>("/chatHub");
 
             app.Run();
         }

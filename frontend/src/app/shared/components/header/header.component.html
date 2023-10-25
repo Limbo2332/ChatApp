@@ -1,6 +1,6 @@
 <header class="header d-flex justify-content-between">
   <div class="logo d-flex align-items-center gap-2" [routerLink]="'/'">
-    <img src="assets/icon.png" alt="icon" class="d-block logo-img" />
+    <img src="assets/chat.png" alt="icon" class="d-block logo-img" />
     <p class="logo-text">Chat App</p>
   </div>
   <div
@@ -14,37 +14,28 @@
 </header>
 
 <ng-template #userProfileButton>
-  <div class="sign-section d-flex align-items-center gap-4">
-    <div class="notification">
-      <fa-icon
-        class="notification"
-        [icon]="['fas', 'bell']"
-        [size]="'xl'"
-      ></fa-icon>
-    </div>
-    <div class="dropdown">
-      <a
-        class="dropdown-link"
-        href="#"
-        role="button"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-      >
-        <img
-          [src]="user?.imagePath ?? defaultImagePath"
-          alt="user profile picture"
-        />
-      </a>
-      <ul class="dropdown-menu">
-        <li>
-          <button class="btn btn-primary dropdown-item">Profile</button>
-        </li>
-        <li>
-          <button class="btn btn-primary dropdown-item" (click)="logout()">
-            Log Out
-          </button>
-        </li>
-      </ul>
-    </div>
+  <div class="sign-section dropdown d-flex align-items-center gap-4">
+    <a
+      class="dropdown-link"
+      href="#"
+      role="button"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      <img
+        [src]="user?.imagePath ?? defaultImagePath"
+        alt="user profile picture"
+      />
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+        <button class="btn btn-primary dropdown-item">Profile</button>
+      </li>
+      <li>
+        <button class="btn btn-primary dropdown-item" (click)="logout()">
+          Log Out
+        </button>
+      </li>
+    </ul>
   </div>
 </ng-template>

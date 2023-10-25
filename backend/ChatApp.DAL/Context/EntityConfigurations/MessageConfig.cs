@@ -13,7 +13,7 @@ namespace ChatApp.DAL.Context.EntityConfigurations
                 .IsRequired()
                 .HasMaxLength(EntityConfigurationSettings.MessageMaxLength);
 
-            builder.Property(message => message.MessageStatus)
+            builder.Property(message => message.IsRead)
                 .IsRequired();
         }
     }
