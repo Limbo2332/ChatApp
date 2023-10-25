@@ -25,6 +25,16 @@ export class ChatsService {
     return this.http.get<IChatConversation>(`${this.baseUrl}/${chatId}`);
   }
 
+  getChatsByNameOrLastMessage(
+    nameOrLastMessage: string,
+  ): Observable<IChatPreview[]> {
+    return this.http.get<IChatPreview[]>(`${this.baseUrl}/search`, {
+      params: {
+        nameOrLastMessage,
+      },
+    });
+  }
+
   addMessage(newMessage: INewMessage): Observable<IMessagePreview> {
     return this.http.post<IMessagePreview>(
       `${this.baseUrl}/message`,

@@ -26,7 +26,7 @@ namespace ChatApp.BLL.Services
             return !_context.Users.Any(u => u.UserName == userName);
         }
 
-        public async Task<User> GetUserByUsernameAsync(string userName)
+        public async Task<User> FindUserByUsernameAsync(string userName)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(user => user.UserName.ToLower() == userName.ToLower())

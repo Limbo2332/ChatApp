@@ -16,16 +16,22 @@
       [InputId]="'find-chat'"
       [InputPlaceholder]="'Search...'"
       [customInputClass]="'search-input'"
+      (InputValueChanged)="getChatsByNameOrLastMessage($event)"
       (NewChatButtonClicked)="openNewChatModal()"
     ></app-custom-input>
-    <div class="chat-blocks d-flex flex-column">
-      <ng-container *ngFor="let chat of chats">
-        <app-chat
-          [chat]="chat"
-          [isActive]="isActiveChat(chat.id)"
-          (click)="selectChat(chat.id)"
-        ></app-chat
-      ></ng-container>
+    <div
+      class="chat-blocks d-flex flex-column"
+      [ngClass]="chats.length === 0 ? 'justify-content-center' : ''"
+    >
+      <ng-container *ngIf="chats.length > 0; else noChatsBlock">
+        <ng-container *ngFor="let chat of chats">
+          <app-chat
+            [chat]="chat"
+            [isActive]="isActiveChat(chat.id)"
+            (click)="selectChat(chat.id)"
+          ></app-chat
+        ></ng-container>
+      </ng-container>
     </div>
   </div>
   <div class="conversation" [ngStyle]="conversationStyles">
@@ -33,3 +39,9 @@
   </div>
 </div>
 <app-new-chat-modal (NewChatAdded)="onNewChat($event)"></app-new-chat-modal>
+
+<ng-template #noChatsBlock>
+  <p class="conversation-text text-center">
+    Create new chat to start conversation
+  </p>
+</ng-template>

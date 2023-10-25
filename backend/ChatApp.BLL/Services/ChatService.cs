@@ -103,7 +103,7 @@ namespace ChatApp.BLL.Services
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
-            var interlocutor = await _userService.GetUserByUsernameAsync(newChat.UserName);
+            var interlocutor = await _userService.FindUserByUsernameAsync(newChat.UserName);
 
             if (await FindCommonChatsAsync(interlocutor.Id))
             {
@@ -151,6 +151,16 @@ namespace ChatApp.BLL.Services
             await _hubContext.Clients
                 .Groups(userChat.UserId.ToString())
                 .ReadMessagesAsync(chat);
+        }
+
+        public async Task<List<ChatPreviewDto>> GetChatsByNameOrLastMessageAsync(string nameOrLastMessage)
+        {
+            var chats = await GetChatsAsync();
+
+            return chats.Where(chat => chat.LastMessage.Value.ToLower().Contains(nameOrLastMessage.ToLower())
+                            || chat.Interlocutor.UserName.ToLower().Contains(nameOrLastMessage.ToLower()))
+                        .OrderByDescending(chat => chat.LastMessage.SentAt)
+                        .ToList();
         }
 
         private async Task<MessagePreviewDto> CreateNewMessageAsync(Message message)

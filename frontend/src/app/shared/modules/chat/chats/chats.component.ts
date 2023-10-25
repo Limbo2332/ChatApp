@@ -34,6 +34,8 @@ export class ChatsComponent implements OnInit {
 
   selectedChatId?: number;
 
+  private cachedChats: IChatPreview[] = [];
+
   private newChatIdentifier: string = 'newChat';
 
   private activeChatName = 'activeChat';
@@ -64,6 +66,18 @@ export class ChatsComponent implements OnInit {
     this.authService.getUser().subscribe((user: IUser) => {
       this.user = user;
     });
+  }
+
+  getChatsByNameOrLastMessage(nameOrLastMessage: string) {
+    if (nameOrLastMessage) {
+      this.chatsService
+        .getChatsByNameOrLastMessage(nameOrLastMessage)
+        .subscribe((chats: IChatPreview[]) => {
+          this.chats = chats;
+        });
+    } else {
+      this.chats = this.cachedChats;
+    }
   }
 
   selectChat(chatId: number) {
@@ -118,6 +132,7 @@ export class ChatsComponent implements OnInit {
   }
 
   onNewChat(chat: IChatPreview) {
+    chat.lastMessage.isMine = true;
     this.chats = [chat, ...this.chats];
     this.modalService.close(this.newChatIdentifier);
   }
@@ -133,6 +148,7 @@ export class ChatsComponent implements OnInit {
   private getChats() {
     this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
       this.chats = chats;
+      this.cachedChats = chats;
       this.chatHubService.startConnection();
     });
   }

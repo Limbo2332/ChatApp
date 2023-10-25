@@ -15,5 +15,7 @@ namespace ChatApp.BLL.Interfaces
         Task<ChatPreviewDto> AddNewChatWithAsync(NewChatDto newChat);
 
         Task ReadMessagesAsync(ChatReadDto chat);
+
+        Task<List<ChatPreviewDto>> GetChatsByNameOrLastMessageAsync(string nameOrLastMessage);
     }
 }

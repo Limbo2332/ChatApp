@@ -8,6 +8,6 @@ namespace ChatApp.BLL.Interfaces
 
         bool IsUserNameUnique(string userName);
 
-        Task<User> GetUserByUsernameAsync(string userName);
+        Task<User> FindUserByUsernameAsync(string userName);
     }
 }

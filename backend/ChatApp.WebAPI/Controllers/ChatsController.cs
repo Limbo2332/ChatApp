@@ -31,6 +31,12 @@ namespace ChatApp.WebAPI.Controllers
             return Ok(await _chatService.GetConversationAsync(chatId));
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<List<ChatPreviewDto>>> GetChatsByNameOrLastMessageAsync([FromQuery] string nameOrLastMessage)
+        {
+            return Ok(await _chatService.GetChatsByNameOrLastMessageAsync(nameOrLastMessage));
+        }
+
         [HttpPost("message")]
         public async Task<ActionResult<MessagePreviewDto>> AddMessageAsync(NewMessageDto newMessage)
         {
