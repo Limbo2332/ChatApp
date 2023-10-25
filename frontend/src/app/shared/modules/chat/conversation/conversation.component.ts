@@ -79,7 +79,9 @@ export class ConversationComponent implements OnInit, OnChanges {
   private registerEventOnNewMessageSent() {
     this.eventService.newMessageSentEvent$.subscribe(
       (message: IMessagePreview) => {
-        this.updateMessages(message);
+        if (message.chatId === this.chatId) {
+          this.updateMessages(message);
+        }
       },
     );
   }

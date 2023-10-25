@@ -132,7 +132,12 @@ export class ChatsComponent implements OnInit {
   }
 
   onNewChat(chat: IChatPreview) {
-    chat.lastMessage.isMine = true;
+    if (chat.interlocutor.userName !== this.user.userName) {
+      chat.lastMessage.isMine = true;
+    } else {
+      chat.unreadMessagesCount += 1;
+    }
+
     this.chats = [chat, ...this.chats];
     this.modalService.close(this.newChatIdentifier);
   }
