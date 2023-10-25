@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services.Abstract;
+using ChatApp.Common.Exceptions;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.DAL.Context;
+using ChatApp.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp.BLL.Services
 {
@@ -21,6 +24,13 @@ namespace ChatApp.BLL.Services
         public bool IsUserNameUnique(string userName)
         {
             return !_context.Users.Any(u => u.UserName == userName);
+        }
+
+        public async Task<User> GetUserByUsernameAsync(string userName)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(user => user.UserName.ToLower() == userName.ToLower())
+                ?? throw new BadRequestException($"User with username {userName} doesn't exist");
         }
     }
 }

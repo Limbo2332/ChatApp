@@ -13,17 +13,24 @@ using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace ChatApp.BLL.Services
 {
     public class ChatService : BaseService, IChatService
     {
         private readonly IHubContext<ChatHub, IChatHubClient> _hubContext;
+        private readonly IUserService _userService;
 
-        public ChatService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter, IHubContext<ChatHub, IChatHubClient> hubContext) 
+        public ChatService(ChatAppContext context, 
+                           IMapper mapper, 
+                           IUserIdGetter userIdGetter, 
+                           IHubContext<ChatHub, IChatHubClient> hubContext, 
+                           IUserService userService)
             : base(context, mapper, userIdGetter)
         {
             _hubContext = hubContext;
+            _userService = userService;
         }
 
         public async Task<List<ChatPreviewDto>> GetChatsAsync()
@@ -87,7 +94,7 @@ namespace ChatApp.BLL.Services
 
             var messagePreview = await CreateNewMessageAsync(message);
 
-            await SendNotificationToInterlocutor(message);
+            await SendNewMessageNotificationToInterlocutor(message);
 
             return messagePreview;
         }
@@ -96,9 +103,7 @@ namespace ChatApp.BLL.Services
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
-            var interlocutor = await _context.Users
-                .FirstOrDefaultAsync(user => user.UserName.ToLower() == newChat.UserName.ToLower())
-                ?? throw new BadRequestException($"User with username {newChat.UserName} doesn't exist");
+            var interlocutor = await _userService.GetUserByUsernameAsync(newChat.UserName);
 
             if (await FindCommonChatsAsync(interlocutor.Id))
             {
@@ -126,36 +131,25 @@ namespace ChatApp.BLL.Services
                 LastMessage = await CreateNewMessageAsync(message),
             };
 
-            chatPreview.LastMessage.IsMine = !chatPreview.LastMessage.IsMine;
-
-            await _hubContext.Clients.Group(interlocutor.Id.ToString()).CreateNewChatAsync(chatPreview);
-
-            chatPreview.LastMessage.IsMine = !chatPreview.LastMessage.IsMine;
+            await SendNewChatNotificationToInterlocutor(interlocutor, chatPreview);
 
             return chatPreview;
         }
 
         public async Task ReadMessagesAsync(ChatReadDto chat)
         {
-            var messages = _context.Messages
-                .Where(message => message.ChatId == chat.Id 
+            await _context.Messages
+                .Where(message => message.ChatId == chat.Id
                     && message.UserId != chat.UserId
-                    && !message.IsRead);
+                    && !message.IsRead)
+                .ForEachAsync(message => message.IsRead = true);
 
-            foreach (var message in messages)
-            {
-                message.IsRead = true;
-            }
-
-            _context.UpdateRange(messages);
             await _context.SaveChangesAsync();
 
-            var interlocutorId = _context.UserChats
-                .First(userChat => userChat.ChatId == chat.Id
-                    && userChat.UserId != chat.UserId).UserId;
+            var userChat = await GetUserChatAsync(chat.Id, chat.UserId);
 
             await _hubContext.Clients
-                .Groups(interlocutorId.ToString())
+                .Groups(userChat.UserId.ToString())
                 .ReadMessagesAsync(chat);
         }
 
@@ -167,16 +161,21 @@ namespace ChatApp.BLL.Services
             return _mapper.Map<MessagePreviewDto>(message);
         }
 
-        private async Task SendNotificationToInterlocutor(Message message)
+        private async Task SendNewMessageNotificationToInterlocutor(Message message)
         {
-            var userChat = await _context.UserChats
-                .FirstAsync(userChat => userChat.ChatId == message.ChatId && userChat.UserId != message.UserId);
+            var userChat = await GetUserChatAsync(message.ChatId, message.UserId);
 
             var messagePreview = _mapper.Map<MessagePreviewDto>(message);
-
             messagePreview.IsMine = !messagePreview.IsMine; 
 
             await _hubContext.Clients.Group(userChat.UserId.ToString()).SendNewMessageAsync(messagePreview);
+        }
+
+        private async Task SendNewChatNotificationToInterlocutor(User interlocutor, ChatPreviewDto chatPreview)
+        {
+            chatPreview.LastMessage.IsMine = !chatPreview.LastMessage.IsMine;
+
+            await _hubContext.Clients.Group(interlocutor.Id.ToString()).CreateNewChatAsync(chatPreview);
         }
 
         private async Task<bool> FindCommonChatsAsync(int interlocutorId)
@@ -220,6 +219,14 @@ namespace ChatApp.BLL.Services
 
             await _context.UserChats.AddRangeAsync(myUserChat, interLocutorUserChat);
             await _context.SaveChangesAsync();
+        }
+
+        private async Task<UserChats> GetUserChatAsync(int chatId, int userId)
+        {
+            return await _context.UserChats
+                .FirstOrDefaultAsync(userChat => userChat.ChatId == chatId 
+                         && userChat.UserId != userId)
+                ?? throw new NotFoundException(nameof(UserChats));
         }
     }
 }
