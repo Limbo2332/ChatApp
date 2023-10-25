@@ -109,6 +109,7 @@ namespace ChatApp.WebAPI.Extensions
             services.AddScoped<IValidator<AccessTokenDto>, AccessTokenValidator>();
             services.AddScoped<IValidator<NewMessageDto>, NewMessageValidator>();
             services.AddScoped<IValidator<NewChatDto>, NewChatValidator>();
+            services.AddScoped<IValidator<ChatReadDto>, ChatReadValidator>();
         }
     }
 }

@@ -10,5 +10,7 @@ namespace ChatApp.Common.DTO.Chat
         public UserPreviewDto Interlocutor { get; set; } = null!;
 
         public MessagePreviewDto LastMessage { get; set; } = null!;
+
+        public int UnreadMessagesCount { get; set; }
     }
 }

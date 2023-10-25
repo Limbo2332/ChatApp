@@ -45,7 +45,10 @@ namespace ChatApp.BLL.Services
                         group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .OrderByDescending(message => message.CreatedAt)
                              .First()
-                    )
+                    ),
+                    UnreadMessagesCount = 
+                        group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
+                             .Count(message => !message.IsRead && message.UserId != currentUserId),
                 })
                 .ToListAsync();
 
@@ -75,7 +78,7 @@ namespace ChatApp.BLL.Services
                     )
                 })
                 .FirstOrDefaultAsync(chat => chat.ChatId == chatId)
-                ?? throw new NotFoundException(nameof(Chat));
+                    ?? throw new NotFoundException(nameof(Chat));
         }
 
         public async Task<MessagePreviewDto> AddMessageAsync(NewMessageDto newMessage)
@@ -130,6 +133,22 @@ namespace ChatApp.BLL.Services
             chatPreview.LastMessage.IsMine = !chatPreview.LastMessage.IsMine;
 
             return chatPreview;
+        }
+
+        public async Task ReadMessagesAsync(ChatReadDto chat)
+        {
+            var messages = _context.Messages
+                .Where(message => message.ChatId == chat.Id 
+                    && message.UserId != chat.UserId
+                    && !message.IsRead);
+
+            foreach (var message in messages)
+            {
+                message.IsRead = true;
+            }
+
+            _context.UpdateRange(messages);
+            await _context.SaveChangesAsync();
         }
 
         private async Task<MessagePreviewDto> CreateNewMessageAsync(Message message)

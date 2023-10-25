@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ResizeEvent } from 'angular-resizable-element';
 import { NgxSmartModalService } from 'ngx-smart-modal';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { ChatHubService } from 'src/app/core/services/chat-hub.service';
 import { ChatsService } from 'src/app/core/services/chats.service';
 import { EventService } from 'src/app/core/services/event.service';
 import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
+import { IChatRead } from 'src/app/shared/models/chats/chat-read';
 import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
+import { IUser } from 'src/app/shared/models/user/user';
 
 import { minChatsWidth, minConversationsWidth } from '../chat-utils';
 
@@ -35,8 +38,11 @@ export class ChatsComponent implements OnInit {
 
   private activeChatName = 'activeChat';
 
+  private user: IUser;
+
   constructor(
     private modalService: NgxSmartModalService,
+    private authService: AuthService,
     private chatsService: ChatsService,
     private chatHubService: ChatHubService,
     private eventService: EventService,
@@ -45,10 +51,7 @@ export class ChatsComponent implements OnInit {
   ngOnInit(): void {
     this.removeActiveChat();
 
-    this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
-      this.chats = chats;
-      this.chatHubService.startConnection();
-    });
+    this.getChats();
 
     this.eventService.newChatCreatedEvent$.subscribe(
       (newChat: IChatPreview) => {
@@ -61,11 +64,26 @@ export class ChatsComponent implements OnInit {
         this.onNewMessage(message);
       },
     );
+
+    this.authService.getUser().subscribe((user: IUser) => {
+      this.user = user;
+    });
   }
 
   selectChat(chatId: number) {
     localStorage.setItem(this.activeChatName, chatId.toString());
     this.selectedChatId = chatId;
+
+    const chatRead: IChatRead = {
+      id: chatId,
+      userId: this.user.id,
+    };
+
+    this.chatsService.readMessages(chatRead).subscribe(() => {
+      const updatedChat = this.chats.find((chat) => chat.id === chatId)!;
+
+      updatedChat.unreadMessagesCount = 0;
+    });
   }
 
   isActiveChat(chatId: number) {
@@ -93,6 +111,10 @@ export class ChatsComponent implements OnInit {
 
     updatedChat.lastMessage = message;
 
+    if (!message.isMine && updatedChat.id !== this.selectedChatId) {
+      updatedChat.unreadMessagesCount += 1;
+    }
+
     this.chats = [...new Set([updatedChat, ...this.chats])];
   }
 
@@ -103,5 +125,12 @@ export class ChatsComponent implements OnInit {
 
   openNewChatModal() {
     this.modalService.open(this.newChatIdentifier);
+  }
+
+  private getChats() {
+    this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
+      this.chats = chats;
+      this.chatHubService.startConnection();
+    });
   }
 }

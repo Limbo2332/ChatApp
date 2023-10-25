@@ -5,4 +5,5 @@ export interface IChatPreview {
   id: number;
   interlocutor: IUserPreview;
   lastMessage: IMessagePreview;
+  unreadMessagesCount: number;
 }

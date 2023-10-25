@@ -4,7 +4,7 @@
     alt="avatar"
     class="chat-block-img d-block"
   />
-  <div class="chat-block-text d-flex flex-column">
+  <div class="chat-block-text d-flex flex-column gap-1">
     <div class="d-flex justify-content-between gap-2">
       <p class="chat-block-name text-overflow">
         {{ chat.interlocutor.userName }}
@@ -21,8 +21,13 @@
         </p>
       </div>
     </div>
-    <p class="chat-block-message text-overflow">
-      {{ chat.lastMessage.value }}
-    </p>
+    <div class="d-flex justify-content-between gap-2 mb-2">
+      <p class="chat-block-message text-overflow">
+        {{ chat.lastMessage.value }}
+      </p>
+      <p *ngIf="chat.unreadMessagesCount" class="chat-block-message-count">
+        {{ chat.unreadMessagesCount }}
+      </p>
+    </div>
   </div>
 </div>

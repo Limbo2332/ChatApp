@@ -46,5 +46,13 @@ namespace ChatApp.WebAPI.Controllers
 
             return Created("chat", chatPreview);
         }
+
+        [HttpPatch("messages")]
+        public async Task<ActionResult> ReadMessagesAsync(ChatReadDto chat)
+        {
+            await _chatService.ReadMessagesAsync(chat);
+
+            return Ok();
+        }
     }
 }
