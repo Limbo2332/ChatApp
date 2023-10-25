@@ -53,27 +53,13 @@ export class ChatsComponent implements OnInit {
 
     this.getChats();
 
-    this.eventService.newChatCreatedEvent$.subscribe(
-      (newChat: IChatPreview) => {
-        this.onNewChat(newChat);
-      },
-    );
+    this.registerEventOnNewChatCreated();
 
-    this.eventService.newMessageSentEvent$.subscribe(
-      (message: IMessagePreview) => {
-        this.onNewMessage(message);
-      },
-    );
+    this.registerEventOnMessageCreated();
 
-    this.eventService.newMessageReceived$.subscribe(
-      (message: IMessagePreview) => {
-        this.onNewMessage(message);
-      },
-    );
+    this.registerEventOnMessageReceived();
 
-    this.eventService.readMessages$.subscribe((chat: IChatRead) => {
-      this.onReadMessages(chat);
-    });
+    this.registerEventOnReadMessages();
 
     this.authService.getUser().subscribe((user: IUser) => {
       this.user = user;
@@ -89,19 +75,11 @@ export class ChatsComponent implements OnInit {
       userId: this.user.id,
     };
 
-    const selectedChat = this.chats.find((chat) => chat.id === chatId)!;
-
-    if (selectedChat.unreadMessagesCount) {
-      this.readMessages(chatRead);
-    }
+    this.updateSelectChatWhenGotMessages(chatId, chatRead);
   }
 
   isActiveChat(chatId: number) {
     return localStorage.getItem(this.activeChatName) === chatId.toString();
-  }
-
-  removeActiveChat() {
-    return localStorage.removeItem(this.activeChatName);
   }
 
   onChatResizeEnd(event: ResizeEvent) {
@@ -117,25 +95,23 @@ export class ChatsComponent implements OnInit {
   }
 
   onNewMessage(message: IMessagePreview) {
-    const updatedChat = this.chats.find((chat) => chat.id === message.chatId)!;
+    const updatedChat = this.getChat(message.chatId);
 
     updatedChat.lastMessage = message;
 
     if (!message.isMine && updatedChat.id === this.selectedChatId) {
       updatedChat.lastMessage.isRead = true;
-    }
 
-    if (!message.isMine && updatedChat.id !== this.selectedChatId) {
-      updatedChat.unreadMessagesCount += 1;
-    }
-
-    if (!message.isMine && updatedChat.id === this.selectedChatId) {
       const chatRead: IChatRead = {
         id: updatedChat.id,
         userId: this.user.id,
       };
 
       this.readMessages(chatRead);
+    }
+
+    if (!message.isMine && updatedChat.id !== this.selectedChatId) {
+      updatedChat.unreadMessagesCount += 1;
     }
 
     this.chats = [...new Set([updatedChat, ...this.chats])];
@@ -148,6 +124,51 @@ export class ChatsComponent implements OnInit {
 
   openNewChatModal() {
     this.modalService.open(this.newChatIdentifier);
+  }
+
+  private removeActiveChat() {
+    return localStorage.removeItem(this.activeChatName);
+  }
+
+  private getChats() {
+    this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
+      this.chats = chats;
+      this.chatHubService.startConnection();
+    });
+  }
+
+  private registerEventOnNewChatCreated() {
+    this.eventService.newChatCreatedEvent$.subscribe(
+      (newChat: IChatPreview) => {
+        this.onNewChat(newChat);
+      },
+    );
+  }
+
+  private registerEventOnMessageCreated() {
+    this.eventService.newMessageSentEvent$.subscribe(
+      (message: IMessagePreview) => {
+        this.onNewMessage(message);
+      },
+    );
+  }
+
+  private registerEventOnMessageReceived() {
+    this.eventService.newMessageReceived$.subscribe(
+      (message: IMessagePreview) => {
+        this.onNewMessage(message);
+      },
+    );
+  }
+
+  private registerEventOnReadMessages() {
+    this.eventService.readMessages$.subscribe((chat: IChatRead) => {
+      this.onReadMessages(chat);
+    });
+  }
+
+  private getChat(chatId: number) {
+    return this.chats.find((chat) => chat.id === chatId)!;
   }
 
   private readMessages(chatRead: IChatRead) {
@@ -165,10 +186,11 @@ export class ChatsComponent implements OnInit {
     updatedChat.lastMessage.isRead = true;
   }
 
-  private getChats() {
-    this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
-      this.chats = chats;
-      this.chatHubService.startConnection();
-    });
+  private updateSelectChatWhenGotMessages(chatId: number, chatRead: IChatRead) {
+    const selectedChat = this.getChat(chatId);
+
+    if (selectedChat.unreadMessagesCount) {
+      this.readMessages(chatRead);
+    }
   }
 }

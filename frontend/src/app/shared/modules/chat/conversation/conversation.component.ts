@@ -5,6 +5,10 @@ import {
   OnInit,
   SimpleChanges,
 } from '@angular/core';
+import {
+  fadeInLeftOnEnterAnimation,
+  fadeInRightOnEnterAnimation,
+} from 'angular-animations';
 import { ChatsService } from 'src/app/core/services/chats.service';
 import { EventService } from 'src/app/core/services/event.service';
 import { IChatConversation } from 'src/app/shared/models/conversation/chat-conversation';
@@ -17,6 +21,10 @@ import { defaultImagePath, toDatePreview } from '../chat-utils';
   selector: 'app-conversation',
   templateUrl: './conversation.component.html',
   styleUrls: ['../chats.component.sass'],
+  animations: [
+    fadeInLeftOnEnterAnimation({ duration: 250 }),
+    fadeInRightOnEnterAnimation({ duration: 250 }),
+  ],
 })
 export class ConversationComponent implements OnInit, OnChanges {
   @Input() chatId?: number;
@@ -35,18 +43,9 @@ export class ConversationComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    this.eventService.newMessageSentEvent$.subscribe(
-      (message: IMessagePreview) => {
-        this.conversation!.messages = [message, ...this.conversation!.messages];
-        this.newMessageValue = '';
-      },
-    );
+    this.registerEventOnNewMessageSent();
 
-    this.eventService.readMessages$.subscribe(() => {
-      this.conversation?.messages.forEach((message) => {
-        message.isRead = true;
-      });
-    });
+    this.registerEventOnMessageRead();
   }
 
   ngOnChanges({ chatId }: SimpleChanges): void {
@@ -72,9 +71,29 @@ export class ConversationComponent implements OnInit, OnChanges {
     this.chatsService
       .addMessage(newMessage)
       .subscribe((message: IMessagePreview) => {
-        this.conversation!.messages = [message, ...this.conversation!.messages];
-        this.newMessageValue = '';
+        this.updateMessages(message);
         this.eventService.receiveNewMessage(message);
       });
+  }
+
+  private registerEventOnNewMessageSent() {
+    this.eventService.newMessageSentEvent$.subscribe(
+      (message: IMessagePreview) => {
+        this.updateMessages(message);
+      },
+    );
+  }
+
+  private registerEventOnMessageRead() {
+    this.eventService.readMessages$.subscribe(() => {
+      this.conversation?.messages.forEach((message) => {
+        message.isRead = true;
+      });
+    });
+  }
+
+  private updateMessages(message: IMessagePreview) {
+    this.conversation!.messages = [message, ...this.conversation!.messages];
+    this.newMessageValue = '';
   }
 }

@@ -23,6 +23,8 @@
       class="message left-message d-flex flex-column"
       *ngFor="let message of conversation.messages; trackBy: identify"
       [ngClass]="message.isMine ? 'right-message' : 'left-message'"
+      [@fadeInRightOnEnter]="message.isMine"
+      [@fadeInLeftOnEnter]="!message.isMine"
     >
       <p class="message-text">
         {{ message.value }}
