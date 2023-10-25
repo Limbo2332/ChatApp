@@ -9,6 +9,7 @@ const routes: Routes = [
     path: '',
     loadChildren: () =>
       import('./shared/modules/main/main.module').then((i) => i.MainModule),
+    canActivate: [unauthenticatedGuard],
   },
   {
     path: 'auth',

@@ -4,6 +4,8 @@
     {
         public bool IsMine { get; set; }
 
+        public bool IsRead { get; set; }
+
         public string Value { get; set; } = string.Empty;
 
         public DateTime SentAt { get; set; }

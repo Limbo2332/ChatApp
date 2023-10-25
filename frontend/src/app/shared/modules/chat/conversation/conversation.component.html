@@ -27,7 +27,21 @@
       <p class="message-text">
         {{ message.value }}
       </p>
-      <p class="message-date">{{ toDatePreview(message.sentAt) }}</p>
+      <div class="d-flex justify-content-end align-items-center gap-2">
+        <p class="message-date">{{ toDatePreview(message.sentAt) }}</p>
+        <fa-icon
+          *ngIf="message.isMine && !message.isRead"
+          class="chat-block-icon"
+          [icon]="['fas', 'check']"
+          [size]="'sm'"
+        ></fa-icon>
+        <fa-icon
+          *ngIf="message.isMine && message.isRead"
+          class="chat-block-icon"
+          [icon]="['fas', 'check-double']"
+          [size]="'sm'"
+        ></fa-icon>
+      </div>
     </div>
   </div>
   <app-custom-input

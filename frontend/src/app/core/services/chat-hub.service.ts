@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HubConnectionBuilder } from '@microsoft/signalr';
 import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
+import { IChatRead } from 'src/app/shared/models/chats/chat-read';
 import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
 import { IUser } from 'src/app/shared/models/user/user';
 import { environment } from 'src/environments/environment';
@@ -42,6 +43,10 @@ export class ChatHubService {
 
     connection.on('createNewChatAsync', (chat: IChatPreview) => {
       this.eventService.createNewChat(chat);
+    });
+
+    connection.on('readMessagesAsync', (chat: IChatRead) => {
+      this.eventService.readMessages(chat);
     });
   }
 }

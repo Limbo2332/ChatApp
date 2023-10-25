@@ -29,10 +29,7 @@
     </div>
   </div>
   <div class="conversation" [ngStyle]="conversationStyles">
-    <app-conversation
-      [chatId]="selectedChatId"
-      (newMessageSent)="onNewMessage($event)"
-    ></app-conversation>
+    <app-conversation [chatId]="selectedChatId"></app-conversation>
   </div>
 </div>
 <app-new-chat-modal (NewChatAdded)="onNewChat($event)"></app-new-chat-modal>

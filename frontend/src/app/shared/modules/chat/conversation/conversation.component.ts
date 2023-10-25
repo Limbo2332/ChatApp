@@ -1,12 +1,12 @@
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
-  Output,
+  OnInit,
   SimpleChanges,
 } from '@angular/core';
 import { ChatsService } from 'src/app/core/services/chats.service';
+import { EventService } from 'src/app/core/services/event.service';
 import { IChatConversation } from 'src/app/shared/models/conversation/chat-conversation';
 import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
 import { INewMessage } from 'src/app/shared/models/messages/new-message';
@@ -18,10 +18,8 @@ import { defaultImagePath, toDatePreview } from '../chat-utils';
   templateUrl: './conversation.component.html',
   styleUrls: ['../chats.component.sass'],
 })
-export class ConversationComponent implements OnChanges {
+export class ConversationComponent implements OnInit, OnChanges {
   @Input() chatId?: number;
-
-  @Output() newMessageSent = new EventEmitter<IMessagePreview>();
 
   conversation?: IChatConversation;
 
@@ -31,7 +29,25 @@ export class ConversationComponent implements OnChanges {
 
   toDatePreview = toDatePreview;
 
-  constructor(private chatsService: ChatsService) {}
+  constructor(
+    private chatsService: ChatsService,
+    private eventService: EventService,
+  ) {}
+
+  ngOnInit(): void {
+    this.eventService.newMessageSentEvent$.subscribe(
+      (message: IMessagePreview) => {
+        this.conversation!.messages = [message, ...this.conversation!.messages];
+        this.newMessageValue = '';
+      },
+    );
+
+    this.eventService.readMessages$.subscribe(() => {
+      this.conversation?.messages.forEach((message) => {
+        message.isRead = true;
+      });
+    });
+  }
 
   ngOnChanges({ chatId }: SimpleChanges): void {
     if (chatId.currentValue) {
@@ -58,8 +74,7 @@ export class ConversationComponent implements OnChanges {
       .subscribe((message: IMessagePreview) => {
         this.conversation!.messages = [message, ...this.conversation!.messages];
         this.newMessageValue = '';
-
-        this.newMessageSent.emit(message);
+        this.eventService.receiveNewMessage(message);
       });
   }
 }

@@ -149,6 +149,14 @@ namespace ChatApp.BLL.Services
 
             _context.UpdateRange(messages);
             await _context.SaveChangesAsync();
+
+            var interlocutorId = _context.UserChats
+                .First(userChat => userChat.ChatId == chat.Id
+                    && userChat.UserId != chat.UserId).UserId;
+
+            await _hubContext.Clients
+                .Groups(interlocutorId.ToString())
+                .ReadMessagesAsync(chat);
         }
 
         private async Task<MessagePreviewDto> CreateNewMessageAsync(Message message)

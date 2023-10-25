@@ -9,5 +9,7 @@ namespace ChatApp.BLL.Hubs.Clients
         Task SendNewMessageAsync(MessagePreviewDto message);
 
         Task CreateNewChatAsync(ChatPreviewDto chat);
+
+        Task ReadMessagesAsync(ChatReadDto chatRead);
     }
 }
