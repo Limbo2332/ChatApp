@@ -20,7 +20,7 @@
   </div>
   <div class="messages d-flex flex-column-reverse gap-2">
     <div
-      class="message left-message d-flex flex-column"
+      class="message text-overflow d-flex flex-column"
       *ngFor="let message of conversation.messages; trackBy: identify"
       [ngClass]="message.isMine ? 'right-message' : 'left-message'"
       [@fadeInRightOnEnter]="message.isMine"

@@ -5,17 +5,19 @@
   height: calc(100% - 70px)
 
 .chat
-  background-color: $auth-bg-color
+  background-color: $auth-bg
   position: relative
-  @media (max-width: $mobile)
-    width: 100% !important
-    max-width: 100%
+
+  @media (max-width: $tablet)
+    min-width: 80px !important
+    max-width: 80px !important
 
 .resize-handle-right
   cursor: col-resize
   width: 5px
   right: 0
-  @media (max-width: $mobile)
+
+  @media (max-width: $tablet)
     display: none
 
 .chat-blocks,
@@ -51,8 +53,11 @@
     margin-top: 8px
     width: calc(100% - 80px)
 
+    @media (max-width: $tablet)
+      display: none !important
+
   &-name
-    max-width: 80%
+    max-width: 50%
 
   &-date,
   &-message-count
@@ -79,7 +84,11 @@
     background-color: $grey-hover
 
 .conversation
-  background: url("/assets/conversation-bg.png") center/cover no-repeat
+  background: url("/assets/conversation-bg.png")
+
+  @media (max-width: $tablet)
+    min-width: calc(100% - 80px) !important
+    max-width: calc(100% - 80px) !important
 
   &-member
     background-color: $dark-pink
@@ -97,9 +106,6 @@
     color: $dark
     font-size: 18px
     font-weight: 600
-
-  @media (max-width: $mobile)
-    display: none
 
 .messages
   padding: 16px
@@ -132,12 +138,12 @@
     bottom: 0
 
 .left-message
-  background-color: $auth-bg-color
+  background-color: $auth-bg
   border-radius: 10px 10px 10px 0
 
   &::before
     left: -6px
-    border-bottom-color: $auth-bg-color
+    border-bottom-color: $auth-bg
 
 .right-message
   background-color: $pink
@@ -150,3 +156,18 @@
 
 :host ::ng-deep .svg-inline--fa.fa-sm
   vertical-align: -0.23em
+
+@media (max-width: $tablet)
+  :host ::ng-deep
+    & #find-chat
+      padding: 18px
+
+      &::-webkit-input-placeholder
+        color: transparent
+
+    & .search-icon
+      margin-left: 0 !important
+      font-size: 24px
+      top: 12px !important
+      bottom: 0 !important
+      right: 25px !important
