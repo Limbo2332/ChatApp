@@ -1,0 +1,56 @@
+@import 'colors'
+
+.wrapper
+  max-width: 1000px
+  margin: 0 auto
+  height: 100%
+
+  & form
+    width: 300px
+
+.paste-img
+  height: 200px
+  width: 200px
+  border-radius: 50%
+  position: relative
+
+  & img
+    border: 1px solid $dark
+    border-radius: 50%
+    width: 100%
+
+  & fa-icon
+    display: none
+    color: $white
+    position: absolute
+    top: calc(50% - 12px)
+    right: calc(50% - 12px)
+
+  &:hover,
+  &:active,
+  &:focus
+    cursor: pointer
+    background-color: $img-hover
+
+    & img
+      position: relative
+      z-index: -1
+
+    & fa-icon
+      display: block
+
+.submit
+  width: 300px
+
+  & button
+    padding: 16px 0
+    width: 142px
+
+.submit-error
+  background-color: $input-error
+
+  &:hover,
+  &:active,
+  &:focus,
+  &:disabled
+    background-color: $input-error-hover
