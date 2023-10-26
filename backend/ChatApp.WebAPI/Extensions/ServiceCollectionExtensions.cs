@@ -1,4 +1,5 @@
-﻿using ChatApp.BLL.Interfaces;
+﻿using Azure.Storage.Blobs;
+using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.MappingProfiles;
 using ChatApp.BLL.Services;
@@ -78,6 +79,15 @@ namespace ChatApp.WebAPI.Extensions
             );
         }
 
+        public static void RegisterAzureBlobStorage(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddSingleton(_ =>
+            {
+                return new BlobServiceClient(config.GetValue<string>("BlobStorage:ConnectionString"))
+                    .GetBlobContainerClient(config.GetValue<string>("BlobStorage:ContainerName"));
+            });
+        }
+
         public static void RegisterUserStorageServices(this IServiceCollection services)
         {
             services.AddScoped<UserIdStorage>();
@@ -98,6 +108,7 @@ namespace ChatApp.WebAPI.Extensions
         {
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IBlobStorageService, BlobStorageService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IChatService, ChatService>();
         }

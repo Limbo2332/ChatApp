@@ -1,10 +1,17 @@
 <div class="wrapper d-flex justify-content-center align-items-center">
   <form class="profile-form d-flex flex-column align-items-center gap-4">
-    <div class="paste-img">
-      <img [src]="currentUser.imagePath ?? defaultImagePath" alt="" />
-      <fa-icon [icon]="['far', 'pen-to-square']" [size]="'xl'"></fa-icon>
-      <input type="file" hidden />
-    </div>
+    <label for="new-picture">
+      <div class="paste-img">
+        <img [src]="avatarPreview" alt="avatarPreview" />
+        <fa-icon [icon]="['far', 'pen-to-square']" [size]="'xl'"></fa-icon>
+        <input
+          id="new-picture"
+          type="file"
+          [ngStyle]="{ display: 'none' }"
+          (change)="imageUploaded($event)"
+        />
+      </div>
+    </label>
     <div class="input-form d-flex flex-column gap-3">
       <div class="w-100 d-flex flex-column">
         <div class="inputs d-flex flex-column gap-3">

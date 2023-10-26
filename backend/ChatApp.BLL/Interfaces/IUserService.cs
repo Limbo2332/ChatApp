@@ -1,4 +1,6 @@
-﻿using ChatApp.DAL.Entities;
+﻿using ChatApp.Common.DTO.User;
+using ChatApp.DAL.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace ChatApp.BLL.Interfaces
 {
@@ -9,5 +11,7 @@ namespace ChatApp.BLL.Interfaces
         bool IsUserNameUnique(string userName);
 
         Task<User> FindUserByUsernameAsync(string userName);
+
+        Task<UserAvatarDto> UpdateUserAvatarAsync(IFormFile newAvatar);
     }
 }
