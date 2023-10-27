@@ -35,7 +35,7 @@ namespace ChatApp.BLL.Services
             _userService = userService;
         }
 
-        public async Task<List<ChatPreviewDto>> GetChatsAsync(PageSettingsDto pageSettings)
+        public async Task<List<ChatPreviewDto>> GetChatsAsync(PageSettingsDto? pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
@@ -61,6 +61,13 @@ namespace ChatApp.BLL.Services
                 })
                 .ToListAsync();
 
+            if(pageSettings is null)
+            {
+                return chats
+                   .OrderByDescending(chat => chat.LastMessage.SentAt)
+                   .ToList();
+            }
+
             if (pageSettings.Filter is not null)
             {
                 chats = chats
@@ -82,11 +89,11 @@ namespace ChatApp.BLL.Services
                 .ToList();
         }
 
-        public async Task<ChatConversationDto> GetConversationAsync(int chatId, PagePaginationDto pageSettings)
+        public async Task<ChatConversationDto> GetConversationAsync(int chatId, PageSettingsDto pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
-            return await _context.UserChats
+            var chatConversation = await _context.UserChats
                 .Include(userChat => userChat.User)
                 .Include(userChat => userChat.Chat)
                     .ThenInclude(chat => chat.Messages)
@@ -99,13 +106,34 @@ namespace ChatApp.BLL.Services
                     Messages = _mapper.Map<IEnumerable<MessagePreviewDto>>(
                         group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .OrderByDescending(message => message.CreatedAt)
-                             .Skip((pageSettings.PageNumber - 1) * pageSettings.PageSize)
-                             .Take(pageSettings.PageSize)
                              .ToList()
                     )
                 })
                 .FirstOrDefaultAsync(chat => chat.ChatId == chatId)
                     ?? throw new NotFoundException(nameof(Chat));
+
+            if(pageSettings is null)
+            {
+                return chatConversation;
+            }
+
+            if(pageSettings.Filter is not null)
+            {
+                chatConversation.Messages = chatConversation.Messages
+                   .AsQueryable()
+                   .Where($"{pageSettings.Filter.PropertyName}.Contains(@0)", pageSettings.Filter.PropertyValue)
+                   .ToList();
+            }
+
+            if(pageSettings.Pagination is not null)
+            {
+                chatConversation.Messages = chatConversation.Messages
+                   .Skip((pageSettings.Pagination.PageNumber - 1) * pageSettings.Pagination.PageSize)
+                   .Take(pageSettings.Pagination.PageSize)
+                   .ToList();
+            }
+
+            return chatConversation;
         }
 
         public async Task<MessagePreviewDto> AddMessageAsync(NewMessageDto newMessage)

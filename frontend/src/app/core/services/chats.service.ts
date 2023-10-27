@@ -24,8 +24,13 @@ export class ChatsService {
     });
   }
 
-  getConversationChat(chatId: number): Observable<IChatConversation> {
-    return this.http.get<IChatConversation>(`${this.baseUrl}/${chatId}`);
+  getConversationChat(
+    chatId: number,
+    pageSettings?: IPageSettings,
+  ): Observable<IChatConversation> {
+    return this.http.get<IChatConversation>(`${this.baseUrl}/${chatId}`, {
+      params: this.getPageParams(pageSettings),
+    });
   }
 
   addMessage(newMessage: INewMessage): Observable<IMessagePreview> {
@@ -67,8 +72,6 @@ export class ChatsService {
           pageSettings.pagination.pageSize.toString(),
         );
     }
-
-    console.log(queryParams);
 
     return queryParams;
   }

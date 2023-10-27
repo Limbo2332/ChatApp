@@ -7,9 +7,9 @@ namespace ChatApp.BLL.Interfaces
 {
     public interface IChatService
     {
-        Task<List<ChatPreviewDto>> GetChatsAsync(PageSettingsDto pageSettings);
+        Task<List<ChatPreviewDto>> GetChatsAsync(PageSettingsDto? pageSettings);
 
-        Task<ChatConversationDto> GetConversationAsync(int chatId, PagePaginationDto pageSettings);
+        Task<ChatConversationDto> GetConversationAsync(int chatId, PageSettingsDto? pageSettings);
 
         Task<MessagePreviewDto> AddMessageAsync(NewMessageDto newMessage);
 

@@ -118,8 +118,7 @@ namespace ChatApp.BLL.Services.Auth
         private async Task<AccessTokenDto> GenerateAccessToken(int userId, string userName, string email)
         {
             var refreshTokenEntity = await _context.RefreshTokens
-                .FirstOrDefaultAsync(rt => rt.UserId == userId)
-                ?? throw new NotFoundException(nameof(RefreshToken));
+                .FirstOrDefaultAsync(rt => rt.UserId == userId);
 
             var refreshToken = _jwtService.GenerateRefreshToken();
 
