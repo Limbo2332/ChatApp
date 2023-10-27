@@ -2,7 +2,7 @@
 {
     public class PageSettingsDto
     {
-        public PageFilteringDto? Filters { get; set; }
+        public PageFilteringDto? Filter { get; set; }
 
         public PagePaginationDto? Pagination { get; set; }
     }

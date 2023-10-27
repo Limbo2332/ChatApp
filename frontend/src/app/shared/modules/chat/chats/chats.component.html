@@ -16,7 +16,7 @@
       [InputId]="'find-chat'"
       [InputPlaceholder]="'Search...'"
       [customInputClass]="'search-input'"
-      (InputValueChanged)="getChatsByNameOrLastMessage($event)"
+      (InputValueChanged)="getChatsByUserName($event)"
       (NewChatButtonClicked)="openNewChatModal()"
     ></app-custom-input>
     <div

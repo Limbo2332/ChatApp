@@ -10,6 +10,7 @@ import { EventService } from 'src/app/core/services/event.service';
 import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
 import { IChatRead } from 'src/app/shared/models/chats/chat-read';
 import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
+import { IPageSettings } from 'src/app/shared/models/page/page-settings';
 import { IUser } from 'src/app/shared/models/user/user';
 
 import { minChatsWidth, minConversationsWidth } from '../chat-utils';
@@ -73,22 +74,27 @@ export class ChatsComponent implements OnInit {
     });
   }
 
-  getChatsByNameOrLastMessage(nameOrLastMessage: string) {
-    if (nameOrLastMessage) {
-      this.chatsService
-        .getChatsByNameOrLastMessage(nameOrLastMessage)
-        .subscribe(
-          (chats: IChatPreview[]) => {
-            this.chats = chats;
-          },
-          (errors?: string[]) => {
-            if (errors) {
-              errors.forEach((error) => this.toastrService.error(error));
-            } else {
-              this.toastrService.error('Server connection error');
-            }
-          },
-        );
+  getChatsByUserName(userName: string) {
+    if (userName) {
+      const pageSettings: IPageSettings = {
+        filter: {
+          propertyName: 'LastMessage.Value',
+          propertyValue: userName,
+        },
+      };
+
+      this.chatsService.getChats(pageSettings).subscribe(
+        (chats: IChatPreview[]) => {
+          this.chats = chats;
+        },
+        (errors?: string[]) => {
+          if (errors) {
+            errors.forEach((error) => this.toastrService.error(error));
+          } else {
+            this.toastrService.error('Server connection error');
+          }
+        },
+      );
     } else {
       this.chats = this.cachedChats;
     }

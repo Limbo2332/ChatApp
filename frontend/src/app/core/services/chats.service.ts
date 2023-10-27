@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
@@ -7,6 +7,7 @@ import { INewChat } from 'src/app/shared/models/chats/new-chat';
 import { IChatConversation } from 'src/app/shared/models/conversation/chat-conversation';
 import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
 import { INewMessage } from 'src/app/shared/models/messages/new-message';
+import { IPageSettings } from 'src/app/shared/models/page/page-settings';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -17,22 +18,14 @@ export class ChatsService {
 
   constructor(private http: HttpClient) {}
 
-  getChats(): Observable<IChatPreview[]> {
-    return this.http.get<IChatPreview[]>(this.baseUrl);
+  getChats(pageSettings?: IPageSettings): Observable<IChatPreview[]> {
+    return this.http.get<IChatPreview[]>(this.baseUrl, {
+      params: this.getPageParams(pageSettings),
+    });
   }
 
   getConversationChat(chatId: number): Observable<IChatConversation> {
     return this.http.get<IChatConversation>(`${this.baseUrl}/${chatId}`);
-  }
-
-  getChatsByNameOrLastMessage(
-    nameOrLastMessage: string,
-  ): Observable<IChatPreview[]> {
-    return this.http.get<IChatPreview[]>(`${this.baseUrl}/search`, {
-      params: {
-        nameOrLastMessage,
-      },
-    });
   }
 
   addMessage(newMessage: INewMessage): Observable<IMessagePreview> {
@@ -48,5 +41,35 @@ export class ChatsService {
 
   readMessages(chatRead: IChatRead): Observable<void> {
     return this.http.patch<void>(`${this.baseUrl}/messages`, chatRead);
+  }
+
+  private getPageParams(pageSettings?: IPageSettings): HttpParams {
+    let queryParams = new HttpParams();
+
+    if (!pageSettings) {
+      return queryParams;
+    }
+
+    if (pageSettings.filter) {
+      queryParams = queryParams
+        .append('filter.propertyName', pageSettings.filter.propertyName)
+        .append('filter.propertyValue', pageSettings.filter.propertyValue);
+    }
+
+    if (pageSettings.pagination) {
+      queryParams = queryParams
+        .append(
+          'pagination.pageNumber',
+          pageSettings.pagination.pageNumber.toString(),
+        )
+        .append(
+          'pagination.pageSize',
+          pageSettings.pagination.pageSize.toString(),
+        );
+    }
+
+    console.log(queryParams);
+
+    return queryParams;
   }
 }

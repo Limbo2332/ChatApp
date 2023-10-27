@@ -24,10 +24,10 @@ namespace ChatApp.BLL.Services
         private readonly IHubContext<ChatHub, IChatHubClient> _hubContext;
         private readonly IUserService _userService;
 
-        public ChatService(ChatAppContext context, 
-                           IMapper mapper, 
-                           IUserIdGetter userIdGetter, 
-                           IHubContext<ChatHub, IChatHubClient> hubContext, 
+        public ChatService(ChatAppContext context,
+                           IMapper mapper,
+                           IUserIdGetter userIdGetter,
+                           IHubContext<ChatHub, IChatHubClient> hubContext,
                            IUserService userService)
             : base(context, mapper, userIdGetter)
         {
@@ -55,23 +55,21 @@ namespace ChatApp.BLL.Services
                              .OrderByDescending(message => message.CreatedAt)
                              .First()
                     ),
-                    UnreadMessagesCount = 
+                    UnreadMessagesCount =
                         group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .Count(message => !message.IsRead && message.UserId != currentUserId),
                 })
                 .ToListAsync();
 
-            if(pageSettings.Filters is not null 
-                && !string.IsNullOrWhiteSpace(pageSettings.Filters.PropertyName)
-                && !string.IsNullOrWhiteSpace(pageSettings.Filters.PropertyValue))
+            if (pageSettings.Filter is not null)
             {
                 chats = chats
-                    .AsQueryable()
-                    .Where(pageSettings.Filters.PropertyName.Contains(pageSettings.Filters.PropertyValue).ToString())
-                    .ToList();
+                   .AsQueryable()
+                   .Where($"{pageSettings.Filter.PropertyName}.Contains(@0)", pageSettings.Filter.PropertyValue)
+                   .ToList();
             }
 
-            if(pageSettings.Pagination is not null)
+            if (pageSettings.Pagination is not null)
             {
                 chats = chats
                     .Skip((pageSettings.Pagination.PageNumber - 1) * pageSettings.Pagination.PageSize)
@@ -192,7 +190,7 @@ namespace ChatApp.BLL.Services
             var userChat = await GetUserChatAsync(message.ChatId, message.UserId);
 
             var messagePreview = _mapper.Map<MessagePreviewDto>(message);
-            messagePreview.IsMine = !messagePreview.IsMine; 
+            messagePreview.IsMine = !messagePreview.IsMine;
 
             await _hubContext.Clients.Group(userChat.UserId.ToString()).SendNewMessageAsync(messagePreview);
         }
@@ -250,7 +248,7 @@ namespace ChatApp.BLL.Services
         private async Task<UserChats> GetUserChatAsync(int chatId, int userId)
         {
             return await _context.UserChats
-                .FirstOrDefaultAsync(userChat => userChat.ChatId == chatId 
+                .FirstOrDefaultAsync(userChat => userChat.ChatId == chatId
                          && userChat.UserId != userId)
                 ?? throw new NotFoundException(nameof(UserChats));
         }

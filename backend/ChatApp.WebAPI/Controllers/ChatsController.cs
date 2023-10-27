@@ -21,7 +21,7 @@ namespace ChatApp.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ChatPreviewDto>>> GetChatsAsync([FromQuery] PageSettingsDto pageSettings)
+        public async Task<ActionResult<List<ChatPreviewDto>>> GetChatsAsync([FromQuery] PageSettingsDto? pageSettings)
         {
             return Ok(await _chatService.GetChatsAsync(pageSettings));
         }
