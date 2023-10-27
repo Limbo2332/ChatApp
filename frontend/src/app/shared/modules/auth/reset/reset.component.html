@@ -1,0 +1,26 @@
+<div class="reset-container d-flex flex-column">
+  <div class="text-center">
+    <h1 class="reset-header">Reset password</h1>
+  </div>
+  <form id="reset-password">
+    <app-custom-input
+      [InputId]="'reset-password'"
+      [InputType]="'password'"
+      [InputPlaceholder]="'New password'"
+      (InputValueChanged)="changePasswordValue($event)"
+    ></app-custom-input>
+    <div class="validation-errors">
+      <ul>
+        <li *ngFor="let error of getValidationErrors()">
+          {{ error }}
+        </li>
+      </ul>
+    </div>
+    <div class="submit text-center">
+      <button type="button" class="submit-reset" (click)="resetPassword()">
+        Reset
+      </button>
+    </div>
+  </form>
+</div>
+<img src="assets/auth-bg.png" class="auth-bg" />

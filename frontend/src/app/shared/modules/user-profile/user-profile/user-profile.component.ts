@@ -78,28 +78,30 @@ export class UserProfileComponent implements OnInit {
   }
 
   updateInfo() {
-    const userEdit: IUserEdit = {
-      email: this.editProfileForm.controls.email.value!,
-      userName: this.editProfileForm.controls.userName.value!,
-    };
+    if (this.editProfileForm.valid) {
+      const userEdit: IUserEdit = {
+        email: this.editProfileForm.controls.email.value!,
+        userName: this.editProfileForm.controls.userName.value!,
+      };
 
-    this.userService
-      .update(userEdit)
-      .pipe(
-        switchMap((user: IUser) =>
-          (this.editProfileForm.value.avatar
-            ? this.updateUserAvatar(user)
-            : of(user))),
-      )
-      .subscribe(
-        (user: IUser) => {
-          this.authService.setUserInfo(user);
-          this.router.navigate(['chats']);
-        },
-        (errors: string[]) => {
-          this.validationErrorsFromBackend = errors;
-        },
-      );
+      this.userService
+        .update(userEdit)
+        .pipe(
+          switchMap((user: IUser) =>
+            (this.editProfileForm.value.avatar
+              ? this.updateUserAvatar(user)
+              : of(user))),
+        )
+        .subscribe(
+          (user: IUser) => {
+            this.authService.setUserInfo(user);
+            this.router.navigate(['chats']);
+          },
+          (errors: string[]) => {
+            this.validationErrorsFromBackend = errors;
+          },
+        );
+    }
   }
 
   updateUserAvatar(user: IUser) {

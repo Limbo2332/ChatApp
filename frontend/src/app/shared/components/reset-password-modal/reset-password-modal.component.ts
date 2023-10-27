@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UserService } from 'src/app/core/services/user.service';
 
+import { IResetEmail } from '../../models/mail/reset-email';
 import { emailMaxLength, emailMinLength } from '../../utils/validation/constants';
 import { emailRegex } from '../../utils/validation/regex-patterns';
 import { getValidationErrors } from '../../utils/validation/validation-helper';
@@ -22,6 +24,8 @@ export class ResetPasswordModalComponent {
     ]),
   });
 
+  constructor(private userService: UserService) {}
+
   changeEmailValue(value: string) {
     this.resetPasswordForm.controls.email.setValue(value);
     this.resetPasswordForm.controls.email.markAsTouched();
@@ -29,5 +33,15 @@ export class ResetPasswordModalComponent {
 
   getResetPasswordValidationErrors() {
     return getValidationErrors(this.resetPasswordForm);
+  }
+
+  sendResetPasswordEmail() {
+    if (this.resetPasswordForm.valid) {
+      const resetEmail: IResetEmail = {
+        email: this.resetPasswordForm.controls.email.value!,
+      };
+
+      this.userService.sendResetPasswordEmail(resetEmail).subscribe();
+    }
   }
 }
