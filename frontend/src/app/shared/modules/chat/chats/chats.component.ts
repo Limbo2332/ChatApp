@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ResizeEvent } from 'angular-resizable-element';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ChatHubService } from 'src/app/core/services/chat-hub.service';
 import { ChatsService } from 'src/app/core/services/chats.service';
@@ -19,6 +20,8 @@ import { minChatsWidth, minConversationsWidth } from '../chat-utils';
   styleUrls: ['../chats.component.sass'],
 })
 export class ChatsComponent implements OnInit {
+  isLoaded: boolean;
+
   chatStyles: object = {
     'width.px': minChatsWidth * 2,
     'min-width.px': minChatsWidth,
@@ -164,20 +167,29 @@ export class ChatsComponent implements OnInit {
   }
 
   private getChats() {
-    this.chatsService.getChats().subscribe(
-      (chats: IChatPreview[]) => {
-        this.chats = chats;
-        this.cachedChats = chats;
-        this.chatHubService.startConnection();
-      },
-      (errors?: string[]) => {
-        if (errors) {
-          errors.forEach((error) => this.toastrService.error(error));
-        } else {
-          this.toastrService.error('Server connection error');
-        }
-      },
-    );
+    this.isLoaded = true;
+
+    this.chatsService
+      .getChats()
+      .pipe(
+        finalize(() => {
+          this.isLoaded = false;
+        }),
+      )
+      .subscribe(
+        (chats: IChatPreview[]) => {
+          this.chats = chats;
+          this.cachedChats = chats;
+          this.chatHubService.startConnection();
+        },
+        (errors?: string[]) => {
+          if (errors) {
+            errors.forEach((error) => this.toastrService.error(error));
+          } else {
+            this.toastrService.error('Server connection error');
+          }
+        },
+      );
   }
 
   private registerEventOnNewChatCreated() {

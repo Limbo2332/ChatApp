@@ -25,7 +25,7 @@ import { defaultImagePath } from '../../chat/chat-utils';
   styleUrls: ['./user-profile.component.sass'],
 })
 export class UserProfileComponent implements OnInit {
-  isLoading: boolean;
+  isLoaded: boolean;
 
   currentUser: IUser;
 
@@ -95,7 +95,7 @@ export class UserProfileComponent implements OnInit {
 
   updateInfo() {
     if (this.editProfileForm.valid) {
-      this.isLoading = true;
+      this.isLoaded = true;
       const userEdit: IUserEdit = {
         email: this.editProfileForm.controls.email.value!,
         userName: this.editProfileForm.controls.userName.value!,
@@ -109,7 +109,7 @@ export class UserProfileComponent implements OnInit {
               ? this.updateUserAvatar(user)
               : of(user))),
           finalize(() => {
-            this.isLoading = false;
+            this.isLoaded = false;
           }),
         )
         .subscribe(
