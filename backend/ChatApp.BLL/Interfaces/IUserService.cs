@@ -13,5 +13,7 @@ namespace ChatApp.BLL.Interfaces
         Task<User> FindUserByUsernameAsync(string userName);
 
         Task<UserAvatarDto> UpdateUserAvatarAsync(IFormFile newAvatar);
+
+        Task<UserDto> UpdateUserAsync(UserEditDto user);
     }
 }

@@ -23,5 +23,11 @@ namespace ChatApp.WebAPI.Controllers
         {
             return Ok(await _userService.UpdateUserAvatarAsync(newAvatar));
         }
+
+        [HttpPut]
+        public async Task<ActionResult<UserDto>> UpdateUserAsync(UserEditDto user)
+        {
+            return Ok(await _userService.UpdateUserAsync(user));
+        }
     }
 }

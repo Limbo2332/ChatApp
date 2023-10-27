@@ -117,6 +117,7 @@ namespace ChatApp.WebAPI.Extensions
         {
             services.AddScoped<IValidator<UserRegisterDto>, UserRegisterValidator>();
             services.AddScoped<IValidator<UserLoginDto>, UserLoginValidator>();
+            services.AddScoped<IValidator<UserEditDto>, UserEditValidator>();
             services.AddScoped<IValidator<AccessTokenDto>, AccessTokenValidator>();
             services.AddScoped<IValidator<NewMessageDto>, NewMessageValidator>();
             services.AddScoped<IValidator<NewChatDto>, NewChatValidator>();

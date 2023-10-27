@@ -4,7 +4,7 @@ namespace ChatApp.BLL.Interfaces
 {
     public interface IBlobStorageService
     {
-        Task<string> UploadNewProfileAvatarAsync(IFormFile newAvatar);
+        Task<string> UploadNewFileAsync(IFormFile newAvatar);
 
         string GetFullAvatarPath(string uniqueImageName);
 

@@ -18,7 +18,7 @@ export function toDatePreview(dateString: Date): string {
   }
 
   if (daysDifference >= 1) {
-    return date.toLocaleDateString(['en-US'], { weekday: 'long' });
+    return date.toLocaleDateString(['en-US'], { weekday: 'short' });
   }
 
   return date.toLocaleTimeString(['en-US'], {

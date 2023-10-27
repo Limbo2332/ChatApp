@@ -3,9 +3,13 @@ import { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 import { debounceTime, Subject } from 'rxjs';
 import { EventService } from 'src/app/core/services/event.service';
 
-import { DebounceTime } from '../../utils/debounce-time';
 import { newMessageMaxLength } from '../../utils/validation/constants';
-import { paddingRightWhenDefaultIcon, paddingRightWhenLgIcon, paddingRightWhenNoIcon } from './custom-input.utils';
+import {
+  DebounceTime,
+  paddingRightWhenDefaultIcon,
+  paddingRightWhenLgIcon,
+  paddingRightWhenNoIcon,
+} from './custom-input.utils';
 
 @Component({
   selector: 'app-custom-input[InputId]',
@@ -44,7 +48,10 @@ export class CustomInputComponent implements OnInit {
   constructor(private eventService: EventService) {}
 
   ngOnInit(): void {
-    this.inputValue = this.InputValue ?? '';
+    if (this.InputValue) {
+      this.inputValue = this.InputValue;
+      this.InputValueChanged.emit(this.InputValue);
+    }
 
     this.valueChanged
       .pipe(debounceTime(DebounceTime))

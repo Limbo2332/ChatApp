@@ -102,7 +102,7 @@ export class AuthService {
       .subscribe();
   }
 
-  private setUserInfo(user: IUser) {
+  setUserInfo(user: IUser) {
     localStorage.setItem(this.userKeyName, JSON.stringify(user));
     this.userSubject.next(user);
     this.user = user;

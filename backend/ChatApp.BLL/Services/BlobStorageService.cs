@@ -20,7 +20,7 @@ namespace ChatApp.BLL.Services
             _blobContainerClient = blobContainerClient;
         }
 
-        public async Task<string> UploadNewProfileAvatarAsync(IFormFile newAvatar)
+        public async Task<string> UploadNewFileAsync(IFormFile newAvatar)
         {
             var uniqueImageName = FileNameGeneratorHelper.GenerateUniqueFileName(newAvatar.FileName);
 

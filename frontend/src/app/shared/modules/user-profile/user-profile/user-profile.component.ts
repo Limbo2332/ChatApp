@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { map, of, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { IUser } from 'src/app/shared/models/user/user';
+import { IUserAvatar } from 'src/app/shared/models/user/user-avatar';
+import { IUserEdit } from 'src/app/shared/models/user/user-edit';
 import {
   emailMaxLength,
   emailMinLength,
@@ -45,6 +49,7 @@ export class UserProfileComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -70,12 +75,45 @@ export class UserProfileComponent implements OnInit {
     this.updateAvatarInForm(event);
 
     this.updateAvatarPreview();
+  }
 
+  updateInfo() {
+    const userEdit: IUserEdit = {
+      email: this.editProfileForm.controls.email.value!,
+      userName: this.editProfileForm.controls.userName.value!,
+    };
+
+    this.userService
+      .update(userEdit)
+      .pipe(
+        switchMap((user: IUser) =>
+          (this.editProfileForm.value.avatar
+            ? this.updateUserAvatar(user)
+            : of(user))),
+      )
+      .subscribe(
+        (user: IUser) => {
+          this.authService.setUserInfo(user);
+          this.router.navigate(['chats']);
+        },
+        (errors: string[]) => {
+          this.validationErrorsFromBackend = errors;
+        },
+      );
+  }
+
+  updateUserAvatar(user: IUser) {
     const formData = new FormData();
 
     formData.append('newAvatar', this.editProfileForm.value.avatar!);
 
-    // this.userService.updateAvatar(formData).subscribe();
+    return this.userService.updateAvatar(formData).pipe(
+      map((newAvatar: IUserAvatar) => {
+        user.imagePath = newAvatar.imagePath;
+
+        return user;
+      }),
+    );
   }
 
   private updateAvatarInForm(event: Event) {
