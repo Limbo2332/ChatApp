@@ -15,6 +15,7 @@
         public const string EmailIsEmptyMessage = "Email is required";
         public const string EmailWithWrongFormatMessage = "Email is in incorrect format";
         public const string EmailIsNotUniqueMessage = "This email is already registered";
+        public const string EmailTokenIsEmpty = "Email token is required";
 
         public static string EmailWithWrongMinimumLengthMessage(int length)
             => $"Email must have at least {length} symbols";
@@ -42,6 +43,7 @@
 
         public const string PasswordIsEmptyMessage = "Password is required";
         public const string PasswordWithWrongFormatMessage = "Password must have at least 1 number, 1 lowercase, 1 uppercase and 1 special character";
+        public const string PasswordAreNotTheSame = "Passwords are not the same";
 
         public static string PasswordWithWrongMinimumLengthMessage(int length)
             => $"Password must have at least {length} symbols";

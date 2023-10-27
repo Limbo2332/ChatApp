@@ -12,6 +12,7 @@ using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace ChatApp.BLL.Services
 {
@@ -92,10 +93,12 @@ namespace ChatApp.BLL.Services
 
         public async Task SendResetEmailAsync(string email)
         {
+            var emailToken = GenerateEmailToken();
+
             var mail = new MailDto
             {
                 Subject = "Reset password",
-                Content = ResetEmailContentGenerator.EmailResetStringBody(email),
+                Content = ResetEmailContentGenerator.EmailResetStringBody(email, emailToken),
                 To = email
             };
 
@@ -117,6 +120,13 @@ namespace ChatApp.BLL.Services
             int currentUserId = _userIdGetter.CurrentUserId;
 
             return await _context.Users.FirstAsync(user => user.Id == currentUserId);
+        }
+
+        private string GenerateEmailToken()
+        {
+            var tokenBytes = RandomNumberGenerator.GetBytes(32);
+
+            return Convert.ToBase64String(tokenBytes);
         }
     }
 }

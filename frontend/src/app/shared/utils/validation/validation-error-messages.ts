@@ -43,6 +43,15 @@ export const passwordValidationErrors: ValidationErrorsMessages = {
   maxlength: `Password must not exceed ${passwordMaxLength} symbols`,
 };
 
+export const confirmPasswordValidationErrors: ValidationErrorsMessages = {
+  required: 'Confirm password is required',
+  pattern:
+    'Confirm password must have at least 1 number, 1 lowercase, 1 uppercase and 1 special character',
+  minlength: `Confirm password must have at least ${passwordMinLength} symbols`,
+  maxlength: `Confirm password must not exceed ${passwordMaxLength} symbols`,
+  confirmPassword: 'Passwords must be the same',
+};
+
 export const newMessageValidationErrors: ValidationErrorsMessages = {
   required: 'Message cannot be empty',
   maxlength: 'Message is too long',

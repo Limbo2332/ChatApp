@@ -7,7 +7,13 @@
       [InputId]="'reset-password'"
       [InputType]="'password'"
       [InputPlaceholder]="'New password'"
-      (InputValueChanged)="changePasswordValue($event)"
+      (InputValueChanged)="changeInputValue('password', $event)"
+    ></app-custom-input>
+    <app-custom-input
+      [InputId]="'reset-confirm-password'"
+      [InputType]="'password'"
+      [InputPlaceholder]="'Confirm password'"
+      (InputValueChanged)="changeInputValue('confirmPassword', $event)"
     ></app-custom-input>
     <div class="validation-errors">
       <ul>

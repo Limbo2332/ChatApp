@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { UserService } from 'src/app/core/services/user.service';
 import { IResetPassword } from 'src/app/shared/models/user/reset-password';
+import { comparePasswordsValidator } from 'src/app/shared/utils/validation/confirm-password';
 import { passwordMaxLength, passwordMinLength } from 'src/app/shared/utils/validation/constants';
 import { passwordRegex } from 'src/app/shared/utils/validation/regex-patterns';
 import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
@@ -20,9 +21,18 @@ export class ResetComponent implements OnInit {
       Validators.minLength(passwordMinLength),
       Validators.maxLength(passwordMaxLength),
     ]),
+    confirmPassword: new FormControl('', [
+      Validators.required,
+      Validators.pattern(passwordRegex),
+      Validators.minLength(passwordMinLength),
+      Validators.maxLength(passwordMaxLength),
+      comparePasswordsValidator(),
+    ]),
   });
 
   private emailToReset: string;
+
+  private emailToken: string;
 
   private validationErrorsFromBackend: string[] = [];
 
@@ -35,12 +45,13 @@ export class ResetComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((val: Params) => {
       this.emailToReset = val['email'];
+      this.emailToken = val['code'];
     });
   }
 
-  changePasswordValue(value: string) {
-    this.resetForm.controls.password.setValue(value);
-    this.resetForm.controls.password.markAsTouched();
+  changeInputValue(controlName: 'password' | 'confirmPassword', value: string) {
+    this.resetForm.controls[controlName].setValue(value);
+    this.resetForm.controls[controlName].markAsTouched();
   }
 
   getValidationErrors() {
@@ -54,7 +65,9 @@ export class ResetComponent implements OnInit {
     if (this.resetForm.valid) {
       const resetPassword: IResetPassword = {
         email: this.emailToReset,
+        emailToken: this.emailToken,
         newPassword: this.resetForm.controls.password.value!,
+        confirmPassword: this.resetForm.controls.confirmPassword.value!,
       };
 
       this.userService.resetPassword(resetPassword).subscribe(
