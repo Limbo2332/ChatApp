@@ -1,4 +1,5 @@
-﻿using Azure.Storage.Blobs;
+﻿using Azure.Communication.Email;
+using Azure.Storage.Blobs;
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.MappingProfiles;
@@ -6,6 +7,7 @@ using ChatApp.BLL.Services;
 using ChatApp.BLL.Services.Auth;
 using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.Chat;
+using ChatApp.Common.DTO.Mail;
 using ChatApp.Common.DTO.Message;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Logic;
@@ -79,12 +81,17 @@ namespace ChatApp.WebAPI.Extensions
             );
         }
 
-        public static void RegisterAzureBlobStorage(this IServiceCollection services, IConfiguration config)
+        public static void RegisterAzureServices(this IServiceCollection services, IConfiguration config)
         {
             services.AddSingleton(_ =>
             {
                 return new BlobServiceClient(config.GetValue<string>("BlobStorage:ConnectionString"))
                     .GetBlobContainerClient(config.GetValue<string>("BlobStorage:ContainerName"));
+            });
+
+            services.AddScoped(_ =>
+            {
+                return new EmailClient(config.GetValue<string>("EmailService:ConnectionString"));
             });
         }
 
@@ -109,6 +116,7 @@ namespace ChatApp.WebAPI.Extensions
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IBlobStorageService, BlobStorageService>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IChatService, ChatService>();
         }
@@ -118,6 +126,8 @@ namespace ChatApp.WebAPI.Extensions
             services.AddScoped<IValidator<UserRegisterDto>, UserRegisterValidator>();
             services.AddScoped<IValidator<UserLoginDto>, UserLoginValidator>();
             services.AddScoped<IValidator<UserEditDto>, UserEditValidator>();
+            services.AddScoped<IValidator<ResetPasswordDto>, ResetPasswordValidator>();
+            services.AddScoped<IValidator<ResetEmailDto>, ResetEmailValidator>();
             services.AddScoped<IValidator<AccessTokenDto>, AccessTokenValidator>();
             services.AddScoped<IValidator<NewMessageDto>, NewMessageValidator>();
             services.AddScoped<IValidator<NewChatDto>, NewChatValidator>();

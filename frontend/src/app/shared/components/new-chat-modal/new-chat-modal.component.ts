@@ -6,11 +6,7 @@ import { EventService } from 'src/app/core/services/event.service';
 
 import { IChatPreview } from '../../models/chats/chat-preview';
 import { INewChat } from '../../models/chats/new-chat';
-import {
-  newMessageMaxLength,
-  userNameMaxLength,
-  userNameMinLength,
-} from '../../utils/validation/constants';
+import { newMessageMaxLength, userNameMaxLength, userNameMinLength } from '../../utils/validation/constants';
 import { noSpacesRegex } from '../../utils/validation/regex-patterns';
 import { getValidationErrors } from '../../utils/validation/validation-helper';
 

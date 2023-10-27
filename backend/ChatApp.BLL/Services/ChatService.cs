@@ -124,14 +124,18 @@ namespace ChatApp.BLL.Services
 
             await CreateUserChatsAsync(chat.Id, interlocutor.Id);
 
+            var currentUser = await _context.Users.FindAsync(currentUserId);
+
             var chatPreview = new ChatPreviewDto
             {
                 Id = chat.Id,
-                Interlocutor = _mapper.Map<UserPreviewDto>(interlocutor),
+                Interlocutor = _mapper.Map<UserPreviewDto>(currentUser),
                 LastMessage = await CreateNewMessageAsync(message),
             };
 
             await SendNewChatNotificationToInterlocutor(interlocutor, chatPreview);
+
+            chatPreview.Interlocutor = _mapper.Map<UserPreviewDto>(interlocutor);
 
             return chatPreview;
         }
