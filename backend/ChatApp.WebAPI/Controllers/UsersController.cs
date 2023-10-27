@@ -24,6 +24,22 @@ namespace ChatApp.WebAPI.Controllers
             return Ok(await _userService.UpdateUserAvatarAsync(newAvatar));
         }
 
+        [HttpPost("send-reset-email/{email}")]
+        public async Task<ActionResult> SendEmailAsync(string email)
+        {
+            await _userService.SendResetEmailAsync(email);
+
+            return Ok();
+        }
+
+        [HttpPost("reset")]
+        public async Task<ActionResult> ResetPasswordAsync(ResetPasswordDto newInfo)
+        {
+            await _userService.ResetPasswordAsync(newInfo);
+
+            return Ok();
+        }
+
         [HttpPut]
         public async Task<ActionResult<UserDto>> UpdateUserAsync(UserEditDto user)
         {

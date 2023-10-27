@@ -2,9 +2,12 @@
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.Constants;
+using ChatApp.Common.DTO.Mail;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
+using ChatApp.Common.Helpers;
 using ChatApp.Common.Logic.Abstract;
+using ChatApp.Common.Security;
 using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using Microsoft.AspNetCore.Http;
@@ -15,11 +18,13 @@ namespace ChatApp.BLL.Services
     public class UserService : BaseService, IUserService
     {
         private readonly IBlobStorageService _blobStorageService;
+        private readonly IEmailService _emailService;
 
-        public UserService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter, IBlobStorageService blobStorageService)
+        public UserService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter, IBlobStorageService blobStorageService, IEmailService emailService)
             : base(context, mapper, userIdGetter)
         {
             _blobStorageService = blobStorageService;
+            _emailService = emailService;
         }
 
         public bool IsEmailUnique(string email)
@@ -83,6 +88,28 @@ namespace ChatApp.BLL.Services
             await _context.SaveChangesAsync();
 
             return _mapper.Map<UserDto>(currentUser);
+        }
+
+        public async Task SendResetEmailAsync(string email)
+        {
+            var mail = new MailDto
+            {
+                Subject = "Reset password",
+                Content = ResetEmailContentGenerator.EmailResetStringBody(email),
+                To = email
+            };
+
+            await _emailService.SendEmailAsync(mail);
+        }
+
+        public async Task ResetPasswordAsync(ResetPasswordDto newInfo)
+        {
+            var user = await _context.Users.FirstAsync(user => user.Email == newInfo.Email);
+
+            user.Password = SecurityHelper.HashPassword(newInfo.NewPassword, Convert.FromBase64String(user.Salt));
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
 
         private async Task<User> GetCurrentUserAsync()

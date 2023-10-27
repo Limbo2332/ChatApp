@@ -15,5 +15,9 @@ namespace ChatApp.BLL.Interfaces
         Task<UserAvatarDto> UpdateUserAvatarAsync(IFormFile newAvatar);
 
         Task<UserDto> UpdateUserAsync(UserEditDto user);
+
+        Task SendResetEmailAsync(string email);
+
+        Task ResetPasswordAsync(ResetPasswordDto newInfo);
     }
 }
