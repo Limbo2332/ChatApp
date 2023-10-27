@@ -1,14 +1,6 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
-import {
-  fadeInLeftOnEnterAnimation,
-  fadeInRightOnEnterAnimation,
-} from 'angular-animations';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { fadeInLeftOnEnterAnimation, fadeInRightOnEnterAnimation } from 'angular-animations';
+import { ToastrService } from 'ngx-toastr';
 import { ChatsService } from 'src/app/core/services/chats.service';
 import { EventService } from 'src/app/core/services/event.service';
 import { IChatConversation } from 'src/app/shared/models/conversation/chat-conversation';
@@ -40,6 +32,7 @@ export class ConversationComponent implements OnInit, OnChanges {
   constructor(
     private chatsService: ChatsService,
     private eventService: EventService,
+    private toastrService: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -50,11 +43,14 @@ export class ConversationComponent implements OnInit, OnChanges {
 
   ngOnChanges({ chatId }: SimpleChanges): void {
     if (chatId.currentValue) {
-      this.chatsService
-        .getConversationChat(chatId.currentValue)
-        .subscribe((conversation: IChatConversation) => {
+      this.chatsService.getConversationChat(chatId.currentValue).subscribe(
+        (conversation: IChatConversation) => {
           this.conversation = conversation;
-        });
+        },
+        (errors: string[]) => {
+          errors.forEach((error) => this.toastrService.error(error));
+        },
+      );
     }
   }
 
@@ -68,12 +64,19 @@ export class ConversationComponent implements OnInit, OnChanges {
       chatId: this.chatId!,
     };
 
-    this.chatsService
-      .addMessage(newMessage)
-      .subscribe((message: IMessagePreview) => {
+    this.chatsService.addMessage(newMessage).subscribe(
+      (message: IMessagePreview) => {
         this.updateMessages(message);
         this.eventService.receiveNewMessage(message);
-      });
+      },
+      (errors?: string[]) => {
+        if (errors) {
+          errors.forEach((error) => this.toastrService.error(error));
+        } else {
+          this.toastrService.error('Server connection error');
+        }
+      },
+    );
   }
 
   private registerEventOnNewMessageSent() {

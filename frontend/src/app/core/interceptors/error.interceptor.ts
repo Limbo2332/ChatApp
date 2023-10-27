@@ -1,6 +1,5 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ToastrService } from 'ngx-toastr';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
@@ -9,10 +8,7 @@ import { AuthService } from '../services/auth.service';
 export class ErrorInterceptor implements HttpInterceptor {
   private isRefreshed = false;
 
-  constructor(
-    private authService: AuthService,
-    private toastrService: ToastrService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   intercept(
     request: HttpRequest<unknown>,

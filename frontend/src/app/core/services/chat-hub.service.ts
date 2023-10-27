@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
 import { IChatRead } from 'src/app/shared/models/chats/chat-read';
 import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
@@ -19,14 +19,13 @@ export class ChatHubService {
     private authService: AuthService,
     private eventService: EventService,
   ) {
-    this.authService.getUser().subscribe((user: IUser) => {
-      this.currentUser = user;
-    });
+    this.getUser();
   }
 
   async startConnection() {
     const connection = new HubConnectionBuilder()
       .withUrl(`${environment.apiUrl}/chathub`)
+      .configureLogging(LogLevel.Warning)
       .withAutomaticReconnect()
       .build();
 
@@ -47,6 +46,12 @@ export class ChatHubService {
 
     connection.on('readMessagesAsync', (chat: IChatRead) => {
       this.eventService.readMessages(chat);
+    });
+  }
+
+  private getUser() {
+    this.authService.getUser().subscribe((user: IUser) => {
+      this.currentUser = user;
     });
   }
 }

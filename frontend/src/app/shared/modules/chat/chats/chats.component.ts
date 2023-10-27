@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ResizeEvent } from 'angular-resizable-element';
 import { NgxSmartModalService } from 'ngx-smart-modal';
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ChatHubService } from 'src/app/core/services/chat-hub.service';
 import { ChatsService } from 'src/app/core/services/chats.service';
@@ -48,6 +49,7 @@ export class ChatsComponent implements OnInit {
     private chatsService: ChatsService,
     private chatHubService: ChatHubService,
     private eventService: EventService,
+    private toastrService: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -72,9 +74,18 @@ export class ChatsComponent implements OnInit {
     if (nameOrLastMessage) {
       this.chatsService
         .getChatsByNameOrLastMessage(nameOrLastMessage)
-        .subscribe((chats: IChatPreview[]) => {
-          this.chats = chats;
-        });
+        .subscribe(
+          (chats: IChatPreview[]) => {
+            this.chats = chats;
+          },
+          (errors?: string[]) => {
+            if (errors) {
+              errors.forEach((error) => this.toastrService.error(error));
+            } else {
+              this.toastrService.error('Server connection error');
+            }
+          },
+        );
     } else {
       this.chats = this.cachedChats;
     }
@@ -153,11 +164,20 @@ export class ChatsComponent implements OnInit {
   }
 
   private getChats() {
-    this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
-      this.chats = chats;
-      this.cachedChats = chats;
-      this.chatHubService.startConnection();
-    });
+    this.chatsService.getChats().subscribe(
+      (chats: IChatPreview[]) => {
+        this.chats = chats;
+        this.cachedChats = chats;
+        this.chatHubService.startConnection();
+      },
+      (errors?: string[]) => {
+        if (errors) {
+          errors.forEach((error) => this.toastrService.error(error));
+        } else {
+          this.toastrService.error('Server connection error');
+        }
+      },
+    );
   }
 
   private registerEventOnNewChatCreated() {

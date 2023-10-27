@@ -48,10 +48,7 @@ export class CustomInputComponent implements OnInit {
   constructor(private eventService: EventService) {}
 
   ngOnInit(): void {
-    if (this.InputValue) {
-      this.inputValue = this.InputValue;
-      this.InputValueChanged.emit(this.InputValue);
-    }
+    this.setStartValue();
 
     this.valueChanged
       .pipe(debounceTime(DebounceTime))
@@ -125,6 +122,13 @@ export class CustomInputComponent implements OnInit {
       this.changeInputValue(this.inputValue);
     } else {
       this.NewChatButtonClicked.emit();
+    }
+  }
+
+  private setStartValue() {
+    if (this.InputValue) {
+      this.inputValue = this.InputValue;
+      this.InputValueChanged.emit(this.InputValue);
     }
   }
 }
