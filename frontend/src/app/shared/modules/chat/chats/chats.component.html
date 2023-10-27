@@ -38,7 +38,9 @@
     <app-conversation [chatId]="selectedChatId"></app-conversation>
   </div>
 </div>
-<app-new-chat-modal (NewChatAdded)="onNewChat($event)"></app-new-chat-modal>
+<app-new-chat-modal
+  (NewChatAdded)="onNewChatForCurrentUser($event)"
+></app-new-chat-modal>
 
 <ng-template #noChatsBlock>
   <p class="conversation-text text-center">

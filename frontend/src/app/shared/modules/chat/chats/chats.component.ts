@@ -131,12 +131,14 @@ export class ChatsComponent implements OnInit {
     this.chats = [...new Set([updatedChat, ...this.chats])];
   }
 
-  onNewChat(chat: IChatPreview) {
-    if (chat.interlocutor.userName !== this.user.userName) {
-      chat.lastMessage.isMine = true;
-    } else {
-      chat.unreadMessagesCount += 1;
-    }
+  onNewChatForInterlocutor(chat: IChatPreview) {
+    chat.unreadMessagesCount += 1;
+
+    this.chats = [chat, ...this.chats];
+  }
+
+  onNewChatForCurrentUser(chat: IChatPreview) {
+    chat.lastMessage.isMine = true;
 
     this.chats = [chat, ...this.chats];
     this.modalService.close(this.newChatIdentifier);
@@ -161,7 +163,7 @@ export class ChatsComponent implements OnInit {
   private registerEventOnNewChatCreated() {
     this.eventService.newChatCreatedEvent$.subscribe(
       (newChat: IChatPreview) => {
-        this.onNewChat(newChat);
+        this.onNewChatForInterlocutor(newChat);
       },
     );
   }
