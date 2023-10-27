@@ -23,6 +23,14 @@ const routes: Routes = [
       import('./shared/modules/chat/chat.module').then((i) => i.ChatModule),
     canActivate: [authenticatedGuard],
   },
+  {
+    path: 'profile',
+    loadChildren: () =>
+      import('./shared/modules/user-profile/user-profile.module').then(
+        (i) => i.UserProfileModule,
+      ),
+    canActivate: [authenticatedGuard],
+  },
   { path: '**', redirectTo: '' },
 ];
 

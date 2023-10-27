@@ -38,3 +38,29 @@ img
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
+
+.submit
+  width: 100%
+
+  & button
+    padding: 12px 116px
+    background-color: $btn
+    color: $white
+    border-radius: 10px
+    font-weight: 600
+    box-shadow: 0 4px 4px $btn-box-shadow
+
+    &:hover,
+    &:active,
+    &:focus,
+    &:disabled
+      background-color: $btn-hover
+
+.validation-errors
+  margin-top: 16px
+  color: $input-error
+  max-width: 300px
+
+  & ul
+    padding-left: 20px
+    margin-bottom: 0

@@ -1,0 +1,48 @@
+<div class="wrapper d-flex justify-content-center align-items-center">
+  <form class="profile-form d-flex flex-column align-items-center gap-4">
+    <label for="new-picture">
+      <div class="paste-img">
+        <img [src]="avatarPreview" alt="avatarPreview" />
+        <fa-icon [icon]="['far', 'pen-to-square']" [size]="'xl'"></fa-icon>
+        <input
+          id="new-picture"
+          type="file"
+          [ngStyle]="{ display: 'none' }"
+          (change)="imageUploaded($event)"
+        />
+      </div>
+    </label>
+    <div class="input-form d-flex flex-column gap-3">
+      <div class="w-100 d-flex flex-column">
+        <div class="inputs d-flex flex-column gap-3">
+          <app-custom-input
+            [InputId]="'new-email'"
+            [InputType]="'email'"
+            [InputPlaceholder]="'New email'"
+            [InputValue]="currentUser.email"
+            (InputValueChanged)="changeInputValue('email', $event)"
+          ></app-custom-input>
+          <app-custom-input
+            [InputId]="'new-username'"
+            [InputPlaceholder]="'New username'"
+            [InputValue]="currentUser.userName"
+            (InputValueChanged)="changeInputValue('userName', $event)"
+          ></app-custom-input>
+        </div>
+        <div class="validation-errors">
+          <ul>
+            <li *ngFor="let error of getValidationErrors()">
+              {{ error }}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="submit d-flex gap-3">
+        <button type="button" class="submit-error" [routerLink]="'/chats'">
+          Go back
+        </button>
+        <button type="button" (click)="updateInfo()">Save</button>
+      </div>
+    </div>
+  </form>
+</div>

@@ -25,11 +25,14 @@
       <img
         [src]="user?.imagePath ?? defaultImagePath"
         alt="user profile picture"
+        class="user-profile"
       />
     </a>
     <ul class="dropdown-menu">
       <li>
-        <button class="btn btn-primary dropdown-item">Profile</button>
+        <button class="btn btn-primary dropdown-item" [routerLink]="'/profile'">
+          Profile
+        </button>
       </li>
       <li>
         <button class="btn btn-primary dropdown-item" (click)="logout()">
