@@ -6,6 +6,7 @@ using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Chat;
 using ChatApp.Common.DTO.Conversation;
 using ChatApp.Common.DTO.Message;
+using ChatApp.Common.DTO.Page;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
 using ChatApp.Common.Logic.Abstract;
@@ -13,7 +14,8 @@ using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+using System.Linq.Dynamic;
+using System.Linq.Dynamic.Core;
 
 namespace ChatApp.BLL.Services
 {
@@ -33,7 +35,7 @@ namespace ChatApp.BLL.Services
             _userService = userService;
         }
 
-        public async Task<List<ChatPreviewDto>> GetChatsAsync()
+        public async Task<List<ChatPreviewDto>> GetChatsAsync(PageSettingsDto pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
@@ -59,12 +61,30 @@ namespace ChatApp.BLL.Services
                 })
                 .ToListAsync();
 
+            if(pageSettings.Filters is not null 
+                && !string.IsNullOrWhiteSpace(pageSettings.Filters.PropertyName)
+                && !string.IsNullOrWhiteSpace(pageSettings.Filters.PropertyValue))
+            {
+                chats = chats
+                    .AsQueryable()
+                    .Where(pageSettings.Filters.PropertyName.Contains(pageSettings.Filters.PropertyValue).ToString())
+                    .ToList();
+            }
+
+            if(pageSettings.Pagination is not null)
+            {
+                chats = chats
+                    .Skip((pageSettings.Pagination.PageNumber - 1) * pageSettings.Pagination.PageSize)
+                    .Take(pageSettings.Pagination.PageSize)
+                    .ToList();
+            }
+
             return chats
                 .OrderByDescending(chat => chat.LastMessage.SentAt)
                 .ToList();
         }
 
-        public async Task<ChatConversationDto> GetConversationAsync(int chatId)
+        public async Task<ChatConversationDto> GetConversationAsync(int chatId, PagePaginationDto pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
@@ -81,6 +101,8 @@ namespace ChatApp.BLL.Services
                     Messages = _mapper.Map<IEnumerable<MessagePreviewDto>>(
                         group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .OrderByDescending(message => message.CreatedAt)
+                             .Skip((pageSettings.PageNumber - 1) * pageSettings.PageSize)
+                             .Take(pageSettings.PageSize)
                              .ToList()
                     )
                 })
@@ -155,16 +177,6 @@ namespace ChatApp.BLL.Services
             await _hubContext.Clients
                 .Groups(userChat.UserId.ToString())
                 .ReadMessagesAsync(chat);
-        }
-
-        public async Task<List<ChatPreviewDto>> GetChatsByNameOrLastMessageAsync(string nameOrLastMessage)
-        {
-            var chats = await GetChatsAsync();
-
-            return chats.Where(chat => chat.LastMessage.Value.ToLower().Contains(nameOrLastMessage.ToLower())
-                            || chat.Interlocutor.UserName.ToLower().Contains(nameOrLastMessage.ToLower()))
-                        .OrderByDescending(chat => chat.LastMessage.SentAt)
-                        .ToList();
         }
 
         private async Task<MessagePreviewDto> CreateNewMessageAsync(Message message)
