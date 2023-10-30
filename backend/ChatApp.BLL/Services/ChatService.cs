@@ -6,6 +6,7 @@ using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Chat;
 using ChatApp.Common.DTO.Conversation;
 using ChatApp.Common.DTO.Message;
+using ChatApp.Common.DTO.Page;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
 using ChatApp.Common.Logic.Abstract;
@@ -13,7 +14,8 @@ using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+using System.Linq.Dynamic;
+using System.Linq.Dynamic.Core;
 
 namespace ChatApp.BLL.Services
 {
@@ -22,10 +24,10 @@ namespace ChatApp.BLL.Services
         private readonly IHubContext<ChatHub, IChatHubClient> _hubContext;
         private readonly IUserService _userService;
 
-        public ChatService(ChatAppContext context, 
-                           IMapper mapper, 
-                           IUserIdGetter userIdGetter, 
-                           IHubContext<ChatHub, IChatHubClient> hubContext, 
+        public ChatService(ChatAppContext context,
+                           IMapper mapper,
+                           IUserIdGetter userIdGetter,
+                           IHubContext<ChatHub, IChatHubClient> hubContext,
                            IUserService userService)
             : base(context, mapper, userIdGetter)
         {
@@ -33,7 +35,7 @@ namespace ChatApp.BLL.Services
             _userService = userService;
         }
 
-        public async Task<List<ChatPreviewDto>> GetChatsAsync()
+        public async Task<List<ChatPreviewDto>> GetChatsAsync(PageSettingsDto? pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
@@ -53,22 +55,45 @@ namespace ChatApp.BLL.Services
                              .OrderByDescending(message => message.CreatedAt)
                              .First()
                     ),
-                    UnreadMessagesCount = 
+                    UnreadMessagesCount =
                         group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .Count(message => !message.IsRead && message.UserId != currentUserId),
                 })
                 .ToListAsync();
+
+            if(pageSettings is null)
+            {
+                return chats
+                   .OrderByDescending(chat => chat.LastMessage.SentAt)
+                   .ToList();
+            }
+
+            if (pageSettings.Filter is not null)
+            {
+                chats = chats
+                   .AsQueryable()
+                   .Where($"{pageSettings.Filter.PropertyName}.Contains(@0)", pageSettings.Filter.PropertyValue)
+                   .ToList();
+            }
+
+            if (pageSettings.Pagination is not null)
+            {
+                chats = chats
+                    .Skip((pageSettings.Pagination.PageNumber - 1) * pageSettings.Pagination.PageSize)
+                    .Take(pageSettings.Pagination.PageSize)
+                    .ToList();
+            }
 
             return chats
                 .OrderByDescending(chat => chat.LastMessage.SentAt)
                 .ToList();
         }
 
-        public async Task<ChatConversationDto> GetConversationAsync(int chatId)
+        public async Task<ChatConversationDto> GetConversationAsync(int chatId, PageSettingsDto pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
-            return await _context.UserChats
+            var chatConversation = await _context.UserChats
                 .Include(userChat => userChat.User)
                 .Include(userChat => userChat.Chat)
                     .ThenInclude(chat => chat.Messages)
@@ -86,6 +111,29 @@ namespace ChatApp.BLL.Services
                 })
                 .FirstOrDefaultAsync(chat => chat.ChatId == chatId)
                     ?? throw new NotFoundException(nameof(Chat));
+
+            if(pageSettings is null)
+            {
+                return chatConversation;
+            }
+
+            if(pageSettings.Filter is not null)
+            {
+                chatConversation.Messages = chatConversation.Messages
+                   .AsQueryable()
+                   .Where($"{pageSettings.Filter.PropertyName}.Contains(@0)", pageSettings.Filter.PropertyValue)
+                   .ToList();
+            }
+
+            if(pageSettings.Pagination is not null)
+            {
+                chatConversation.Messages = chatConversation.Messages
+                   .Skip((pageSettings.Pagination.PageNumber - 1) * pageSettings.Pagination.PageSize)
+                   .Take(pageSettings.Pagination.PageSize)
+                   .ToList();
+            }
+
+            return chatConversation;
         }
 
         public async Task<MessagePreviewDto> AddMessageAsync(NewMessageDto newMessage)
@@ -157,16 +205,6 @@ namespace ChatApp.BLL.Services
                 .ReadMessagesAsync(chat);
         }
 
-        public async Task<List<ChatPreviewDto>> GetChatsByNameOrLastMessageAsync(string nameOrLastMessage)
-        {
-            var chats = await GetChatsAsync();
-
-            return chats.Where(chat => chat.LastMessage.Value.ToLower().Contains(nameOrLastMessage.ToLower())
-                            || chat.Interlocutor.UserName.ToLower().Contains(nameOrLastMessage.ToLower()))
-                        .OrderByDescending(chat => chat.LastMessage.SentAt)
-                        .ToList();
-        }
-
         private async Task<MessagePreviewDto> CreateNewMessageAsync(Message message)
         {
             await _context.Messages.AddAsync(message);
@@ -180,7 +218,7 @@ namespace ChatApp.BLL.Services
             var userChat = await GetUserChatAsync(message.ChatId, message.UserId);
 
             var messagePreview = _mapper.Map<MessagePreviewDto>(message);
-            messagePreview.IsMine = !messagePreview.IsMine; 
+            messagePreview.IsMine = !messagePreview.IsMine;
 
             await _hubContext.Clients.Group(userChat.UserId.ToString()).SendNewMessageAsync(messagePreview);
         }
@@ -238,7 +276,7 @@ namespace ChatApp.BLL.Services
         private async Task<UserChats> GetUserChatAsync(int chatId, int userId)
         {
             return await _context.UserChats
-                .FirstOrDefaultAsync(userChat => userChat.ChatId == chatId 
+                .FirstOrDefaultAsync(userChat => userChat.ChatId == chatId
                          && userChat.UserId != userId)
                 ?? throw new NotFoundException(nameof(UserChats));
         }

@@ -57,8 +57,7 @@ namespace ChatApp.BLL.Services.Auth
                     ValidateLifetime = false,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey))
-                }, out var securityToken)
-                ?? throw new NotFoundException(nameof(accessToken));
+                }, out var securityToken);
 
             return int.Parse(claimsPrincipal.Claims.First(c => c.Type == "id").Value);
         }

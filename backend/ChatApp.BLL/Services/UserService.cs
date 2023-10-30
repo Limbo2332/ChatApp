@@ -47,6 +47,11 @@ namespace ChatApp.BLL.Services
 
         public async Task<UserAvatarDto> UpdateUserAvatarAsync(IFormFile newAvatar)
         {
+            if (!ValidateImageFormat(newAvatar.ContentType))
+            {
+                throw new BadRequestException("Image type is wrong.");
+            }
+
             var user = await GetCurrentUserAsync();
 
             var newImagePath = await _blobStorageService.UploadNewFileAsync(newAvatar);
@@ -127,6 +132,14 @@ namespace ChatApp.BLL.Services
             var tokenBytes = RandomNumberGenerator.GetBytes(32);
 
             return Convert.ToBase64String(tokenBytes);
+        }
+
+        private bool ValidateImageFormat(string imageType)
+        {
+            var idxDot = imageType.LastIndexOf('.') + 1;
+            var extFile = imageType.Substring(idxDot, imageType.Length).ToLower();
+
+            return extFile == "jpg" || extFile == "jpeg" || extFile == "png";
         }
     }
 }

@@ -18,7 +18,13 @@
       ></fa-icon>
     </div>
   </div>
-  <div class="messages d-flex flex-column-reverse gap-2">
+  <div
+    class="messages d-flex flex-column-reverse gap-2"
+    infinite-scroll
+    [infiniteScrollUpDistance]="2500"
+    (scrolledUp)="getNewMessages()"
+    [scrollWindow]="false"
+  >
     <div
       class="message text-overflow d-flex flex-column"
       *ngFor="let message of conversation.messages; trackBy: identify"

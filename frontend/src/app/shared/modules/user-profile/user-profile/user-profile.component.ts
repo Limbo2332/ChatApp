@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { map, of, switchMap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
+import { finalize, map, of, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { IUser } from 'src/app/shared/models/user/user';
@@ -24,7 +25,7 @@ import { defaultImagePath } from '../../chat/chat-utils';
   styleUrls: ['./user-profile.component.sass'],
 })
 export class UserProfileComponent implements OnInit {
-  isLoading: boolean;
+  isLoaded: boolean;
 
   currentUser: IUser;
 
@@ -51,6 +52,7 @@ export class UserProfileComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private userService: UserService,
+    private toastrService: ToastrService,
     private router: Router,
   ) {}
 
@@ -74,14 +76,26 @@ export class UserProfileComponent implements OnInit {
   }
 
   imageUploaded(event: Event) {
-    this.updateAvatarInForm(event);
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || !input.files.length || !input.files.item(0)) {
+      return;
+    }
+
+    const fileValue = input.files.item(0);
+
+    if (!this.validateImageFormat(fileValue!.type)) {
+      return;
+    }
+
+    this.editProfileForm.patchValue({ avatar: fileValue });
 
     this.updateAvatarPreview();
   }
 
   updateInfo() {
     if (this.editProfileForm.valid) {
-      this.isLoading = true;
+      this.isLoaded = true;
       const userEdit: IUserEdit = {
         email: this.editProfileForm.controls.email.value!,
         userName: this.editProfileForm.controls.userName.value!,
@@ -94,17 +108,18 @@ export class UserProfileComponent implements OnInit {
             (this.editProfileForm.value.avatar
               ? this.updateUserAvatar(user)
               : of(user))),
+          finalize(() => {
+            this.isLoaded = false;
+          }),
         )
         .subscribe(
           (user: IUser) => {
             this.authService.setUserInfo(user);
+            this.toastrService.success('Your data was successfully updated');
             this.router.navigate(['chats']);
           },
           (errors: string[]) => {
             this.validationErrorsFromBackend = errors;
-          },
-          () => {
-            this.isLoading = false;
           },
         );
     }
@@ -124,18 +139,6 @@ export class UserProfileComponent implements OnInit {
     );
   }
 
-  private updateAvatarInForm(event: Event) {
-    const input = event.target as HTMLInputElement;
-
-    if (!input.files || !input.files.length || !input.files.item(0)) {
-      return;
-    }
-
-    const fileValue = input.files.item(0);
-
-    this.editProfileForm.patchValue({ avatar: fileValue });
-  }
-
   private updateAvatarPreview() {
     const reader = new FileReader();
     const fileValue = this.editProfileForm.value.avatar;
@@ -149,5 +152,12 @@ export class UserProfileComponent implements OnInit {
     };
 
     reader.readAsDataURL(fileValue);
+  }
+
+  private validateImageFormat(type: string): boolean {
+    const idxDot = type.lastIndexOf('.') + 1;
+    const extFile = type.substr(idxDot, type.length).toLowerCase();
+
+    return extFile === 'jpg' || extFile === 'jpeg' || extFile === 'png';
   }
 }

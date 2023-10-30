@@ -25,36 +25,34 @@ export class AuthService {
   private refreshTokenKeyName = 'userRefreshToken';
 
   constructor(private http: HttpClient) {
-    this.userSubject = new BehaviorSubject(
-      JSON.parse(localStorage.getItem(this.userKeyName)!),
-    );
+    const userFromStorage = localStorage.getItem(this.userKeyName);
+    const initialUser = userFromStorage
+      ? JSON.parse(userFromStorage)
+      : undefined;
 
+    this.userSubject = new BehaviorSubject<IUser | undefined>(initialUser);
     this.user = this.userSubject.value;
   }
 
-  login(user: IUserLogin) {
-    return this.http.post<IAuthUser>(`${this.baseUrl}/login`, user).pipe(
-      map((resp: IAuthUser) => {
-        this.setUserInfo(resp.user);
-        this.setTokensInfo(resp.token);
+  setUserInfo(user: IUser) {
+    localStorage.setItem(this.userKeyName, JSON.stringify(user));
+    this.userSubject.next(user);
+    this.user = user;
+  }
 
-        return resp;
-      }),
+  login(user: IUserLogin): Observable<IAuthUser> {
+    return this.handleAuthResponse(
+      this.http.post<IAuthUser>(`${this.baseUrl}/login`, user),
     );
   }
 
-  register(user: IUserRegister) {
-    return this.http.post<IAuthUser>(`${this.baseUrl}/register`, user).pipe(
-      map((resp: IAuthUser) => {
-        this.setUserInfo(resp.user);
-        this.setTokensInfo(resp.token);
-
-        return resp;
-      }),
+  register(user: IUserRegister): Observable<IAuthUser> {
+    return this.handleAuthResponse(
+      this.http.post<IAuthUser>(`${this.baseUrl}/register`, user),
     );
   }
 
-  refreshToken() {
+  refreshToken(): Observable<IAccessToken> {
     const token: IAccessToken = {
       accessToken: localStorage.getItem(this.accessTokenKeyName)!,
       refreshToken: localStorage.getItem(this.refreshTokenKeyName)!,
@@ -67,6 +65,18 @@ export class AuthService {
         return resp;
       }),
     );
+  }
+
+  removeRefreshToken(): void {
+    const refreshToken = localStorage.getItem(this.refreshTokenKeyName)!;
+
+    this.http
+      .delete<void>(`${this.baseUrl}/removetoken`, {
+        params: {
+          refreshToken,
+        },
+      })
+      .subscribe();
   }
 
   get isAuthenticated() {
@@ -90,22 +100,17 @@ export class AuthService {
     this.userSubject.next(undefined);
   }
 
-  removeRefreshToken() {
-    const refreshToken = localStorage.getItem(this.refreshTokenKeyName)!;
+  private handleAuthResponse(
+    authRequest: Observable<IAuthUser>,
+  ): Observable<IAuthUser> {
+    return authRequest.pipe(
+      map((response) => {
+        this.setUserInfo(response.user);
+        this.setTokensInfo(response.token);
 
-    this.http
-      .delete<void>(`${this.baseUrl}/removetoken`, {
-        params: {
-          refreshToken,
-        },
-      })
-      .subscribe();
-  }
-
-  setUserInfo(user: IUser) {
-    localStorage.setItem(this.userKeyName, JSON.stringify(user));
-    this.userSubject.next(user);
-    this.user = user;
+        return response;
+      }),
+    );
   }
 
   private setTokensInfo(token: IAccessToken) {

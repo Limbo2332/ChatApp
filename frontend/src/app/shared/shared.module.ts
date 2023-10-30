@@ -7,6 +7,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { ResizableModule } from 'angular-resizable-element';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NgxLoadingModule } from 'ngx-loading';
 import { NgxSmartModalModule } from 'ngx-smart-modal';
 import { ToastrModule } from 'ngx-toastr';
@@ -33,6 +34,7 @@ import { loadingOptions } from './utils/loading-global-options';
     NgxSmartModalModule.forChild(),
     NgxLoadingModule.forRoot(loadingOptions),
     ToastrModule.forRoot(),
+    InfiniteScrollModule,
   ],
   exports: [
     HeaderComponent,
@@ -45,6 +47,7 @@ import { loadingOptions } from './utils/loading-global-options';
     NgxSmartModalModule,
     NgxLoadingModule,
     ToastrModule,
+    InfiniteScrollModule,
   ],
 })
 export class SharedModule {

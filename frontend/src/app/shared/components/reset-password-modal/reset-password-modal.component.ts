@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgxSmartModalService } from 'ngx-smart-modal';
 import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs';
 import { UserService } from 'src/app/core/services/user.service';
 
 import { IResetEmail } from '../../models/mail/reset-email';
@@ -15,7 +16,7 @@ import { getValidationErrors } from '../../utils/validation/validation-helper';
   styleUrls: ['../../../../styles/modal.sass'],
 })
 export class ResetPasswordModalComponent {
-  isLoading: boolean;
+  isLoaded: boolean;
 
   resetModalIdentifier = 'resetModal';
 
@@ -45,24 +46,30 @@ export class ResetPasswordModalComponent {
 
   sendResetPasswordEmail() {
     if (this.resetPasswordForm.valid) {
-      this.isLoading = true;
+      this.isLoaded = true;
 
       const resetEmail: IResetEmail = {
         email: this.resetPasswordForm.controls.email.value!,
       };
 
-      this.userService.sendResetPasswordEmail(resetEmail).subscribe(
-        () => {
-          this.isLoading = false;
-          this.toastrService.success(
-            'Email to reset password was successfully sent!',
-          );
-          this.modalService.get(this.resetModalIdentifier).close();
-        },
-        () => {
-          this.toastrService.error('Something went wrong. Try again later');
-        },
-      );
+      this.userService
+        .sendResetPasswordEmail(resetEmail)
+        .pipe(
+          finalize(() => {
+            this.isLoaded = false;
+          }),
+        )
+        .subscribe(
+          () => {
+            this.toastrService.success(
+              'Email to reset password was successfully sent!',
+            );
+            this.modalService.get(this.resetModalIdentifier).close();
+          },
+          () => {
+            this.toastrService.error('Something went wrong. Try again later');
+          },
+        );
     }
   }
 }

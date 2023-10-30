@@ -2,6 +2,7 @@
 using ChatApp.Common.DTO.Chat;
 using ChatApp.Common.DTO.Conversation;
 using ChatApp.Common.DTO.Message;
+using ChatApp.Common.DTO.Page;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,21 +21,16 @@ namespace ChatApp.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ChatPreviewDto>>> GetChatsAsync()
+        public async Task<ActionResult<List<ChatPreviewDto>>> GetChatsAsync([FromQuery] PageSettingsDto? pageSettings)
         {
-            return Ok(await _chatService.GetChatsAsync());
+            return Ok(await _chatService.GetChatsAsync(pageSettings));
         }
 
         [HttpGet("{chatId}")]
-        public async Task<ActionResult<ChatConversationDto>> GetChatConversationAsync(int chatId)
+        public async Task<ActionResult<ChatConversationDto>> GetChatConversationAsync(int chatId, 
+            [FromQuery] PageSettingsDto? pageSettings)
         {
-            return Ok(await _chatService.GetConversationAsync(chatId));
-        }
-
-        [HttpGet("search")]
-        public async Task<ActionResult<List<ChatPreviewDto>>> GetChatsByNameOrLastMessageAsync([FromQuery] string nameOrLastMessage)
-        {
-            return Ok(await _chatService.GetChatsByNameOrLastMessageAsync(nameOrLastMessage));
+            return Ok(await _chatService.GetConversationAsync(chatId, pageSettings));
         }
 
         [HttpPost("message")]

@@ -11,12 +11,12 @@ import { AuthService } from './services/auth.service';
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: JwtInterceptor,
+      useClass: ErrorInterceptor,
       multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
+      useClass: JwtInterceptor,
       multi: true,
     },
     AuthService,

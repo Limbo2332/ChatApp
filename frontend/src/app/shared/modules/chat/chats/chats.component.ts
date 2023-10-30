@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ResizeEvent } from 'angular-resizable-element';
 import { NgxSmartModalService } from 'ngx-smart-modal';
+import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { ChatHubService } from 'src/app/core/services/chat-hub.service';
 import { ChatsService } from 'src/app/core/services/chats.service';
@@ -8,6 +10,7 @@ import { EventService } from 'src/app/core/services/event.service';
 import { IChatPreview } from 'src/app/shared/models/chats/chat-preview';
 import { IChatRead } from 'src/app/shared/models/chats/chat-read';
 import { IMessagePreview } from 'src/app/shared/models/messages/message-preview';
+import { IPageSettings } from 'src/app/shared/models/page/page-settings';
 import { IUser } from 'src/app/shared/models/user/user';
 
 import { minChatsWidth, minConversationsWidth } from '../chat-utils';
@@ -18,6 +21,8 @@ import { minChatsWidth, minConversationsWidth } from '../chat-utils';
   styleUrls: ['../chats.component.sass'],
 })
 export class ChatsComponent implements OnInit {
+  isLoaded: boolean;
+
   chatStyles: object = {
     'width.px': minChatsWidth * 2,
     'min-width.px': minChatsWidth,
@@ -48,6 +53,7 @@ export class ChatsComponent implements OnInit {
     private chatsService: ChatsService,
     private chatHubService: ChatHubService,
     private eventService: EventService,
+    private toastrService: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -68,13 +74,27 @@ export class ChatsComponent implements OnInit {
     });
   }
 
-  getChatsByNameOrLastMessage(nameOrLastMessage: string) {
-    if (nameOrLastMessage) {
-      this.chatsService
-        .getChatsByNameOrLastMessage(nameOrLastMessage)
-        .subscribe((chats: IChatPreview[]) => {
+  getChatsByUserName(userName: string) {
+    if (userName) {
+      const pageSettings: IPageSettings = {
+        filter: {
+          propertyName: 'LastMessage.Value',
+          propertyValue: userName,
+        },
+      };
+
+      this.chatsService.getChats(pageSettings).subscribe(
+        (chats: IChatPreview[]) => {
           this.chats = chats;
-        });
+        },
+        (errors?: string[]) => {
+          if (errors) {
+            errors.forEach((error) => this.toastrService.error(error));
+          } else {
+            this.toastrService.error('Server connection error');
+          }
+        },
+      );
     } else {
       this.chats = this.cachedChats;
     }
@@ -153,11 +173,29 @@ export class ChatsComponent implements OnInit {
   }
 
   private getChats() {
-    this.chatsService.getChats().subscribe((chats: IChatPreview[]) => {
-      this.chats = chats;
-      this.cachedChats = chats;
-      this.chatHubService.startConnection();
-    });
+    this.isLoaded = true;
+
+    this.chatsService
+      .getChats()
+      .pipe(
+        finalize(() => {
+          this.isLoaded = false;
+        }),
+      )
+      .subscribe(
+        (chats: IChatPreview[]) => {
+          this.chats = chats;
+          this.cachedChats = chats;
+          this.chatHubService.startConnection();
+        },
+        (errors?: string[]) => {
+          if (errors) {
+            errors.forEach((error) => this.toastrService.error(error));
+          } else {
+            this.toastrService.error('Server connection error');
+          }
+        },
+      );
   }
 
   private registerEventOnNewChatCreated() {

@@ -27,6 +27,7 @@
     "@microsoft/signalr": "^7.0.12",
     "angular-animations": "^0.11.0",
     "angular-resizable-element": "^7.0.2",
+    "ngx-infinite-scroll": "^16.0.0",
     "ngx-loading": "^15.0.0",
     "ngx-smart-modal": "^14.0.2",
     "ngx-toastr": "^17.0.2",

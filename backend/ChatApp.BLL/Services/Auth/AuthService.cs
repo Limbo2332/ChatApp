@@ -31,12 +31,8 @@ namespace ChatApp.BLL.Services.Auth
         {
             var userEntity = await _context.Users
                 .FirstOrDefaultAsync(user => user.Email == userDto.EmailOrUserName
-                    || user.UserName == userDto.EmailOrUserName);
-
-            if (userEntity == null)
-            {
-                throw new NotFoundException(nameof(User));
-            }
+                    || user.UserName == userDto.EmailOrUserName)
+                ?? throw new NotFoundException(nameof(User));
 
             if (!SecurityHelper.ValidatePassword(userDto.Password, userEntity.Password, userEntity.Salt))
             {

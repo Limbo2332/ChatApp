@@ -2,12 +2,13 @@
   <form class="profile-form d-flex flex-column align-items-center gap-4">
     <label for="new-picture">
       <div class="paste-img">
-        <img [src]="avatarPreview" alt="avatarPreview" />
+        <img [src]="avatarPreview" />
         <fa-icon [icon]="['far', 'pen-to-square']" [size]="'xl'"></fa-icon>
         <input
           id="new-picture"
           type="file"
           [ngStyle]="{ display: 'none' }"
+          accept="image/png, image/jpg, image/jpeg"
           (change)="imageUploaded($event)"
         />
       </div>
@@ -46,4 +47,4 @@
     </div>
   </form>
 </div>
-<ngx-loading [show]="isLoading"></ngx-loading>
+<ngx-loading [show]="isLoaded"></ngx-loading>

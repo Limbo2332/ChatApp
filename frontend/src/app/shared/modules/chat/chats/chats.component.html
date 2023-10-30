@@ -16,7 +16,7 @@
       [InputId]="'find-chat'"
       [InputPlaceholder]="'Search...'"
       [customInputClass]="'search-input'"
-      (InputValueChanged)="getChatsByNameOrLastMessage($event)"
+      (InputValueChanged)="getChatsByUserName($event)"
       (NewChatButtonClicked)="openNewChatModal()"
     ></app-custom-input>
     <div
@@ -47,3 +47,5 @@
     Create new chat to start conversation
   </p>
 </ng-template>
+
+<ngx-loading [show]="isLoaded"></ngx-loading>
