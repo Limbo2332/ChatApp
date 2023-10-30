@@ -1,4 +1,7 @@
-﻿using ChatApp.BLL.Services.Auth;
+﻿using ChatApp.BLL.Interfaces.Auth;
+using ChatApp.BLL.Services.Auth;
+using ChatApp.UnitTests.Abstract;
+using ChatApp.UnitTests.TestData;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
@@ -7,20 +10,14 @@ using System.Text;
 
 namespace ChatApp.UnitTests
 {
-    public class JwtServiceTests
+    public class JwtServiceTests : BaseServiceTests
     {
-        private readonly JwtService _sut;
-        private readonly Mock<IConfiguration> _config = new Mock<IConfiguration>();
-        private readonly string _signingKeyConfigName = "JWT:SigningKey";
+        private readonly IJwtService _sut;
 
-        public JwtServiceTests()
+        public JwtServiceTests() 
+            : base()
         {
             _sut = new JwtService(_config.Object);
-
-            var mockIConfigurationSection = new Mock<IConfigurationSection>();
-            mockIConfigurationSection.Setup(x => x.Key).Returns(_signingKeyConfigName);
-            mockIConfigurationSection.Setup(x => x.Value).Returns("4odPs71hSke+1yr7h66LLg==");
-            _config.Setup(x => x.GetSection(_signingKeyConfigName)).Returns(mockIConfigurationSection.Object);
         }
 
         [Fact]

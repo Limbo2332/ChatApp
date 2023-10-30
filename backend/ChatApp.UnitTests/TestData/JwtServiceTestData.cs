@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ChatApp.UnitTests
+namespace ChatApp.UnitTests.TestData
 {
     public class JwtServiceTestData : IEnumerable<object[]>
     {

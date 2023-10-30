@@ -72,7 +72,7 @@ namespace ChatApp.BLL.Services.Auth
 
         public async Task<AccessTokenDto> RefreshTokenAsync(AccessTokenDto tokenDto)
         {
-            var userId = _jwtService.GetUserIdFromToken(tokenDto.AccessToken, _config["JWT:SigningKey"]!);
+            var userId = _jwtService.GetUserIdFromToken(tokenDto.AccessToken, _config.GetSection("JWT:SigningKey").Value!);
             var userEntity = await _context.Users.FindAsync(userId)
                 ?? throw new NotFoundException(nameof(User));
 
