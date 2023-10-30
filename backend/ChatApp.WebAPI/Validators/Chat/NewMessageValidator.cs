@@ -1,6 +1,7 @@
 ﻿using ChatApp.Common.Constants;
 using ChatApp.Common.DTO.Message;
 using ChatApp.DAL.Context.SeedSettings;
+using ChatApp.WebAPI.Extensions;
 using FluentValidation;
 
 namespace ChatApp.WebAPI.Validators.Chat
@@ -10,10 +11,7 @@ namespace ChatApp.WebAPI.Validators.Chat
         public NewMessageValidator()
         {
             RuleFor(nm => nm.Value)
-                .NotEmpty()
-                    .WithMessage(ValidationMessages.NewMessageIsEmptyMessage)
-                .MaximumLength(EntityConfigurationSettings.MessageMaxLength)
-                    .WithMessage(ValidationMessages.NewMessageMaxLengthMessage);
+                .CustomMessageValue();
 
             RuleFor(nm => nm.ChatId)
                 .NotNull()

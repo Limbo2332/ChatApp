@@ -11,6 +11,7 @@ namespace ChatApp.WebAPI.Validators.Auth
             RuleFor(at => at.AccessToken)
                 .NotEmpty()
                     .WithMessage(ValidationMessages.AccessTokenIsEmptyMessage);
+
             RuleFor(at => at.RefreshToken)
                 .NotEmpty()
                     .WithMessage(ValidationMessages.RefreshTokenIsEmptyMessage);

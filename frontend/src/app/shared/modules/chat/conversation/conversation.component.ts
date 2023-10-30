@@ -1,5 +1,14 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { fadeInLeftOnEnterAnimation, fadeInRightOnEnterAnimation } from 'angular-animations';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
+import {
+  fadeInLeftOnEnterAnimation,
+  fadeInRightOnEnterAnimation,
+} from 'angular-animations';
 import { ToastrService } from 'ngx-toastr';
 import { ChatsService } from 'src/app/core/services/chats.service';
 import { EventService } from 'src/app/core/services/event.service';
