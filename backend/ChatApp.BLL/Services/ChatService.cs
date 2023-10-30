@@ -89,7 +89,7 @@ namespace ChatApp.BLL.Services
                 .ToList();
         }
 
-        public async Task<ChatConversationDto> GetConversationAsync(int chatId, PageSettingsDto pageSettings)
+        public async Task<ChatConversationDto> GetConversationAsync(int chatId, PageSettingsDto? pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
