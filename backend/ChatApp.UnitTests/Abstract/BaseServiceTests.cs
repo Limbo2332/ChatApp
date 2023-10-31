@@ -17,7 +17,6 @@ namespace ChatApp.UnitTests.Abstract
         protected readonly ChatAppContext _context;
         protected readonly IMapper _mapper;
         protected readonly Mock<IUserIdGetter> _userIdGetter = new Mock<IUserIdGetter>();
-        protected readonly IJwtService _jwtService;
         protected readonly Mock<IConfiguration> _config = new Mock<IConfiguration>();
         protected readonly string _signingKeyConfigName = "JWT:SigningKey";
         protected readonly string _blobAccessPathConfigName = "BlobStorage:AccessPath";
@@ -28,7 +27,6 @@ namespace ChatApp.UnitTests.Abstract
                 .UseInMemoryDatabase(databaseName: $"{nameof(AuthServiceTests)}_FakeDatabase")
                 .Options;
 
-            _jwtService = new JwtService(_config.Object);
             SetUpConfiguration();
 
             _context = new ChatAppContext(options);

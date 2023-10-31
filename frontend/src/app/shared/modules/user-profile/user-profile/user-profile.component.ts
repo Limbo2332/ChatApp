@@ -14,7 +14,10 @@ import {
   userNameMaxLength,
   userNameMinLength,
 } from 'src/app/shared/utils/validation/constants';
-import { emailRegex, noSpacesRegex } from 'src/app/shared/utils/validation/regex-patterns';
+import {
+  emailRegex,
+  noSpacesRegex,
+} from 'src/app/shared/utils/validation/regex-patterns';
 import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 import { defaultImagePath } from '../../chat/chat-utils';
@@ -84,9 +87,13 @@ export class UserProfileComponent implements OnInit {
 
     const fileValue = input.files.item(0);
 
+    console.log(fileValue);
+
     if (!this.validateImageFormat(fileValue!.type)) {
       return;
     }
+
+    console.log(fileValue);
 
     this.editProfileForm.patchValue({ avatar: fileValue });
 
@@ -105,9 +112,10 @@ export class UserProfileComponent implements OnInit {
         .update(userEdit)
         .pipe(
           switchMap((user: IUser) =>
-            (this.editProfileForm.value.avatar
+            this.editProfileForm.value.avatar
               ? this.updateUserAvatar(user)
-              : of(user))),
+              : of(user),
+          ),
           finalize(() => {
             this.isLoaded = false;
           }),
@@ -155,7 +163,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   private validateImageFormat(type: string): boolean {
-    const idxDot = type.lastIndexOf('.') + 1;
+    const idxDot = type.lastIndexOf('/') + 1;
     const extFile = type.substr(idxDot, type.length).toLowerCase();
 
     return extFile === 'jpg' || extFile === 'jpeg' || extFile === 'png';

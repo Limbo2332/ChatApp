@@ -16,8 +16,10 @@ namespace ChatApp.BLL.Interfaces
 
         Task<UserDto> UpdateUserAsync(UserEditDto user);
 
-        Task SendResetEmailAsync(string email);
+        Task<bool> SendResetEmailAsync(string email);
 
         Task ResetPasswordAsync(ResetPasswordDto newInfo);
+
+        string GenerateEmailToken();
     }
 }

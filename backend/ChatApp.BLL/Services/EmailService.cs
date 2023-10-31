@@ -21,11 +21,11 @@ namespace ChatApp.BLL.Services
             _config = config;
         }
 
-        public async Task SendEmailAsync(MailDto mail)
+        public async Task<EmailSendOperation> SendEmailAsync(MailDto mail)
         {
             var sender = _config.GetSection("EmailService:Sender").Value;
 
-            await _emailClient.SendAsync(Azure.WaitUntil.Completed, sender, mail.To, mail.Subject, mail.Content);
+            return await _emailClient.SendAsync(Azure.WaitUntil.Completed, sender, mail.To, mail.Subject, mail.Content);
         }
     }
 }

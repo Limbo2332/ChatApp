@@ -17,17 +17,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Linq.Dynamic.Core.Tokenizer;
-using Xunit.Priority;
 
 namespace ChatApp.UnitTests
 {
     public class AuthServiceTests : BaseServiceTests, IDisposable
     {
         private IAuthService _sut;
+        private readonly IJwtService _jwtService;
 
         public AuthServiceTests()
             : base()
         {
+            _jwtService = new JwtService(_config.Object);
+
             _sut = new AuthService(_context, _mapper, _userIdGetter.Object, _jwtService, _config.Object);
         }
 
@@ -198,6 +200,8 @@ namespace ChatApp.UnitTests
             Assert.Multiple(() =>
             {
                 Assert.NotNull(result);
+                Assert.NotNull(result.AccessToken);
+                Assert.NotNull(result.RefreshToken);
 
                 Assert.NotEqual(accessToken.RefreshToken, result.RefreshToken);
                 Assert.NotEqual(accessToken.AccessToken, result.AccessToken);
