@@ -17,7 +17,7 @@ namespace ChatApp.UnitTests
         public JwtServiceTests() 
             : base()
         {
-            _sut = new JwtService(_config.Object);
+            _sut = new JwtService(_configMock.Object);
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace ChatApp.UnitTests
         public void GenerateAccessToken_ShouldReturn_AccessToken(int userId, string userName, string email)
         {
             // Arrange
-            var signingKey = _config.Object.GetSection(_signingKeyConfigName).Value!;
+            var signingKey = _configMock.Object.GetSection(_signingKeyConfigName).Value!;
 
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -83,7 +83,7 @@ namespace ChatApp.UnitTests
         public void GetUserIdFromToken_ShouldReturn_UserId(int userId, string userName, string email)
         {
             // Arrange
-            var signingKey = _config.Object.GetSection(_signingKeyConfigName).Value!;
+            var signingKey = _configMock.Object.GetSection(_signingKeyConfigName).Value!;
             var accessToken = _sut.GenerateAccessToken(userId, userName, email);
 
             // Act

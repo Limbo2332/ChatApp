@@ -23,7 +23,7 @@ namespace ChatApp.UnitTests
         public UserServiceTests()
             : base()
         {
-            _sut = new UserService(_context, _mapper, _userIdGetter.Object, _blobStorageServiceMock.Object, _emailServiceMock.Object);
+            _sut = new UserService(_context, _mapper, _userIdGetterMock.Object, _blobStorageServiceMock.Object, _emailServiceMock.Object);
         }
 
         [Fact]
@@ -151,7 +151,7 @@ namespace ChatApp.UnitTests
                 Assert.NotNull(result);
                 Assert.NotNull(result.ImagePath);
 
-                Assert.NotNull(_context.Users.First(u => u.Id == _userIdGetter.Object.CurrentUserId).ImagePath);
+                Assert.NotNull(_context.Users.First(u => u.Id == _userIdGetterMock.Object.CurrentUserId).ImagePath);
             });
         }
 
@@ -178,6 +178,9 @@ namespace ChatApp.UnitTests
             _blobStorageServiceMock.Setup(m => m.GetFullAvatarPath(uniqueFileName))
                 .Returns($"aaa{uniqueFileName}");
 
+            _userIdGetterMock.Reset();
+            _userIdGetterMock.Setup(r => r.CurrentUserId).Returns(2);
+
             var imagePath = _context.Users.First(u => u.ImagePath != null).ImagePath;
 
             // Act
@@ -197,7 +200,7 @@ namespace ChatApp.UnitTests
         public async Task UpdateUserAsync_ShouldThrowException_IfEmailNotUnique()
         {
             // Arrange
-            var currentUser = _context.Users.First(u => u.Id == _userIdGetter.Object.CurrentUserId);
+            var currentUser = _context.Users.First(u => u.Id == _userIdGetterMock.Object.CurrentUserId);
             var notUniqueEmail = _context.Users.First(u => u.Email != currentUser.Email).Email;
             var userDto = new UserEditDto
             {
@@ -216,7 +219,7 @@ namespace ChatApp.UnitTests
         public async Task UpdateUserAsync_ShouldThrowException_IfUserNameNotUnique()
         {
             // Arrange
-            var currentUser = _context.Users.First(u => u.Id == _userIdGetter.Object.CurrentUserId);
+            var currentUser = _context.Users.First(u => u.Id == _userIdGetterMock.Object.CurrentUserId);
             var notUniqueUserName = _context.Users.First(u => u.UserName != currentUser.UserName).UserName;
             var userDto = new UserEditDto
             {
@@ -272,7 +275,7 @@ namespace ChatApp.UnitTests
         public async Task ResetPasswordAsync_ShouldUpdatePassword()
         {
             // Arrange
-            var currentUser = _context.Users.First(u => u.Id == _userIdGetter.Object.CurrentUserId);
+            var currentUser = _context.Users.First(u => u.Id == _userIdGetterMock.Object.CurrentUserId);
 
             var emailToken = _sut.GenerateEmailToken();
             var resetPasswordDto = new ResetPasswordDto

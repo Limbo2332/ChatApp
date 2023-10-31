@@ -145,14 +145,14 @@ export class ChatsComponent implements OnInit {
     }
 
     if (!message.isMine && updatedChat.id !== this.selectedChatId) {
-      updatedChat.unreadMessagesCount += 1;
+      updatedChat.interlocutorUnreadMessagesCount += 1;
     }
 
     this.chats = [...new Set([updatedChat, ...this.chats])];
   }
 
   onNewChatForInterlocutor(chat: IChatPreview) {
-    chat.unreadMessagesCount += 1;
+    chat.interlocutorUnreadMessagesCount += 1;
 
     this.chats = [chat, ...this.chats];
   }
@@ -236,21 +236,21 @@ export class ChatsComponent implements OnInit {
     this.chatsService.readMessages(chatRead).subscribe(() => {
       const updatedChat = this.chats.find((chat) => chat.id === chatRead.id)!;
 
-      updatedChat.unreadMessagesCount = 0;
+      updatedChat.interlocutorUnreadMessagesCount = 0;
     });
   }
 
   private onReadMessages(chatRead: IChatRead) {
     const updatedChat = this.chats.find((chat) => chat.id === chatRead.id)!;
 
-    updatedChat.unreadMessagesCount = 0;
+    updatedChat.interlocutorUnreadMessagesCount = 0;
     updatedChat.lastMessage.isRead = true;
   }
 
   private updateSelectChatWhenGotMessages(chatId: number, chatRead: IChatRead) {
     const selectedChat = this.getChat(chatId);
 
-    if (selectedChat.unreadMessagesCount) {
+    if (selectedChat.interlocutorUnreadMessagesCount) {
       this.readMessages(chatRead);
     }
   }

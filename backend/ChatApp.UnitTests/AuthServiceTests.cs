@@ -28,9 +28,9 @@ namespace ChatApp.UnitTests
         public AuthServiceTests()
             : base()
         {
-            _jwtService = new JwtService(_config.Object);
+            _jwtService = new JwtService(_configMock.Object);
 
-            _sut = new AuthService(_context, _mapper, _userIdGetter.Object, _jwtService, _config.Object);
+            _sut = new AuthService(_context, _mapper, _userIdGetterMock.Object, _jwtService, _configMock.Object);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace ChatApp.UnitTests
         public async Task RefreshTokenAsync_ShouldThrowException_WhenRefreshTokenIsNotActive()
         {
             // Arrange
-            var refreshToken = await _context.RefreshTokens.LastAsync();
+            var refreshToken = await _context.RefreshTokens.FirstAsync();
             refreshToken.Expires = DateTime.UtcNow.AddDays(-5);
 
             var accessToken = new AccessTokenDto
@@ -186,6 +186,7 @@ namespace ChatApp.UnitTests
         {
             // Arrange
             var refreshToken = await _context.RefreshTokens.FirstAsync();
+            refreshToken.Expires = DateTime.UtcNow.AddDays(10);
 
             var accessToken = new AccessTokenDto
             {
