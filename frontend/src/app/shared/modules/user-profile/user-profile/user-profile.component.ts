@@ -112,10 +112,9 @@ export class UserProfileComponent implements OnInit {
         .update(userEdit)
         .pipe(
           switchMap((user: IUser) =>
-            this.editProfileForm.value.avatar
+            (this.editProfileForm.value.avatar
               ? this.updateUserAvatar(user)
-              : of(user),
-          ),
+              : of(user))),
           finalize(() => {
             this.isLoaded = false;
           }),
