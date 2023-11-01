@@ -1,9 +1,10 @@
-﻿using ChatApp.Common.DTO.Mail;
+﻿using Azure.Communication.Email;
+using ChatApp.Common.DTO.Mail;
 
 namespace ChatApp.BLL.Interfaces
 {
     public interface IEmailService
     {
-        Task SendEmailAsync(MailDto mail);
+        Task<EmailSendOperation> SendEmailAsync(MailDto mail);
     }
 }

@@ -55,7 +55,7 @@ namespace ChatApp.BLL.Services
                              .OrderByDescending(message => message.CreatedAt)
                              .First()
                     ),
-                    UnreadMessagesCount =
+                    InterlocutorUnreadMessagesCount =
                         group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .Count(message => !message.IsRead && message.UserId != currentUserId),
                 })
@@ -89,7 +89,7 @@ namespace ChatApp.BLL.Services
                 .ToList();
         }
 
-        public async Task<ChatConversationDto> GetConversationAsync(int chatId, PageSettingsDto pageSettings)
+        public async Task<ChatConversationDto> GetConversationAsync(int chatId, PageSettingsDto? pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
@@ -201,7 +201,7 @@ namespace ChatApp.BLL.Services
             var userChat = await GetUserChatAsync(chat.Id, chat.UserId);
 
             await _hubContext.Clients
-                .Groups(userChat.UserId.ToString())
+                .Group(userChat.UserId.ToString())
                 .ReadMessagesAsync(chat);
         }
 

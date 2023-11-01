@@ -96,7 +96,7 @@ namespace ChatApp.BLL.Services
             return _mapper.Map<UserDto>(currentUser);
         }
 
-        public async Task SendResetEmailAsync(string email)
+        public async Task<bool> SendResetEmailAsync(string email)
         {
             var emailToken = GenerateEmailToken();
 
@@ -107,7 +107,9 @@ namespace ChatApp.BLL.Services
                 To = email
             };
 
-            await _emailService.SendEmailAsync(mail);
+            var result = await _emailService.SendEmailAsync(mail);
+
+            return result.HasCompleted;
         }
 
         public async Task ResetPasswordAsync(ResetPasswordDto newInfo)
@@ -120,6 +122,13 @@ namespace ChatApp.BLL.Services
             await _context.SaveChangesAsync();
         }
 
+        public string GenerateEmailToken()
+        {
+            var tokenBytes = RandomNumberGenerator.GetBytes(32);
+
+            return Convert.ToBase64String(tokenBytes);
+        }
+
         private async Task<User> GetCurrentUserAsync()
         {
             int currentUserId = _userIdGetter.CurrentUserId;
@@ -127,17 +136,10 @@ namespace ChatApp.BLL.Services
             return await _context.Users.FirstAsync(user => user.Id == currentUserId);
         }
 
-        private string GenerateEmailToken()
-        {
-            var tokenBytes = RandomNumberGenerator.GetBytes(32);
-
-            return Convert.ToBase64String(tokenBytes);
-        }
-
         private bool ValidateImageFormat(string imageType)
         {
-            var idxDot = imageType.LastIndexOf('.') + 1;
-            var extFile = imageType.Substring(idxDot, imageType.Length).ToLower();
+            var idxDot = imageType.LastIndexOf('/') + 1;
+            var extFile = imageType.Substring(idxDot).ToLower();
 
             return extFile == "jpg" || extFile == "jpeg" || extFile == "png";
         }

@@ -31,8 +31,11 @@
       <p class="chat-block-message text-overflow">
         {{ chat.lastMessage.value }}
       </p>
-      <p *ngIf="chat.unreadMessagesCount" class="chat-block-message-count">
-        {{ chat.unreadMessagesCount }}
+      <p
+        *ngIf="chat.interlocutorUnreadMessagesCount"
+        class="chat-block-message-count"
+      >
+        {{ chat.interlocutorUnreadMessagesCount }}
       </p>
     </div>
   </div>
