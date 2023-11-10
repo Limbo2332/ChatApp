@@ -1,5 +1,6 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
 
 import { AuthService } from '../services/auth.service';
@@ -8,7 +9,10 @@ import { AuthService } from '../services/auth.service';
 export class ErrorInterceptor implements HttpInterceptor {
   private isRefreshed = false;
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -28,6 +32,11 @@ export class ErrorInterceptor implements HttpInterceptor {
 
     return next.handle(newReq).pipe(
       catchError((error: HttpErrorResponse) => {
+        if (error.error && error.error.code === 6) {
+          this.router.navigate(['/']);
+          this.authService.logout();
+        }
+
         if (error.status === 401) {
           return this.refreshTokensOn401Request(newReq, next);
         }
@@ -36,7 +45,7 @@ export class ErrorInterceptor implements HttpInterceptor {
           return throwError([error.error.error]);
         }
 
-        return throwError(error.error.errors);
+        return throwError(error.error?.errors ?? []);
       }),
     );
   }

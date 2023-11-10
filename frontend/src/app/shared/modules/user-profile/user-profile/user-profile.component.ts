@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { finalize, map, of, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -14,10 +15,7 @@ import {
   userNameMaxLength,
   userNameMinLength,
 } from 'src/app/shared/utils/validation/constants';
-import {
-  emailRegex,
-  noSpacesRegex,
-} from 'src/app/shared/utils/validation/regex-patterns';
+import { emailRegex, noSpacesRegex } from 'src/app/shared/utils/validation/regex-patterns';
 import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 import { defaultImagePath } from '../../chat/chat-utils';
@@ -28,8 +26,6 @@ import { defaultImagePath } from '../../chat/chat-utils';
   styleUrls: ['./user-profile.component.sass'],
 })
 export class UserProfileComponent implements OnInit {
-  isLoaded: boolean;
-
   currentUser: IUser;
 
   avatarPreview = defaultImagePath;
@@ -57,6 +53,7 @@ export class UserProfileComponent implements OnInit {
     private userService: UserService,
     private toastrService: ToastrService,
     private router: Router,
+    private spinner: NgxSpinnerService,
   ) {}
 
   ngOnInit(): void {
@@ -87,13 +84,9 @@ export class UserProfileComponent implements OnInit {
 
     const fileValue = input.files.item(0);
 
-    console.log(fileValue);
-
     if (!this.validateImageFormat(fileValue!.type)) {
       return;
     }
-
-    console.log(fileValue);
 
     this.editProfileForm.patchValue({ avatar: fileValue });
 
@@ -102,7 +95,7 @@ export class UserProfileComponent implements OnInit {
 
   updateInfo() {
     if (this.editProfileForm.valid) {
-      this.isLoaded = true;
+      this.spinner.show();
       const userEdit: IUserEdit = {
         email: this.editProfileForm.controls.email.value!,
         userName: this.editProfileForm.controls.userName.value!,
@@ -112,11 +105,12 @@ export class UserProfileComponent implements OnInit {
         .update(userEdit)
         .pipe(
           switchMap((user: IUser) =>
-            (this.editProfileForm.value.avatar
+            this.editProfileForm.value.avatar
               ? this.updateUserAvatar(user)
-              : of(user))),
+              : of(user),
+          ),
           finalize(() => {
-            this.isLoaded = false;
+            this.spinner.hide();
           }),
         )
         .subscribe(

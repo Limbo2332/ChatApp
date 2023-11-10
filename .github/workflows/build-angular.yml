@@ -18,7 +18,7 @@ jobs:
       - name: Install packages
         run: |
           cd frontend
-          npm install --frozen-lockfile --force
+          npm install --frozen-lockfile
       - name: Eslint and Prettier checks
         run: |
           cd frontend

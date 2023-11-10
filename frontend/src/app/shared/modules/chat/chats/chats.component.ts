@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ResizeEvent } from 'angular-resizable-element';
 import { NgxSmartModalService } from 'ngx-smart-modal';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -21,8 +22,6 @@ import { minChatsWidth, minConversationsWidth } from '../chat-utils';
   styleUrls: ['../chats.component.sass'],
 })
 export class ChatsComponent implements OnInit {
-  isLoaded: boolean;
-
   chatStyles: object = {
     'width.px': minChatsWidth * 2,
     'min-width.px': minChatsWidth,
@@ -54,6 +53,7 @@ export class ChatsComponent implements OnInit {
     private chatHubService: ChatHubService,
     private eventService: EventService,
     private toastrService: ToastrService,
+    private spinner: NgxSpinnerService,
   ) {}
 
   ngOnInit(): void {
@@ -173,13 +173,13 @@ export class ChatsComponent implements OnInit {
   }
 
   private getChats() {
-    this.isLoaded = true;
+    this.spinner.show();
 
     this.chatsService
       .getChats()
       .pipe(
         finalize(() => {
-          this.isLoaded = false;
+          this.spinner.hide();
         }),
       )
       .subscribe(
