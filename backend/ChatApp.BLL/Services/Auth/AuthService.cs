@@ -47,7 +47,7 @@ namespace ChatApp.BLL.Services.Auth
 
             if (!SecurityHelper.ValidatePassword(userDto.Password, userEntity.Password, userEntity.Salt))
             {
-                throw new NotFoundException(nameof(User), userEntity.Id);
+                throw new InvalidEmailUsernameOrPasswordException();
             }
 
             var token = await GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);

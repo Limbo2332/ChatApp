@@ -13,11 +13,10 @@ using Microsoft.Extensions.DependencyInjection;
 using ChatApp.DAL.Entities;
 using ChatApp.Common.DTO.Message;
 
-namespace ChatApp.UnitTests.Abstract
+namespace ChatApp.UnitTests.Systems.Services.Abstract
 {
     public abstract class BaseServiceTests
     {
-        protected readonly ChatAppContext _context;
         protected readonly IMapper _mapper;
         protected readonly Mock<IUserIdGetter> _userIdGetterMock = new Mock<IUserIdGetter>();
         protected readonly Mock<IConfiguration> _configMock = new Mock<IConfiguration>();
@@ -26,8 +25,6 @@ namespace ChatApp.UnitTests.Abstract
 
         public BaseServiceTests()
         {
-            _context = new MockContext().GetContext();
-
             SetUpConfiguration();
 
             _mapper = SetUpMapper();
@@ -48,11 +45,13 @@ namespace ChatApp.UnitTests.Abstract
             _configMock.Setup(x => x.GetSection(_signingKeyConfigName)).Returns(mockIConfigurationSigningKeySection.Object);
             _configMock.Setup(x => x.GetSection(_blobAccessPathConfigName)).Returns(mockIConfigurationBlobAccessSection.Object);
         }
+
         private IMapper SetUpMapper()
         {
             var mappingConfig = new MapperConfiguration(mc =>
             {
-                mc.ConstructServicesUsing(type => {
+                mc.ConstructServicesUsing(type =>
+                {
                     if (type.Name.Contains(nameof(CurrentUserResolver)))
                     {
                         return new CurrentUserResolver(_userIdGetterMock.Object);
