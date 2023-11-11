@@ -33,6 +33,7 @@ namespace ChatApp
 
             builder.Services.RegisterUserStorageServices();
             builder.Services.RegisterAutoMapper();
+            builder.Services.RegisterRepositories();
             builder.Services.RegisterCustomServices();
 
             builder.Services.AddFluentValidationAutoValidation();

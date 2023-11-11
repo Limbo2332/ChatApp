@@ -1,7 +1,14 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, Observable, switchMap, throwError } from 'rxjs';
+import { ErrorCode } from 'src/app/shared/models/enums/errorcode';
 
 import { AuthService } from '../services/auth.service';
 
@@ -32,13 +39,20 @@ export class ErrorInterceptor implements HttpInterceptor {
 
     return next.handle(newReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.error && error.error.code === 6) {
-          this.router.navigate(['/']);
-          this.authService.logout();
+        if (error.status === 401 && !error.error) {
+          return this.refreshTokensOn401Request(newReq, next);
         }
 
-        if (error.status === 401) {
-          return this.refreshTokensOn401Request(newReq, next);
+        if (
+          (error.error &&
+            error.error.code &&
+            error.error.code === ErrorCode.InvalidToken) ||
+          error.error.code === ErrorCode.ExpiredRefreshToken
+        ) {
+          this.authService.logout();
+          this.router.navigate(['/']);
+
+          return throwError([error.error.error]);
         }
 
         if (error.error.code) {
@@ -67,10 +81,10 @@ export class ErrorInterceptor implements HttpInterceptor {
 
           return next.handle(request);
         }),
-        catchError((error) => {
+        catchError((error: HttpErrorResponse) => {
           this.isRefreshed = false;
 
-          return throwError(() => error);
+          return throwError(() => [error.error.error]);
         }),
       );
     }
