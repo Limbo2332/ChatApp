@@ -8,13 +8,11 @@ namespace ChatApp.BLL.Services.Abstract
 {
     public abstract class BaseService
     {
-        protected readonly ChatAppContext _context;
         protected readonly IMapper _mapper;
         protected readonly IUserIdGetter _userIdGetter;
 
-        protected BaseService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter)
+        protected BaseService(IMapper mapper, IUserIdGetter userIdGetter)
         {
-            _context = context;
             _mapper = mapper;
             _userIdGetter = userIdGetter;
         }

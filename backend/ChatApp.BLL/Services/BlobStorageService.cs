@@ -14,8 +14,11 @@ namespace ChatApp.BLL.Services
     {
         private readonly BlobContainerClient _blobContainerClient;
 
-        public BlobStorageService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter, BlobContainerClient blobContainerClient) 
-            : base(context, mapper, userIdGetter)
+        public BlobStorageService(
+            IMapper mapper, 
+            IUserIdGetter userIdGetter, 
+            BlobContainerClient blobContainerClient) 
+            : base(mapper, userIdGetter)
         {
             _blobContainerClient = blobContainerClient;
         }

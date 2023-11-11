@@ -14,8 +14,12 @@ namespace ChatApp.BLL.Services
         private readonly EmailClient _emailClient;
         private readonly IConfiguration _config;
 
-        public EmailService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter, EmailClient emailClient, IConfiguration config)
-            : base(context, mapper, userIdGetter)
+        public EmailService(
+            IMapper mapper, 
+            IUserIdGetter userIdGetter, 
+            EmailClient emailClient, 
+            IConfiguration config)
+            : base(mapper, userIdGetter)
         {
             _emailClient = emailClient;
             _config = config;

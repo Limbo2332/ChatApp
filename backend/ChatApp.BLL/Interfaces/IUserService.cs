@@ -21,5 +21,7 @@ namespace ChatApp.BLL.Interfaces
         Task ResetPasswordAsync(ResetPasswordDto newInfo);
 
         string GenerateEmailToken();
+
+        Task<User> GetCurrentUserAsync();
     }
 }
