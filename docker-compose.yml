@@ -1,0 +1,42 @@
+version: "3"
+
+networks:
+  default:
+    driver: bridge
+
+services:
+  db:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    ports:
+      - "1433:1433"
+    restart: always
+    networks:
+      - default
+    environment:
+      SA_PASSWORD: "MySecretPassword!"
+      ACCEPT_EULA: "Y"
+
+  backend:
+    build:
+      context: backend/
+    ports:
+      - "5000:80"
+    restart: always
+    networks:
+      - default
+    depends_on:
+      - db
+    environment:
+      ConnectionStrings__ChatAppConnection: "Server=db;Database=LeetWarsCoreDB;User ID=SA;Password=MySecretPassword!;TrustServerCertificate=True"
+
+  frontend:
+    build:
+      context: frontend/
+    ports:
+      - "4200:80"
+    links:
+      - db
+      - backend
+    restart: always
+    networks:
+      - default

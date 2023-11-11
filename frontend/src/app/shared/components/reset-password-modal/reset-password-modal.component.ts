@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgxSmartModalService } from 'ngx-smart-modal';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs';
 import { UserService } from 'src/app/core/services/user.service';
@@ -16,8 +17,6 @@ import { getValidationErrors } from '../../utils/validation/validation-helper';
   styleUrls: ['../../../../styles/modal.sass'],
 })
 export class ResetPasswordModalComponent {
-  isLoaded: boolean;
-
   resetModalIdentifier = 'resetModal';
 
   resetPasswordForm = new FormGroup({
@@ -33,6 +32,7 @@ export class ResetPasswordModalComponent {
     private userService: UserService,
     private toastrService: ToastrService,
     private modalService: NgxSmartModalService,
+    private spinner: NgxSpinnerService,
   ) {}
 
   changeEmailValue(value: string) {
@@ -46,7 +46,7 @@ export class ResetPasswordModalComponent {
 
   sendResetPasswordEmail() {
     if (this.resetPasswordForm.valid) {
-      this.isLoaded = true;
+      this.spinner.show();
 
       const resetEmail: IResetEmail = {
         email: this.resetPasswordForm.controls.email.value!,
@@ -56,7 +56,7 @@ export class ResetPasswordModalComponent {
         .sendResetPasswordEmail(resetEmail)
         .pipe(
           finalize(() => {
-            this.isLoaded = false;
+            this.spinner.hide();
           }),
         )
         .subscribe(
