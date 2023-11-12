@@ -105,15 +105,18 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = await _sut.LoginAsync(userDto);
 
             // Assert
-            result.Should().NotBeNull();
-            result.User.Should().NotBeNull();
-            result.Token.Should().NotBeNull();
-            result.Token.AccessToken.Should().NotBeNull();
-            result.Token.RefreshToken.Should().NotBeNull();
+            using (new AssertionScope())
+            {
+                result.Should().NotBeNull();
+                result.User.Should().NotBeNull();
+                result.Token.Should().NotBeNull();
+                result.Token.AccessToken.Should().NotBeNull();
+                result.Token.RefreshToken.Should().NotBeNull();
 
-            result.User.UserName.Should().BeEquivalentTo(userDto.EmailOrUserName);
+                result.User.UserName.Should().BeEquivalentTo(userDto.EmailOrUserName);
 
-            Convert.FromBase64String(result.Token.RefreshToken).Length.Should().Be(32);
+                Convert.FromBase64String(result.Token.RefreshToken).Length.Should().Be(32);
+            }
         }
 
         [Fact]
@@ -145,19 +148,22 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = await _sut.RegisterAsync(userDto);
 
             // Assert
-            result.Should().NotBeNull();
-            result.User.Should().NotBeNull();
-            result.Token.Should().NotBeNull();
-            result.Token.AccessToken.Should().NotBeNull();
-            result.Token.RefreshToken.Should().NotBeNull();
+            using (new AssertionScope())
+            {
+                result.Should().NotBeNull();
+                result.User.Should().NotBeNull();
+                result.Token.Should().NotBeNull();
+                result.Token.AccessToken.Should().NotBeNull();
+                result.Token.RefreshToken.Should().NotBeNull();
 
-            result.User.UserName.Should().BeEquivalentTo(userDto.UserName);
-            result.User.Email.Should().BeEquivalentTo(userDto.Email);
-            result.User.ImagePath.Should().BeNull();
+                result.User.UserName.Should().BeEquivalentTo(userDto.UserName);
+                result.User.Email.Should().BeEquivalentTo(userDto.Email);
+                result.User.ImagePath.Should().BeNull();
 
-            Convert.FromBase64String(result.Token.RefreshToken).Length.Should().Be(32);
+                Convert.FromBase64String(result.Token.RefreshToken).Length.Should().Be(32);
 
-            users.Should().Contain(userInList => userInList.Email == userDto.Email);
+                users.Should().Contain(userInList => userInList.Email == userDto.Email);
+            }
         }
 
         [Fact]
@@ -286,14 +292,17 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = await _sut.RefreshTokenAsync(accessToken);
 
             // Assert
-            result.Should().NotBeNull();
-            result.AccessToken.Should().NotBeNull();
-            result.RefreshToken.Should().NotBeNull();
+            using (new AssertionScope())
+            {
+                result.Should().NotBeNull();
+                result.AccessToken.Should().NotBeNull();
+                result.RefreshToken.Should().NotBeNull();
 
-            accessToken.AccessToken.Should().NotBeEquivalentTo(result.AccessToken);
-            accessToken.RefreshToken.Should().NotBeEquivalentTo(result.RefreshToken);
+                accessToken.AccessToken.Should().NotBeEquivalentTo(result.AccessToken);
+                accessToken.RefreshToken.Should().NotBeEquivalentTo(result.RefreshToken);
 
-            refreshTokens.Should().Contain(rt => rt.Id == newRefreshToken.Id);
+                refreshTokens.Should().Contain(rt => rt.Id == newRefreshToken.Id);
+            }
         }
 
         [Fact]

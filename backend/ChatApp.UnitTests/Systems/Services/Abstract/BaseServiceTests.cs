@@ -20,8 +20,7 @@ namespace ChatApp.UnitTests.Systems.Services.Abstract
         protected readonly IMapper _mapper;
         protected readonly Mock<IUserIdGetter> _userIdGetterMock = new Mock<IUserIdGetter>();
         protected readonly Mock<IConfiguration> _configMock = new Mock<IConfiguration>();
-        protected readonly string _signingKeyConfigName = "JWT:SigningKey";
-        protected readonly string _blobAccessPathConfigName = "BlobStorage:AccessPath";
+        protected readonly string _signingKey = "testForSigningKey";
 
         public BaseServiceTests()
         {
@@ -34,16 +33,9 @@ namespace ChatApp.UnitTests.Systems.Services.Abstract
 
         private void SetUpConfiguration()
         {
-            var mockIConfigurationSigningKeySection = new Mock<IConfigurationSection>();
-            mockIConfigurationSigningKeySection.Setup(x => x.Key).Returns(_signingKeyConfigName);
-            mockIConfigurationSigningKeySection.Setup(x => x.Value).Returns("4odPs71hSke+1yr7h66LLg==");
-
-            var mockIConfigurationBlobAccessSection = new Mock<IConfigurationSection>();
-            mockIConfigurationBlobAccessSection.Setup(x => x.Key).Returns(_blobAccessPathConfigName);
-            mockIConfigurationBlobAccessSection.Setup(x => x.Value).Returns("https://ovchatappstorage.blob.core.windows.net/profileimages");
-
-            _configMock.Setup(x => x.GetSection(_signingKeyConfigName)).Returns(mockIConfigurationSigningKeySection.Object);
-            _configMock.Setup(x => x.GetSection(_blobAccessPathConfigName)).Returns(mockIConfigurationBlobAccessSection.Object);
+            _configMock
+                .Setup(c => c.GetSection(It.IsAny<string>()).Value)
+                .Returns(_signingKey);
         }
 
         private IMapper SetUpMapper()
