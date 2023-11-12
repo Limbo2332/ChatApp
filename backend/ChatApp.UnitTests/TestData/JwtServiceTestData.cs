@@ -2,20 +2,15 @@
 
 namespace ChatApp.UnitTests.TestData
 {
-    public class JwtServiceTestData : IEnumerable<object[]>
+    public class JwtServiceTestData : TheoryData<int, string, string>
     {
-        public IEnumerator<object[]> GetEnumerator()
+        public JwtServiceTestData()
         {
-            yield return new object[] { 1, "test", "test@gmail.com" };
-            yield return new object[] { 2, "unique", "unique@gmail.com" };
-            yield return new object[] { 3, "helloWorld!", "my@gmail.com" };
-            yield return new object[] { 4, "cmon", "test@hotline.com" };
-            yield return new object[] { 5, "MyUserName", "mypost@gmail.com" };
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            Add(1, "test", "test@gmail.com");
+            Add(2, "unique", "unique@gmail.com");
+            Add(3, "helloWorld!", "my@gmail.com");
+            Add(4, "cmon", "test@hotline.com");
+            Add(5, "MyUserName", "mypost@gmail.com");
         }
     }
 }

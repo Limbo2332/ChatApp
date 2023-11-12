@@ -46,7 +46,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task LoginAsync_ShouldThrowException_WhenNoUser()
+        public async Task LoginAsync_Should_ThrowException_WhenNoUser()
         {
             // Arrange
             var userDto = new UserLoginDto
@@ -63,7 +63,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task LoginAsync_ShouldThrowException_WhenWrongPassword()
+        public async Task LoginAsync_Should_ThrowException_WhenWrongPassword()
         {
             // Arrange
             var userDto = new UserLoginDto
@@ -86,7 +86,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task LoginAsync_ShouldReturnAuthUser()
+        public async Task LoginAsync_Should_ReturnAuthUser()
         {
             // Arrange
             var userDto = new UserLoginDto
@@ -120,7 +120,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task RegisterAsync_ShouldReturnAuthUser()
+        public async Task RegisterAsync_Should_ReturnAuthUser()
         {
             // Arrange
             var userDto = new UserRegisterDto
@@ -167,7 +167,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task RefreshTokenAsync_ShouldThrowException_WhenWrongUser()
+        public async Task RefreshTokenAsync_Should_ThrowException_WhenWrongUser()
         {
             // Arrange
             var fakeUser = new User
@@ -191,7 +191,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task RefreshTokenAsync_ShouldThrowException_WhenNoSuchRefreshTokens()
+        public async Task RefreshTokenAsync_Should_ThrowException_WhenNoSuchRefreshTokens()
         {
             // Arrange
             var user = DbContextTestData.Users.First();
@@ -217,7 +217,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task RefreshTokenAsync_ShouldThrowException_WhenRefreshTokenIsNotActive()
+        public async Task RefreshTokenAsync_Should_ThrowException_WhenRefreshTokenIsNotActive()
         {
             // Arrange
             var refreshToken = DbContextTestData.RefreshTokens.First();
@@ -246,7 +246,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task RefreshTokenAsync_ShouldReturnToken()
+        public async Task RefreshTokenAsync_Should_ReturnToken()
         {
             // Arrange
             var refreshTokens = DbContextTestData.RefreshTokens;
@@ -306,7 +306,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public async Task RemoveRefreshTokenAsync_ShouldThrowException_WhenNoTokenInDatabase()
+        public async Task RemoveRefreshTokenAsync_Should_ThrowException_WhenNoTokenInDatabase()
         {
             // Arrange
             var refreshToken = _jwtService.GenerateRefreshToken();

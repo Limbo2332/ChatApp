@@ -27,8 +27,6 @@ namespace ChatApp.UnitTests.Systems.Services.Abstract
             SetUpConfiguration();
 
             _mapper = SetUpMapper();
-
-            _userIdGetterMock.Setup(x => x.CurrentUserId).Returns(1);
         }
 
         private void SetUpConfiguration()

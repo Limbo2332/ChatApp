@@ -102,7 +102,7 @@ namespace ChatApp.BLL.Services
             return _mapper.Map<UserDto>(currentUser);
         }
 
-        public async Task<bool> SendResetEmailAsync(string email)
+        public async Task<MailDto?> SendResetEmailAsync(string email)
         {
             var emailToken = GenerateEmailToken();
 
@@ -115,7 +115,7 @@ namespace ChatApp.BLL.Services
 
             var result = await _emailService.SendEmailAsync(mail);
 
-            return result.HasCompleted;
+            return result.HasCompleted ? mail : null;
         }
 
         public async Task ResetPasswordAsync(ResetPasswordDto newInfo)

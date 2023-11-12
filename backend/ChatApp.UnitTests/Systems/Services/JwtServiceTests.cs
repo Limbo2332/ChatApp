@@ -22,7 +22,7 @@ namespace ChatApp.UnitTests.Systems.Services
         }
 
         [Fact]
-        public void GenerateRefreshToken_ShouldReturn_RefreshToken()
+        public void GenerateRefreshToken_Should_ReturnRefreshToken()
         {
             // Arrange & Act
             var token = _sut.GenerateRefreshToken();
@@ -37,7 +37,7 @@ namespace ChatApp.UnitTests.Systems.Services
 
         [Theory]
         [ClassData(typeof(JwtServiceTestData))]
-        public void GenerateAccessToken_ShouldReturn_AccessToken(int userId, string userName, string email)
+        public void GenerateAccessToken_Should_ReturnAccessToken(int userId, string userName, string email)
         {
             // Arrange
             var tokenValidationParameters = new TokenValidationParameters
@@ -80,7 +80,7 @@ namespace ChatApp.UnitTests.Systems.Services
 
         [Theory]
         [ClassData(typeof(JwtServiceTestData))]
-        public void GetUserIdFromToken_ShouldReturn_UserId(int userId, string userName, string email)
+        public void GetUserIdFromToken_Should_ReturnUserId(int userId, string userName, string email)
         {
             // Arrange
             var accessToken = _sut.GenerateAccessToken(userId, userName, email);
