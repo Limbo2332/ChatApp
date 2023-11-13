@@ -1,6 +1,4 @@
-﻿using ChatApp.Common.Constants;
-using ChatApp.Common.DTO.Mail;
-using ChatApp.DAL.Context.SeedSettings;
+﻿using ChatApp.Common.DTO.Mail;
 using ChatApp.WebAPI.Extensions;
 using FluentValidation;
 

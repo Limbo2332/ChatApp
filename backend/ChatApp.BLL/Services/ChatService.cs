@@ -10,12 +10,9 @@ using ChatApp.Common.DTO.Page;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
 using ChatApp.Common.Logic.Abstract;
-using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using ChatApp.DAL.Repositories.Abstract;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic;
 using System.Linq.Dynamic.Core;
 
 namespace ChatApp.BLL.Services
@@ -112,7 +109,7 @@ namespace ChatApp.BLL.Services
                 .FirstOrDefault(chat => chat.ChatId == chatId)
                     ?? throw new NotFoundException(nameof(Chat));
 
-            if(pageSettings?.Filter is not null)
+            if (pageSettings?.Filter is not null)
             {
                 chatConversation.Messages = chatConversation.Messages
                    .AsQueryable()
@@ -120,7 +117,7 @@ namespace ChatApp.BLL.Services
                    .ToList();
             }
 
-            if(pageSettings?.Pagination is not null)
+            if (pageSettings?.Pagination is not null)
             {
                 chatConversation.Messages = chatConversation.Messages
                    .Skip((pageSettings.Pagination.PageNumber - 1) * pageSettings.Pagination.PageSize)

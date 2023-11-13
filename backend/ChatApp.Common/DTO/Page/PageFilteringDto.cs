@@ -1,6 +1,4 @@
-﻿using ChatApp.Common.Enums;
-
-namespace ChatApp.Common.DTO.Page
+﻿namespace ChatApp.Common.DTO.Page
 {
     public class PageFilteringDto
     {

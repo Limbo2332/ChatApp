@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ChatApp.BLL.Hubs;
 using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Auth;
@@ -7,11 +6,8 @@ using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.Common.Security;
-using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using ChatApp.DAL.Repositories.Abstract;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace ChatApp.BLL.Services.Auth

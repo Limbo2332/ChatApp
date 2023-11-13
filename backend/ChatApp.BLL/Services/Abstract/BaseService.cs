@@ -1,8 +1,5 @@
 ﻿using AutoMapper;
-using ChatApp.BLL.Hubs;
 using ChatApp.Common.Logic.Abstract;
-using ChatApp.DAL.Context;
-using Microsoft.AspNetCore.SignalR;
 
 namespace ChatApp.BLL.Services.Abstract
 {

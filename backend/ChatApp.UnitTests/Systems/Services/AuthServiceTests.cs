@@ -1,25 +1,14 @@
 ﻿using AutoMapper;
-using AutoMapper.Internal;
 using ChatApp.BLL.Interfaces.Auth;
-using ChatApp.BLL.MappingProfiles;
-using ChatApp.BLL.MappingProfiles.Resolvers;
 using ChatApp.BLL.Services.Auth;
 using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
-using ChatApp.Common.Logic.Abstract;
-using ChatApp.Common.Security;
-using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using ChatApp.DAL.Repositories.Abstract;
 using ChatApp.UnitTests.Systems.Services.Abstract;
 using ChatApp.UnitTests.TestData;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Moq;
-using System;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.Linq.Expressions;
 
 namespace ChatApp.UnitTests.Systems.Services
@@ -37,11 +26,11 @@ namespace ChatApp.UnitTests.Systems.Services
             _jwtService = new JwtService(_configMock.Object);
 
             _sut = new AuthService(
-                _mapper, 
-                _userIdGetterMock.Object, 
+                _mapper,
+                _userIdGetterMock.Object,
                 _jwtService,
-                _configMock.Object, 
-                _userRepositoryMock.Object, 
+                _configMock.Object,
+                _userRepositoryMock.Object,
                 _refreshTokenRepositoryMock.Object);
         }
 

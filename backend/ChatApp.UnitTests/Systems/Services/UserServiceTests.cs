@@ -1,6 +1,4 @@
 ﻿using Azure.Communication.Email;
-using ChatApp.BLL.Hubs;
-using ChatApp.BLL.Hubs.Clients;
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services;
 using ChatApp.Common.DTO.Mail;
@@ -13,9 +11,6 @@ using ChatApp.DAL.Repositories.Abstract;
 using ChatApp.UnitTests.Systems.Services.Abstract;
 using ChatApp.UnitTests.TestData;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
-using Moq;
-using System.Linq.Dynamic.Core.Tokenizer;
 using System.Linq.Expressions;
 
 namespace ChatApp.UnitTests.Systems.Services
@@ -385,7 +380,7 @@ namespace ChatApp.UnitTests.Systems.Services
 
                 result!.Subject.Should().BeEquivalentTo(subject);
                 result!.To.Should().BeEquivalentTo(email);
-                result!.Content.Should().BeOfType<string>();   
+                result!.Content.Should().BeOfType<string>();
             }
         }
 
@@ -425,7 +420,7 @@ namespace ChatApp.UnitTests.Systems.Services
             };
 
             var hashedPassword = SecurityHelper.HashPassword(
-                resetPasswordDto.NewPassword, 
+                resetPasswordDto.NewPassword,
                 Convert.FromBase64String(user.Salt));
 
             _userRepository

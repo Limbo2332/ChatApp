@@ -1,5 +1,4 @@
-﻿using ChatApp.DAL.Entities.Abstract;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace ChatApp.DAL.Repositories.Abstract
 {

@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace ChatApp.UnitTests.TestData
+﻿namespace ChatApp.UnitTests.TestData
 {
     public class JwtServiceTestData : TheoryData<int, string, string>
     {

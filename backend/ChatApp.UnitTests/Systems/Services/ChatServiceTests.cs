@@ -11,7 +11,6 @@ using ChatApp.DAL.Repositories.Abstract;
 using ChatApp.UnitTests.Systems.Services.Abstract;
 using ChatApp.UnitTests.TestData;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace ChatApp.UnitTests.Systems.Services
@@ -428,19 +427,19 @@ namespace ChatApp.UnitTests.Systems.Services
         {
             var combinedUserChats = DbContextTestData.UserChats
                 .Join(
-                    DbContextTestData.Users, 
-                    uc => uc.UserId, 
-                    u => u.Id, 
+                    DbContextTestData.Users,
+                    uc => uc.UserId,
+                    u => u.Id,
                     (uc, u) => new { uc, u })
                 .Join(
-                    DbContextTestData.Chats, 
-                    combined => combined.uc.ChatId, 
-                    c => c.Id, 
+                    DbContextTestData.Chats,
+                    combined => combined.uc.ChatId,
+                    c => c.Id,
                     (combined, c) => new { combined.uc, combined.u, c })
                 .GroupJoin(
-                    DbContextTestData.Messages, 
-                    combined => combined.c.Id, 
-                    m => m.ChatId, 
+                    DbContextTestData.Messages,
+                    combined => combined.c.Id,
+                    m => m.ChatId,
                     (combined, messages) => new { combined.uc, combined.u, combined.c, messages })
                 .ToList();
 

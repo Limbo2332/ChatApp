@@ -1,6 +1,5 @@
 ﻿using ChatApp.Common.DTO.Chat;
 using ChatApp.Common.DTO.Message;
-using ChatApp.DAL.Entities;
 
 namespace ChatApp.BLL.Hubs.Clients
 {

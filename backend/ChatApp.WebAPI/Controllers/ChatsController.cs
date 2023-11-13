@@ -27,7 +27,7 @@ namespace ChatApp.WebAPI.Controllers
         }
 
         [HttpGet("{chatId}")]
-        public async Task<ActionResult<ChatConversationDto>> GetChatConversationAsync(int chatId, 
+        public async Task<ActionResult<ChatConversationDto>> GetChatConversationAsync(int chatId,
             [FromQuery] PageSettingsDto? pageSettings)
         {
             return Ok(await _chatService.GetConversationAsync(chatId, pageSettings));

@@ -5,7 +5,6 @@ using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.Helpers;
 using ChatApp.Common.Logic.Abstract;
-using ChatApp.DAL.Context;
 using Microsoft.AspNetCore.Http;
 
 namespace ChatApp.BLL.Services
@@ -15,9 +14,9 @@ namespace ChatApp.BLL.Services
         private readonly BlobContainerClient _blobContainerClient;
 
         public BlobStorageService(
-            IMapper mapper, 
-            IUserIdGetter userIdGetter, 
-            BlobContainerClient blobContainerClient) 
+            IMapper mapper,
+            IUserIdGetter userIdGetter,
+            BlobContainerClient blobContainerClient)
             : base(mapper, userIdGetter)
         {
             _blobContainerClient = blobContainerClient;

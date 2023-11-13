@@ -2,10 +2,7 @@
 using ChatApp.BLL.Services.Auth;
 using ChatApp.UnitTests.Systems.Services.Abstract;
 using ChatApp.UnitTests.TestData;
-using FluentAssertions.Execution;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Moq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 

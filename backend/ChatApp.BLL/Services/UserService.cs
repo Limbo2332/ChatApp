@@ -8,11 +8,9 @@ using ChatApp.Common.Exceptions;
 using ChatApp.Common.Helpers;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.Common.Security;
-using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using ChatApp.DAL.Repositories.Abstract;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
 namespace ChatApp.BLL.Services
@@ -24,10 +22,10 @@ namespace ChatApp.BLL.Services
         private readonly IEmailService _emailService;
 
         public UserService(
-            IMapper mapper, 
-            IUserIdGetter userIdGetter, 
-            IBlobStorageService blobStorageService, 
-            IEmailService emailService, 
+            IMapper mapper,
+            IUserIdGetter userIdGetter,
+            IBlobStorageService blobStorageService,
+            IEmailService emailService,
             IUserRepository userRepository)
             : base(mapper, userIdGetter)
         {
@@ -83,14 +81,14 @@ namespace ChatApp.BLL.Services
         {
             var currentUser = await GetCurrentUserAsync();
 
-            if(currentUser.Email != user.Email && !IsEmailUnique(user.Email))
+            if (currentUser.Email != user.Email && !IsEmailUnique(user.Email))
             {
                 throw new BadRequestException(ValidationMessages.EmailIsNotUniqueMessage);
             }
 
             currentUser.Email = user.Email;
 
-            if(currentUser.UserName != user.UserName && !IsUserNameUnique(user.UserName))
+            if (currentUser.UserName != user.UserName && !IsUserNameUnique(user.UserName))
             {
                 throw new BadRequestException(ValidationMessages.UsernameIsNotUniqueMessage);
             }
@@ -121,7 +119,7 @@ namespace ChatApp.BLL.Services
         public async Task ResetPasswordAsync(ResetPasswordDto newInfo)
         {
             var user = await _userRepository
-                .GetByExpressionAsync(user => user.Email == newInfo.Email) 
+                .GetByExpressionAsync(user => user.Email == newInfo.Email)
                 ?? throw new BadRequestException($"User with email {newInfo.Email} doesn't exist");
 
             user.Password = SecurityHelper.HashPassword(newInfo.NewPassword, Convert.FromBase64String(user.Salt));

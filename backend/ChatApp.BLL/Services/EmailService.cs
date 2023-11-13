@@ -4,7 +4,6 @@ using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Mail;
 using ChatApp.Common.Logic.Abstract;
-using ChatApp.DAL.Context;
 using Microsoft.Extensions.Configuration;
 
 namespace ChatApp.BLL.Services
@@ -15,9 +14,9 @@ namespace ChatApp.BLL.Services
         private readonly IConfiguration _config;
 
         public EmailService(
-            IMapper mapper, 
-            IUserIdGetter userIdGetter, 
-            EmailClient emailClient, 
+            IMapper mapper,
+            IUserIdGetter userIdGetter,
+            EmailClient emailClient,
             IConfiguration config)
             : base(mapper, userIdGetter)
         {

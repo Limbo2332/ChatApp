@@ -1,5 +1,4 @@
 ﻿using ChatApp.DAL.Context;
-using ChatApp.DAL.Entities.Abstract;
 using ChatApp.DAL.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

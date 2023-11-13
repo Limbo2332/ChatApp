@@ -1,17 +1,8 @@
 ﻿using AutoMapper;
-using ChatApp.BLL.Interfaces.Auth;
-using ChatApp.BLL.MappingProfiles.Resolvers;
 using ChatApp.BLL.MappingProfiles;
-using ChatApp.BLL.Services.Auth;
+using ChatApp.BLL.MappingProfiles.Resolvers;
 using ChatApp.Common.Logic.Abstract;
-using ChatApp.DAL.Context;
-using ChatApp.UnitTests.TestData;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Moq;
-using Microsoft.Extensions.DependencyInjection;
-using ChatApp.DAL.Entities;
-using ChatApp.Common.DTO.Message;
 
 namespace ChatApp.UnitTests.Systems.Services.Abstract
 {

@@ -1,6 +1,5 @@
 ﻿using ChatApp.Common.Security;
 using ChatApp.DAL.Entities;
-using System.Collections;
 
 namespace ChatApp.UnitTests.TestData
 {
