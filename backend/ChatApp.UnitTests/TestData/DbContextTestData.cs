@@ -69,8 +69,14 @@ namespace ChatApp.UnitTests.TestData
 
         public static List<Chat> Chats => new List<Chat>()
         {
-            new Chat(),
-            new Chat()
+            new Chat
+            {
+                Id = 1,
+            },
+            new Chat
+            {
+                Id = 2,
+            }
         };
 
         public static List<UserChats> UserChats => new List<UserChats>()
@@ -101,6 +107,7 @@ namespace ChatApp.UnitTests.TestData
         {
             new Message
             {
+                Id = 1,
                 ChatId = 1,
                 IsRead = true,
                 UserId = 2,
@@ -109,6 +116,7 @@ namespace ChatApp.UnitTests.TestData
             },
             new Message
             {
+                Id = 2,
                 ChatId = 1,
                 IsRead = true,
                 UserId = 1,
@@ -117,6 +125,7 @@ namespace ChatApp.UnitTests.TestData
             },
             new Message
             {
+                Id = 3,
                 ChatId = 1,
                 IsRead = false,
                 UserId = 1,
@@ -125,6 +134,7 @@ namespace ChatApp.UnitTests.TestData
             },
             new Message
             {
+                Id = 4,
                 ChatId = 2,
                 IsRead = false,
                 UserId = 1,
@@ -133,6 +143,7 @@ namespace ChatApp.UnitTests.TestData
             },
             new Message
             {
+                Id = 5,
                 ChatId = 2,
                 IsRead = false,
                 UserId = 1,

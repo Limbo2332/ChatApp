@@ -448,7 +448,7 @@ namespace ChatApp.UnitTests.Systems.Services
                 .ReturnsAsync(It.IsAny<User>);
 
             // Act
-            var action = async () => await _sut.GetCurrentUserAsync();
+            var action = _sut.GetCurrentUserAsync;
 
             // Assert
             await action.Should().ThrowAsync<NotFoundException>();
