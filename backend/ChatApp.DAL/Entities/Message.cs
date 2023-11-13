@@ -1,5 +1,4 @@
-﻿using ChatApp.Common.Enums;
-using ChatApp.DAL.Entities.Abstract;
+﻿using ChatApp.DAL.Entities.Abstract;
 
 namespace ChatApp.DAL.Entities
 {

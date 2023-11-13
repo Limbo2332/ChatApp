@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using Bogus.Extensions;
-using ChatApp.Common.Enums;
 using ChatApp.Common.Security;
 using ChatApp.DAL.Context.EntityConfigurations;
 using ChatApp.DAL.Context.SeedSettings;

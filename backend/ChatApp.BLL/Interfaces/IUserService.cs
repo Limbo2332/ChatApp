@@ -1,4 +1,5 @@
-﻿using ChatApp.Common.DTO.User;
+﻿using ChatApp.Common.DTO.Mail;
+using ChatApp.Common.DTO.User;
 using ChatApp.DAL.Entities;
 using Microsoft.AspNetCore.Http;
 
@@ -16,10 +17,12 @@ namespace ChatApp.BLL.Interfaces
 
         Task<UserDto> UpdateUserAsync(UserEditDto user);
 
-        Task<bool> SendResetEmailAsync(string email);
+        Task<MailDto?> SendResetEmailAsync(string email);
 
         Task ResetPasswordAsync(ResetPasswordDto newInfo);
 
         string GenerateEmailToken();
+
+        Task<User> GetCurrentUserAsync();
     }
 }

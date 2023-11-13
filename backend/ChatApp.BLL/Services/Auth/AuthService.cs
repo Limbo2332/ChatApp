@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ChatApp.BLL.Hubs;
 using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.Services.Abstract;
 using ChatApp.Common.DTO.Auth;
@@ -7,10 +6,8 @@ using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.Common.Security;
-using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
+using ChatApp.DAL.Repositories.Abstract;
 using Microsoft.Extensions.Configuration;
 
 namespace ChatApp.BLL.Services.Auth
@@ -19,24 +16,34 @@ namespace ChatApp.BLL.Services.Auth
     {
         private readonly IJwtService _jwtService;
         private readonly IConfiguration _config;
+        private readonly IUserRepository _userRepository;
+        private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-        public AuthService(ChatAppContext context, IMapper mapper, IUserIdGetter userIdGetter, IJwtService jwtService, IConfiguration config) 
-            : base(context, mapper, userIdGetter)
+        public AuthService(
+            IMapper mapper,
+            IUserIdGetter userIdGetter,
+            IJwtService jwtService,
+            IConfiguration config,
+            IUserRepository userRepository,
+            IRefreshTokenRepository refreshTokenRepository)
+            : base(mapper, userIdGetter)
         {
             _jwtService = jwtService;
             _config = config;
+            _userRepository = userRepository;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
         public async Task<AuthUserDto> LoginAsync(UserLoginDto userDto)
         {
-            var userEntity = await _context.Users
-                .FirstOrDefaultAsync(user => user.Email == userDto.EmailOrUserName
+            var userEntity = await _userRepository.GetByExpressionAsync(
+                user => user.Email == userDto.EmailOrUserName
                     || user.UserName == userDto.EmailOrUserName)
                 ?? throw new NotFoundException(nameof(User));
 
             if (!SecurityHelper.ValidatePassword(userDto.Password, userEntity.Password, userEntity.Salt))
             {
-                throw new NotFoundException(nameof(User), userEntity.Id);
+                throw new InvalidEmailUsernameOrPasswordException();
             }
 
             var token = await GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);
@@ -57,8 +64,7 @@ namespace ChatApp.BLL.Services.Auth
             userEntity.Salt = Convert.ToBase64String(salt);
             userEntity.Password = SecurityHelper.HashPassword(userDto.Password, salt);
 
-            await _context.Users.AddAsync(userEntity);
-            await _context.SaveChangesAsync();
+            await _userRepository.AddAsync(userEntity);
 
             var token = await GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);
             var user = _mapper.Map<UserDto>(userEntity);
@@ -73,11 +79,12 @@ namespace ChatApp.BLL.Services.Auth
         public async Task<AccessTokenDto> RefreshTokenAsync(AccessTokenDto tokenDto)
         {
             var userId = _jwtService.GetUserIdFromToken(tokenDto.AccessToken, _config.GetSection("JWT:SigningKey").Value!);
-            var userEntity = await _context.Users.FindAsync(userId)
+            var userEntity = await _userRepository
+                .GetByExpressionAsync(user => user.Id == userId)
                 ?? throw new NotFoundException(nameof(User));
 
-            var refreshToken = await _context.RefreshTokens
-                .FirstOrDefaultAsync(rt => rt.Token == tokenDto.RefreshToken && rt.UserId == userId)
+            var refreshToken = await _refreshTokenRepository
+                .GetByExpressionAsync(rt => rt.Token == tokenDto.RefreshToken && rt.UserId == userId)
                 ?? throw new InvalidTokenException(nameof(tokenDto.RefreshToken));
 
             if (!refreshToken.IsActive)
@@ -88,14 +95,15 @@ namespace ChatApp.BLL.Services.Auth
             var jwtToken = _jwtService.GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);
             var rToken = _jwtService.GenerateRefreshToken();
 
-            _context.RefreshTokens.Remove(refreshToken);
-            _context.RefreshTokens.Add(new RefreshToken
+            await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
+
+            var newRefreshToken = new RefreshToken
             {
                 Token = rToken,
                 UserId = userEntity.Id
-            });
+            };
 
-            await _context.SaveChangesAsync();
+            await _refreshTokenRepository.AddAsync(newRefreshToken);
 
             return new AccessTokenDto()
             {
@@ -107,30 +115,29 @@ namespace ChatApp.BLL.Services.Auth
         public async Task RemoveRefreshTokenAsync(string token)
         {
             var currentUserId = _userIdGetter.CurrentUserId;
-            var refreshToken = await _context.RefreshTokens
-                .FirstOrDefaultAsync(rt => rt.Token == token && rt.UserId == currentUserId)
+            var refreshToken = await _refreshTokenRepository
+                .GetByExpressionAsync(rt => rt.Token == token && rt.UserId == currentUserId)
                 ?? throw new InvalidTokenException(nameof(token));
 
-            _context.RefreshTokens.Remove(refreshToken);
-            await _context.SaveChangesAsync();
+            await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
         }
 
         private async Task<AccessTokenDto> GenerateAccessToken(int userId, string userName, string email)
         {
-            var refreshTokenEntity = await _context.RefreshTokens
-                .FirstOrDefaultAsync(rt => rt.UserId == userId);
+            var refreshTokenEntity = await _refreshTokenRepository
+                .GetByExpressionAsync(rt => rt.UserId == userId);
 
             var refreshToken = _jwtService.GenerateRefreshToken();
 
             if (refreshTokenEntity is null)
             {
-                await _context.RefreshTokens.AddAsync(new RefreshToken
+                var newRefreshToken = new RefreshToken
                 {
                     Token = refreshToken,
                     UserId = userId,
-                });
+                };
 
-                await _context.SaveChangesAsync();
+                await _refreshTokenRepository.AddAsync(newRefreshToken);
             }
 
             var accessToken = _jwtService.GenerateAccessToken(userId, userName, email);

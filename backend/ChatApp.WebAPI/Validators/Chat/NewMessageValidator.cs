@@ -1,6 +1,5 @@
 ﻿using ChatApp.Common.Constants;
 using ChatApp.Common.DTO.Message;
-using ChatApp.DAL.Context.SeedSettings;
 using ChatApp.WebAPI.Extensions;
 using FluentValidation;
 

@@ -13,6 +13,8 @@ using ChatApp.Common.DTO.User;
 using ChatApp.Common.Logic;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.DAL.Context;
+using ChatApp.DAL.Repositories;
+using ChatApp.DAL.Repositories.Abstract;
 using ChatApp.WebAPI.Validators.Auth;
 using ChatApp.WebAPI.Validators.Chat;
 using ChatApp.WebAPI.Validators.User;
@@ -109,6 +111,15 @@ namespace ChatApp.WebAPI.Extensions
                 cfg.AddProfile<UserProfile>();
                 cfg.AddProfile<ChatsProfile>();
             }, Assembly.GetAssembly(typeof(UserProfile)));
+        }
+
+        public static void RegisterRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IChatRepository, ChatRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IUserChatsRepository, UserChatsRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
         }
 
         public static void RegisterCustomServices(this IServiceCollection services)

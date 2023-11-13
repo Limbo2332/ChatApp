@@ -10,11 +10,9 @@ using ChatApp.Common.DTO.Page;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
 using ChatApp.Common.Logic.Abstract;
-using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
+using ChatApp.DAL.Repositories.Abstract;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Dynamic;
 using System.Linq.Dynamic.Core;
 
 namespace ChatApp.BLL.Services
@@ -23,26 +21,34 @@ namespace ChatApp.BLL.Services
     {
         private readonly IHubContext<ChatHub, IChatHubClient> _hubContext;
         private readonly IUserService _userService;
+        private readonly IChatRepository _chatRepository;
+        private readonly IUserChatsRepository _userChatsRepository;
+        private readonly IMessageRepository _messageRepository;
 
-        public ChatService(ChatAppContext context,
-                           IMapper mapper,
-                           IUserIdGetter userIdGetter,
-                           IHubContext<ChatHub, IChatHubClient> hubContext,
-                           IUserService userService)
-            : base(context, mapper, userIdGetter)
+        public ChatService(
+            IMapper mapper,
+            IUserIdGetter userIdGetter,
+            IHubContext<ChatHub, IChatHubClient> hubContext,
+            IUserService userService,
+            IChatRepository chatRepository,
+            IUserChatsRepository userChatsRepository,
+            IMessageRepository messageRepository)
+            : base(mapper, userIdGetter)
         {
             _hubContext = hubContext;
             _userService = userService;
+            _userChatsRepository = userChatsRepository;
+            _chatRepository = chatRepository;
+            _messageRepository = messageRepository;
         }
 
         public async Task<List<ChatPreviewDto>> GetChatsAsync(PageSettingsDto? pageSettings)
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
-            var chats = await _context.UserChats
-                .Include(userChat => userChat.User)
-                .Include(userChat => userChat.Chat)
-                    .ThenInclude(chat => chat.Messages)
+            var userChats = await _userChatsRepository.GetAllAsync();
+
+            var chats = userChats
                 .GroupBy(userChat => userChat.Chat)
                 .Where(group => group.Any(userChat => userChat.UserId == currentUserId))
                 .Select(group => new ChatPreviewDto
@@ -58,17 +64,9 @@ namespace ChatApp.BLL.Services
                     InterlocutorUnreadMessagesCount =
                         group.First(userChat => userChat.ChatId == group.Key.Id).Chat.Messages
                              .Count(message => !message.IsRead && message.UserId != currentUserId),
-                })
-                .ToListAsync();
+                });
 
-            if(pageSettings is null)
-            {
-                return chats
-                   .OrderByDescending(chat => chat.LastMessage.SentAt)
-                   .ToList();
-            }
-
-            if (pageSettings.Filter is not null)
+            if (pageSettings?.Filter is not null)
             {
                 chats = chats
                    .AsQueryable()
@@ -76,7 +74,7 @@ namespace ChatApp.BLL.Services
                    .ToList();
             }
 
-            if (pageSettings.Pagination is not null)
+            if (pageSettings?.Pagination is not null)
             {
                 chats = chats
                     .Skip((pageSettings.Pagination.PageNumber - 1) * pageSettings.Pagination.PageSize)
@@ -93,10 +91,9 @@ namespace ChatApp.BLL.Services
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
-            var chatConversation = await _context.UserChats
-                .Include(userChat => userChat.User)
-                .Include(userChat => userChat.Chat)
-                    .ThenInclude(chat => chat.Messages)
+            var userChats = await _userChatsRepository.GetAllAsync();
+
+            var chatConversation = userChats
                 .GroupBy(userChat => userChat.Chat)
                 .Select(group => new ChatConversationDto
                 {
@@ -109,15 +106,10 @@ namespace ChatApp.BLL.Services
                              .ToList()
                     )
                 })
-                .FirstOrDefaultAsync(chat => chat.ChatId == chatId)
+                .FirstOrDefault(chat => chat.ChatId == chatId)
                     ?? throw new NotFoundException(nameof(Chat));
 
-            if(pageSettings is null)
-            {
-                return chatConversation;
-            }
-
-            if(pageSettings.Filter is not null)
+            if (pageSettings?.Filter is not null)
             {
                 chatConversation.Messages = chatConversation.Messages
                    .AsQueryable()
@@ -125,7 +117,7 @@ namespace ChatApp.BLL.Services
                    .ToList();
             }
 
-            if(pageSettings.Pagination is not null)
+            if (pageSettings?.Pagination is not null)
             {
                 chatConversation.Messages = chatConversation.Messages
                    .Skip((pageSettings.Pagination.PageNumber - 1) * pageSettings.Pagination.PageSize)
@@ -160,8 +152,7 @@ namespace ChatApp.BLL.Services
 
             var chat = new Chat();
 
-            await _context.Chats.AddAsync(chat);
-            await _context.SaveChangesAsync();
+            await _chatRepository.AddAsync(chat);
 
             var message = new Message
             {
@@ -172,7 +163,7 @@ namespace ChatApp.BLL.Services
 
             await CreateUserChatsAsync(chat.Id, interlocutor.Id);
 
-            var currentUser = await _context.Users.FindAsync(currentUserId);
+            var currentUser = await _userService.GetCurrentUserAsync();
 
             var chatPreview = new ChatPreviewDto
             {
@@ -190,13 +181,15 @@ namespace ChatApp.BLL.Services
 
         public async Task ReadMessagesAsync(ChatReadDto chat)
         {
-            await _context.Messages
+            var messages = await _messageRepository
+                .GetAllAsync();
+
+            messages = messages
                 .Where(message => message.ChatId == chat.Id
                     && message.UserId != chat.UserId
-                    && !message.IsRead)
-                .ForEachAsync(message => message.IsRead = true);
+                    && !message.IsRead);
 
-            await _context.SaveChangesAsync();
+            await _messageRepository.UpdateEveryMessageByExpressionAsync(message => message.IsRead, true);
 
             var userChat = await GetUserChatAsync(chat.Id, chat.UserId);
 
@@ -207,8 +200,7 @@ namespace ChatApp.BLL.Services
 
         private async Task<MessagePreviewDto> CreateNewMessageAsync(Message message)
         {
-            await _context.Messages.AddAsync(message);
-            await _context.SaveChangesAsync();
+            await _messageRepository.AddAsync(message);
 
             return _mapper.Map<MessagePreviewDto>(message);
         }
@@ -234,17 +226,17 @@ namespace ChatApp.BLL.Services
         {
             int currentUserId = _userIdGetter.CurrentUserId;
 
-            var myUserChats = await _context.UserChats
-                .Include(userChat => userChat.Chat)
+            var userChats = await _userChatsRepository.GetAllAsync();
+
+            var myUserChats = userChats
                 .Where(userChat => userChat.UserId == currentUserId)
                 .Select(userChat => userChat.Chat)
-                .ToListAsync();
+                .ToList();
 
-            var interlocutorChats = await _context.UserChats
-                .Include(userChat => userChat.Chat)
+            var interlocutorChats = userChats
                 .Where(userChat => userChat.UserId == interlocutorId)
                 .Select(userChat => userChat.Chat)
-                .ToListAsync();
+                .ToList();
 
             var commonChats = myUserChats
                 .Intersect(interlocutorChats)
@@ -269,14 +261,13 @@ namespace ChatApp.BLL.Services
                 UserId = interlocutorId,
             };
 
-            await _context.UserChats.AddRangeAsync(myUserChat, interLocutorUserChat);
-            await _context.SaveChangesAsync();
+            await _userChatsRepository.AddRangeAsync(new List<UserChats> { myUserChat, interLocutorUserChat });
         }
 
         private async Task<UserChats> GetUserChatAsync(int chatId, int userId)
         {
-            return await _context.UserChats
-                .FirstOrDefaultAsync(userChat => userChat.ChatId == chatId
+            return await _userChatsRepository
+                .GetByExpressionAsync(userChat => userChat.ChatId == chatId
                          && userChat.UserId != userId)
                 ?? throw new NotFoundException(nameof(UserChats));
         }

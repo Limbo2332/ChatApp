@@ -2,7 +2,6 @@
 using ChatApp.Common.DTO.Mail;
 using ChatApp.Common.DTO.User;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatApp.WebAPI.Controllers
