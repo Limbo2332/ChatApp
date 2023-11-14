@@ -121,7 +121,7 @@ namespace ChatApp.BLL.Services.Auth
             var currentUserId = _userIdGetter.CurrentUserId;
             var refreshToken = await _refreshTokenRepository
                 .GetByExpressionAsync(rt => rt.Token == token && rt.UserId == currentUserId)
-                ?? throw new InvalidTokenException(nameof(token));
+                ?? throw new InvalidTokenException(nameof(RefreshToken));
 
             await _refreshTokenRepository.DeleteAsync(refreshToken.Id);
         }

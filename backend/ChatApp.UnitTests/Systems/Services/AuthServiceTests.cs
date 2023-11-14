@@ -49,7 +49,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = async () => await _sut.LoginAsync(userDto);
 
             // Assert
-            await result.Should().ThrowAsync<NotFoundException>();
+            await result
+                .Should()
+                .ThrowAsync<NotFoundException>()
+                .WithMessage("User was not found");
         }
 
         [Fact]
@@ -72,7 +75,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = async () => await _sut.LoginAsync(userDto);
 
             // Assert
-            await result.Should().ThrowAsync<InvalidEmailUsernameOrPasswordException>();
+            await result
+                .Should()
+                .ThrowAsync<InvalidEmailUsernameOrPasswordException>()
+                .WithMessage("Invalid username/email or password");
         }
 
         [Fact]
@@ -177,7 +183,9 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = async () => await _sut.RefreshTokenAsync(accessToken);
 
             // Assert
-            await result.Should().ThrowAsync<NotFoundException>();
+            await result
+                .Should()
+                .ThrowAsync<NotFoundException>("User was not found");
         }
 
         [Fact]
@@ -203,7 +211,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = async () => await _sut.RefreshTokenAsync(accessToken);
 
             // Assert
-            await result.Should().ThrowAsync<InvalidTokenException>();
+            await result
+                .Should()
+                .ThrowAsync<InvalidTokenException>()
+                .WithMessage("Invalid RefreshToken.");
         }
 
         [Fact]
@@ -232,7 +243,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = async () => await _sut.RefreshTokenAsync(accessToken);
 
             // Assert
-            await result.Should().ThrowAsync<ExpiredRefreshTokenException>();
+            await result
+                .Should()
+                .ThrowAsync<ExpiredRefreshTokenException>()
+                .WithMessage("Refresh token expired.");
         }
 
         [Fact]
@@ -305,7 +319,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var result = async () => await _sut.RemoveRefreshTokenAsync(refreshToken);
 
             // Assert
-            await result.Should().ThrowAsync<InvalidTokenException>();
+            await result
+                .Should()
+                .ThrowAsync<InvalidTokenException>()
+                .WithMessage("Invalid RefreshToken.");
         }
 
         [Fact]

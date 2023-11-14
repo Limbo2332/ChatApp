@@ -1,6 +1,7 @@
 ﻿using Azure.Communication.Email;
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services;
+using ChatApp.Common.Constants;
 using ChatApp.Common.DTO.Mail;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
@@ -103,7 +104,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.FindUserByUsernameAsync(uniqueUserName);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage($"User with username {uniqueUserName} doesn't exist");
         }
 
         [Theory]
@@ -139,7 +143,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.UpdateUserAvatarAsync(fileMock.Object);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage("Image type is wrong.");
         }
 
         [Theory]
@@ -266,7 +273,9 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.UpdateUserAsync(userDto);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>(ValidationMessages.EmailIsNotUniqueMessage);
         }
 
         [Theory]
@@ -290,7 +299,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.UpdateUserAsync(userDto);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage(ValidationMessages.UsernameIsNotUniqueMessage);
         }
 
         [Fact]
@@ -404,7 +416,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.ResetPasswordAsync(resetPasswordDto);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage($"User with email {resetPasswordDto.Email} doesn't exist");
         }
 
         [Theory]
@@ -449,7 +464,9 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = _sut.GetCurrentUserAsync;
 
             // Assert
-            await action.Should().ThrowAsync<NotFoundException>();
+            await action
+                .Should()
+                .ThrowAsync<NotFoundException>($"User with id {_userIdGetterMock.Object.CurrentUserId} was not found");
         }
     }
 }

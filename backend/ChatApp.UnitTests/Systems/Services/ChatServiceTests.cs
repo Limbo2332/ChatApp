@@ -157,7 +157,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.GetConversationAsync(chatId, pageSettingsDto);
 
             // Assert
-            await action.Should().ThrowAsync<NotFoundException>();
+            await action
+                .Should()
+                .ThrowAsync<NotFoundException>()
+                .WithMessage("Chat was not found");
         }
 
         [Fact]
@@ -318,7 +321,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.AddNewChatWithAsync(newChat);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage("This chat is already created");
         }
 
         [Fact]
@@ -363,7 +369,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.ReadMessagesAsync(chat);
 
             // Assert
-            await action.Should().ThrowAsync<NotFoundException>();
+            await action
+                .Should()
+                .ThrowAsync<NotFoundException>()
+                .WithMessage("UserChats was not found");
         }
 
         [Fact]
