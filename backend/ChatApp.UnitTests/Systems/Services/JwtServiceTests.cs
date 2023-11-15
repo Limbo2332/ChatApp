@@ -13,7 +13,6 @@ namespace ChatApp.UnitTests.Systems.Services
         private readonly IJwtService _sut;
 
         public JwtServiceTests()
-            : base()
         {
             _sut = new JwtService(_configMock.Object);
         }

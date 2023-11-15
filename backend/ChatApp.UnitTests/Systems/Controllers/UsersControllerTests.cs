@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-using ChatApp.BLL.Interfaces;
-using ChatApp.Common.DTO.Auth;
+﻿using ChatApp.BLL.Interfaces;
 using ChatApp.Common.DTO.Mail;
 using ChatApp.Common.DTO.User;
 using ChatApp.WebAPI.Controllers;

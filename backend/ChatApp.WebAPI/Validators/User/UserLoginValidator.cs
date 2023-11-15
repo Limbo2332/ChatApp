@@ -12,7 +12,7 @@ namespace ChatApp.WebAPI.Validators.User
             RuleFor(ur => ur.EmailOrUserName)
                 .NotEmpty()
                     .WithMessage(ValidationMessages.InvalidUserNameOrEmailMessage)
-                .Matches(Regexes.NoSpacesRegex)
+                .Matches(ValidationRegexs.NO_SPACES_REGEX)
                     .WithMessage(ValidationMessages.InvalidUserNameOrEmailMessage);
 
             RuleFor(ur => ur.Password)

@@ -9,15 +9,17 @@ namespace ChatApp.UnitTests.Systems.Services.Abstract
     public abstract class BaseServiceTests
     {
         protected readonly IMapper _mapper;
-        protected readonly Mock<IUserIdGetter> _userIdGetterMock = new Mock<IUserIdGetter>();
-        protected readonly Mock<IConfiguration> _configMock = new Mock<IConfiguration>();
+        protected readonly Mock<IUserIdGetter> _userIdGetterMock;
+        protected readonly Mock<IConfiguration> _configMock;
         protected readonly string _signingKey = "testForSigningKey";
 
-        public BaseServiceTests()
+        protected BaseServiceTests()
         {
-            SetUpConfiguration();
-
+            _userIdGetterMock = new Mock<IUserIdGetter>();
+            _configMock = new Mock<IConfiguration>();
             _mapper = SetUpMapper();
+
+            SetUpConfiguration();
         }
 
         private void SetUpConfiguration()

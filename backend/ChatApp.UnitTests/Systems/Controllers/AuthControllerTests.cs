@@ -1,17 +1,8 @@
-﻿using Azure.Core;
-using ChatApp.BLL.Interfaces.Auth;
+﻿using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.User;
-using ChatApp.Common.Exceptions;
-using ChatApp.Common.Filters;
-using ChatApp.UnitTests.TestData;
 using ChatApp.WebAPI.Controllers;
-using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using System.Net;
 
 namespace ChatApp.UnitTests.Systems.Controllers

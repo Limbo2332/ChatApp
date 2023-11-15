@@ -17,21 +17,20 @@ namespace ChatApp.Common.Security
 
         public static byte[] GetRandomBytes(int length = 32)
         {
-            using (var randomNumberGenerator = RandomNumberGenerator.Create())
-            {
-                var salt = new byte[length];
-                randomNumberGenerator.GetBytes(salt);
+            using var randomNumberGenerator = RandomNumberGenerator.Create();
 
-                return salt;
-            }
+            var salt = new byte[length];
+            randomNumberGenerator.GetBytes(salt);
+
+            return salt;
         }
 
         public static byte[] GetSeedingBytes(int length = 32)
         {
-            Random r = new Random(0);
+            var r = new Random(0);
             var salt = new byte[length];
 
-            for (int i = 0; i < salt.Length; i++)
+            for (var i = 0; i < salt.Length; i++)
                 salt[i] = (byte)r.Next(1, 256);
 
             r.NextBytes(salt);

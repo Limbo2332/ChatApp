@@ -17,7 +17,7 @@ namespace ChatApp.WebAPI.Validators.User
             RuleFor(ur => ur.Email)
                 .CustomEmail()
                 .Must(_userService.IsEmailUnique)
-                    .WithMessage(ValidationMessages.EmailIsNotUniqueMessage);
+                    .WithMessage(ValidationMessages.EMAIL_IS_NOT_UNIQUE_MESSAGE);
 
             RuleFor(ur => ur.UserName)
                 .CustomUserName()

@@ -12,10 +12,10 @@ namespace ChatApp.BLL.MappingProfiles
             CreateMap<UserRegisterDto, User>();
 
             CreateMap<User, UserDto>()
-                .ForMember(dest => dest.ImagePath, src => src.ConvertUsing<ImagePathResolver, string>(src => src.ImagePath!));
+                .ForMember(dest => dest.ImagePath, conf => conf.ConvertUsing<ImagePathResolver, string>(src => src.ImagePath!));
 
             CreateMap<User, UserPreviewDto>()
-                .ForMember(dest => dest.ImagePath, src => src.ConvertUsing<ImagePathResolver, string>(src => src.ImagePath!));
+                .ForMember(dest => dest.ImagePath, conf => conf.ConvertUsing<ImagePathResolver, string>(src => src.ImagePath!));
         }
     }
 }

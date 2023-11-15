@@ -83,7 +83,7 @@ namespace ChatApp.BLL.Services
 
             if (currentUser.Email != user.Email && !IsEmailUnique(user.Email))
             {
-                throw new BadRequestException(ValidationMessages.EmailIsNotUniqueMessage);
+                throw new BadRequestException(ValidationMessages.EMAIL_IS_NOT_UNIQUE_MESSAGE);
             }
 
             currentUser.Email = user.Email;

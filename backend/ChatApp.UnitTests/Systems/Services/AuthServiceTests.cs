@@ -1,51 +1,52 @@
-﻿using AutoMapper;
-using ChatApp.BLL.Interfaces.Auth;
+﻿using ChatApp.BLL.Interfaces.Auth;
 using ChatApp.BLL.Services.Auth;
 using ChatApp.Common.DTO.Auth;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
+using ChatApp.Common.Security;
 using ChatApp.DAL.Entities;
 using ChatApp.DAL.Repositories.Abstract;
 using ChatApp.UnitTests.Systems.Services.Abstract;
 using ChatApp.UnitTests.TestData;
-using Microsoft.Extensions.Configuration;
 using System.Linq.Expressions;
 
 namespace ChatApp.UnitTests.Systems.Services
 {
     public class AuthServiceTests : BaseServiceTests
     {
-        private IAuthService _sut;
-        private readonly IJwtService _jwtService;
-        private readonly Mock<IUserRepository> _userRepositoryMock = new Mock<IUserRepository>();
-        private readonly Mock<IRefreshTokenRepository> _refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
+        private readonly IAuthService _sut;
+        private readonly Mock<IJwtService> _jwtServiceMock;
+        private readonly Mock<IUserRepository> _userRepositoryMock;
+        private readonly Mock<IRefreshTokenRepository> _refreshTokenRepositoryMock;
+        private readonly string _generatedRefreshToken;
 
         public AuthServiceTests()
-            : base()
         {
-            _jwtService = new JwtService(_configMock.Object);
+            _jwtServiceMock = new Mock<IJwtService>();
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _refreshTokenRepositoryMock = new Mock<IRefreshTokenRepository>();
+
+            _generatedRefreshToken = Convert.ToBase64String(SecurityHelper.GetRandomBytes());
 
             _sut = new AuthService(
                 _mapper,
                 _userIdGetterMock.Object,
-                _jwtService,
+                _jwtServiceMock.Object,
                 _configMock.Object,
                 _userRepositoryMock.Object,
                 _refreshTokenRepositoryMock.Object);
+
+            SetupJwtServiceMock();
         }
 
         [Fact]
         public async Task LoginAsync_Should_ThrowException_WhenNoUser()
         {
             // Arrange
-            var userDto = new UserLoginDto
-            {
-                EmailOrUserName = "Test",
-                Password = "Test"
-            };
+            var userDto = new Mock<UserLoginDto>();
 
             // Act
-            var result = async () => await _sut.LoginAsync(userDto);
+            var result = async () => await _sut.LoginAsync(userDto.Object);
 
             // Assert
             await result
@@ -58,20 +59,16 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task LoginAsync_Should_ThrowException_WhenWrongPassword()
         {
             // Arrange
-            var userDto = new UserLoginDto
-            {
-                EmailOrUserName = "TestUserName",
-                Password = "Test"
-            };
+            var userDto = new Mock<UserLoginDto>();
 
-            var user = DbContextTestData.Users.First();
+            var user = new Mock<User>();
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(user);
+                .ReturnsAsync(user.Object);
 
             // Act
-            var result = async () => await _sut.LoginAsync(userDto);
+            var result = async () => await _sut.LoginAsync(userDto.Object);
 
             // Assert
             await result
@@ -84,13 +81,15 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task LoginAsync_Should_ReturnAuthUser()
         {
             // Arrange
+            var user = DbContextTestData.Users.First();
+
             var userDto = new UserLoginDto
             {
-                EmailOrUserName = "TestUserName",
-                Password = "Test123!$"
+                EmailOrUserName = user.Email,
+                Password = user.Password
             };
 
-            var user = DbContextTestData.Users.First(u => u.UserName == userDto.EmailOrUserName);
+            user.Password = SecurityHelper.HashPassword(user.Password, Convert.FromBase64String(user.Salt));
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
@@ -108,9 +107,9 @@ namespace ChatApp.UnitTests.Systems.Services
                 result.Token.AccessToken.Should().NotBeNull();
                 result.Token.RefreshToken.Should().NotBeNull();
 
-                result.User.UserName.Should().BeEquivalentTo(userDto.EmailOrUserName);
+                result.User.Email.Should().BeEquivalentTo(userDto.EmailOrUserName);
 
-                Convert.FromBase64String(result.Token.RefreshToken).Length.Should().Be(32);
+                result.Token.RefreshToken.Should().BeEquivalentTo(_generatedRefreshToken);
             }
         }
 
@@ -165,21 +164,10 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task RefreshTokenAsync_Should_ThrowException_WhenWrongUser()
         {
             // Arrange
-            var fakeUser = new User
-            {
-                Id = 999,
-                UserName = "FakeUserName",
-                Email = "FakeEmail"
-            };
-
-            var accessToken = new AccessTokenDto
-            {
-                RefreshToken = _jwtService.GenerateRefreshToken(),
-                AccessToken = _jwtService.GenerateAccessToken(fakeUser.Id, fakeUser.UserName, fakeUser.Email)
-            };
+            var accessToken = new Mock<AccessTokenDto>();
 
             // Act
-            var result = async () => await _sut.RefreshTokenAsync(accessToken);
+            var result = async () => await _sut.RefreshTokenAsync(accessToken.Object);
 
             // Assert
             await result
@@ -191,23 +179,15 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task RefreshTokenAsync_Should_ThrowException_WhenNoSuchRefreshTokens()
         {
             // Arrange
-            var user = DbContextTestData.Users.First();
-            var accessToken = new AccessTokenDto
-            {
-                RefreshToken = _jwtService.GenerateRefreshToken(),
-                AccessToken = _jwtService.GenerateAccessToken(user.Id, user.UserName, user.Email)
-            };
+            var user = new Mock<User>();
+            var accessToken = new Mock<AccessTokenDto>();
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(user);
-
-            _refreshTokenRepositoryMock
-                .Setup(rtr => rtr.GetByExpressionAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>()))
-                .ReturnsAsync(It.IsAny<RefreshToken>());
+                .ReturnsAsync(user.Object);
 
             // Act
-            var result = async () => await _sut.RefreshTokenAsync(accessToken);
+            var result = async () => await _sut.RefreshTokenAsync(accessToken.Object);
 
             // Assert
             await result
@@ -220,26 +200,27 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task RefreshTokenAsync_Should_ThrowException_WhenRefreshTokenIsNotActive()
         {
             // Arrange
-            var refreshToken = DbContextTestData.RefreshTokens.First();
-            refreshToken.Expires = DateTime.UtcNow.AddDays(-5);
-
-            var user = DbContextTestData.Users.First();
-            var accessToken = new AccessTokenDto
+            var refreshToken = new Mock<RefreshToken>
             {
-                RefreshToken = _jwtService.GenerateRefreshToken(),
-                AccessToken = _jwtService.GenerateAccessToken(user.Id, user.UserName, user.Email)
+                Object =
+                {
+                    Expires = DateTime.UtcNow.AddDays(-15)
+                }
             };
+
+            var user = new Mock<User>();
+            var accessToken = new Mock<AccessTokenDto>();
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(user);
+                .ReturnsAsync(user.Object);
 
             _refreshTokenRepositoryMock
                 .Setup(rtr => rtr.GetByExpressionAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>()))
-                .ReturnsAsync(refreshToken);
+                .ReturnsAsync(refreshToken.Object);
 
             // Act
-            var result = async () => await _sut.RefreshTokenAsync(accessToken);
+            var result = async () => await _sut.RefreshTokenAsync(accessToken.Object);
 
             // Assert
             await result
@@ -255,23 +236,19 @@ namespace ChatApp.UnitTests.Systems.Services
             var refreshTokens = DbContextTestData.RefreshTokens;
             var refreshToken = refreshTokens.First();
 
-            var user = DbContextTestData.Users.First();
-            var accessToken = new AccessTokenDto
-            {
-                RefreshToken = _jwtService.GenerateRefreshToken(),
-                AccessToken = _jwtService.GenerateAccessToken(user.Id, user.UserName, user.Email)
-            };
+            var user = new Mock<User>();
+            var accessToken = new Mock<AccessTokenDto>();
 
             var newRefreshToken = new RefreshToken
             {
                 Id = 999,
-                Token = _jwtService.GenerateRefreshToken(),
-                UserId = user.Id,
+                Token = "123Token",
+                UserId = 999,
             };
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(user);
+                .ReturnsAsync(user.Object);
 
             _refreshTokenRepositoryMock
                 .Setup(rtr => rtr.GetByExpressionAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>()))
@@ -279,12 +256,11 @@ namespace ChatApp.UnitTests.Systems.Services
 
             _refreshTokenRepositoryMock
                 .Setup(rtr => rtr.DeleteAsync(It.IsAny<int>()))
-                .Callback(() => refreshTokens.Remove(refreshToken))
-                .Returns(Task.CompletedTask);
+                .Callback(() => refreshTokens.Remove(refreshToken));
 
             _refreshTokenRepositoryMock
                 .Setup(rtr => rtr.AddAsync(It.IsAny<RefreshToken>()))
-                .Callback<RefreshToken>(refreshToken =>
+                .Callback(() =>
                 {
                     refreshToken.Id = newRefreshToken.Id;
                     refreshTokens.Add(refreshToken);
@@ -292,7 +268,7 @@ namespace ChatApp.UnitTests.Systems.Services
                 .ReturnsAsync(newRefreshToken);
 
             // Act
-            var result = await _sut.RefreshTokenAsync(accessToken);
+            var result = await _sut.RefreshTokenAsync(accessToken.Object);
 
             // Assert
             using (new AssertionScope())
@@ -301,8 +277,8 @@ namespace ChatApp.UnitTests.Systems.Services
                 result.AccessToken.Should().NotBeNull();
                 result.RefreshToken.Should().NotBeNull();
 
-                accessToken.AccessToken.Should().NotBeEquivalentTo(result.AccessToken);
-                accessToken.RefreshToken.Should().NotBeEquivalentTo(result.RefreshToken);
+                accessToken.Object.AccessToken.Should().NotBeEquivalentTo(result.AccessToken);
+                accessToken.Object.RefreshToken.Should().NotBeEquivalentTo(result.RefreshToken);
 
                 refreshTokens.Should().Contain(rt => rt.Id == newRefreshToken.Id);
             }
@@ -312,7 +288,7 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task RemoveRefreshTokenAsync_Should_ThrowException_WhenNoTokenInDatabase()
         {
             // Arrange
-            var refreshToken = _jwtService.GenerateRefreshToken();
+            var refreshToken = It.IsAny<string>();
 
             // Act
             var result = async () => await _sut.RemoveRefreshTokenAsync(refreshToken);
@@ -345,6 +321,20 @@ namespace ChatApp.UnitTests.Systems.Services
 
             // Assert
             refreshTokens.Should().NotContain(rt => rt.Id == refreshToken.Id);
+        }
+
+        private void SetupJwtServiceMock()
+        {
+            _jwtServiceMock
+                .Setup(s => s.GenerateRefreshToken())
+                .Returns(_generatedRefreshToken);
+
+            _jwtServiceMock
+                .Setup(s => s.GenerateAccessToken(
+                    It.IsAny<int>(),
+                    It.IsAny<string>(),
+                    It.IsAny<string>()))
+                .Returns(_generatedRefreshToken);
         }
     }
 }

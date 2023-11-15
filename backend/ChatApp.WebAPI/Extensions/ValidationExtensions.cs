@@ -10,11 +10,11 @@ namespace ChatApp.WebAPI.Extensions
         {
             return rule
                 .NotEmpty()
-                    .WithMessage(ValidationMessages.EmailIsEmptyMessage)
+                    .WithMessage(ValidationMessages.EMAIL_IS_EMPTY_MESSAGE)
                 .EmailAddress()
-                    .WithMessage(ValidationMessages.EmailWithWrongFormatMessage)
-                .Matches(Regexes.EmailRegex)
-                    .WithMessage(ValidationMessages.EmailWithWrongFormatMessage)
+                    .WithMessage(ValidationMessages.EMAIL_WITH_WRONG_FORMAT_MESSAGE)
+                .Matches(ValidationRegexs.EMAIL_REGEX)
+                    .WithMessage(ValidationMessages.EMAIL_WITH_WRONG_FORMAT_MESSAGE)
                 .MinimumLength(EntityConfigurationSettings.EmailMinLength)
                     .WithMessage(ValidationMessages.EmailWithWrongMinimumLengthMessage(EntityConfigurationSettings.EmailMinLength))
                 .MaximumLength(EntityConfigurationSettings.EmailMaxLength)
@@ -26,7 +26,7 @@ namespace ChatApp.WebAPI.Extensions
             return rule
                 .NotEmpty()
                     .WithMessage(ValidationMessages.PasswordIsEmptyMessage)
-                .Matches(Regexes.PasswordRegex)
+                .Matches(ValidationRegexs.PASSWORD_REGEX)
                     .WithMessage(ValidationMessages.PasswordWithWrongFormatMessage)
                 .MinimumLength(EntityConfigurationSettings.PasswordMinLength)
                     .WithMessage(ValidationMessages.PasswordWithWrongMinimumLengthMessage(EntityConfigurationSettings.PasswordMinLength))
@@ -39,7 +39,7 @@ namespace ChatApp.WebAPI.Extensions
             return rule
                 .NotEmpty()
                     .WithMessage(ValidationMessages.UserNameIsEmptyMessage)
-                .Matches(Regexes.NoSpacesRegex)
+                .Matches(ValidationRegexs.NO_SPACES_REGEX)
                     .WithMessage(ValidationMessages.UsernameWithWrongFormatMessage)
                 .MinimumLength(EntityConfigurationSettings.UserNameMinLength)
                     .WithMessage(ValidationMessages.UserNameWithWrongMinimumLengthMessage(EntityConfigurationSettings.UserNameMinLength))
