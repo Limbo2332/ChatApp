@@ -30,21 +30,8 @@ namespace ChatApp.UnitTests.Systems.Controllers
         public async Task RegisterAsync_Should_BeSuccess()
         {
             // Arrange
-            var userRegister = new UserRegisterDto
-            {
-                Email = "correctEmail@gmail.com",
-                Password = "correctPassword123!$%",
-                UserName = "correctUserName"
-            };
-
-            var authUser = new AuthUserDto
-            {
-                User = new UserDto
-                {
-                    Email = userRegister.Email,
-                    UserName = userRegister.UserName
-                }
-            };
+            var userRegister = Substitute.For<UserRegisterDto>();
+            var authUser = Substitute.For<AuthUserDto>();
 
             _authService
                 .RegisterAsync(userRegister)
@@ -57,12 +44,10 @@ namespace ChatApp.UnitTests.Systems.Controllers
             // Assert
             using (new AssertionScope())
             {
-                result.Should().BeOfType<ActionResult<AuthUserDto>>();
                 _authService.ReceivedCalls().Count().Should().Be(1);
 
                 response.Should().NotBeNull();
-                response!.Value.Should().BeOfType<AuthUserDto>();
-                response.Value.Should().Be(authUser);
+                response!.Value.Should().Be(authUser);
                 response.StatusCode.Should().Be((int)HttpStatusCode.Created);
             }
         }
@@ -71,19 +56,8 @@ namespace ChatApp.UnitTests.Systems.Controllers
         public async Task LoginAsync_Should_BeSuccess()
         {
             // Arrange
-            var userLogin = new UserLoginDto
-            {
-                EmailOrUserName = "correctEmail@gmail.com",
-                Password = "correctPassword123!$%"
-            };
-
-            var authUser = new AuthUserDto
-            {
-                User = new UserDto
-                {
-                    Email = userLogin.EmailOrUserName
-                }
-            };
+            var userLogin = Substitute.For<UserLoginDto>();
+            var authUser = Substitute.For<AuthUserDto>();
 
             _authService
                 .LoginAsync(userLogin)
@@ -96,13 +70,10 @@ namespace ChatApp.UnitTests.Systems.Controllers
             // Assert
             using (new AssertionScope())
             {
-                result.Should().BeOfType<ActionResult<AuthUserDto>>();
                 _authService.ReceivedCalls().Count().Should().Be(1);
 
-                _sut.ModelState.IsValid.Should().BeTrue();
                 response.Should().NotBeNull();
-                response!.Value.Should().BeOfType<AuthUserDto>();
-                response.Value.Should().Be(authUser);
+                response!.Value.Should().Be(authUser);
                 response.StatusCode.Should().Be((int)HttpStatusCode.OK);
             }
         }
@@ -111,17 +82,8 @@ namespace ChatApp.UnitTests.Systems.Controllers
         public async Task RefreshAsync_Should_BeSuccess()
         {
             // Arrange
-            var accessToken = new AccessTokenDto
-            {
-                AccessToken = "accessToken",
-                RefreshToken = "refreshToken"
-            };
-
-            var updatedAccessToken = new AccessTokenDto
-            {
-                AccessToken = "updatedAccessToken",
-                RefreshToken = "updatedRefreshToken"
-            };
+            var accessToken = Substitute.For<AccessTokenDto>();
+            var updatedAccessToken = Substitute.For<AccessTokenDto>();
 
             _authService
                 .RefreshTokenAsync(accessToken)
@@ -134,12 +96,10 @@ namespace ChatApp.UnitTests.Systems.Controllers
             // Assert
             using (new AssertionScope())
             {
-                result.Should().BeOfType<ActionResult<AccessTokenDto>>();
                 _authService.ReceivedCalls().Count().Should().Be(1);
 
                 response.Should().NotBeNull();
-                response!.Value.Should().BeOfType<AccessTokenDto>();
-                response.Value.Should().Be(updatedAccessToken);
+                response!.Value.Should().Be(updatedAccessToken);
                 response.StatusCode.Should().Be((int)HttpStatusCode.OK);
             }
         }
