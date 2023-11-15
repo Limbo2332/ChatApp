@@ -11,30 +11,22 @@ namespace ChatApp.WebAPI.Controllers
     [Authorize]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
+        private readonly IUserService _userService;
 
         public UsersController(IUserService userService)
         {
             _userService = userService;
         }
 
-        [HttpPost("avatar")]
-        public async Task<ActionResult<UserAvatarDto>> UpdateAvatarAsync([FromForm] IFormFile newAvatar)
-        {
-            return Ok(await _userService.UpdateUserAvatarAsync(newAvatar));
-        }
-
         [AllowAnonymous]
         [HttpPost("send-reset-email")]
-        public async Task<ActionResult> SendEmailAsync(ResetEmailDto resetEmail)
+        public async Task<ActionResult<MailDto>> SendEmailAsync(ResetEmailDto resetEmail)
         {
-            await _userService.SendResetEmailAsync(resetEmail.Email);
-
-            return Ok();
+            return Ok(await _userService.SendResetEmailAsync(resetEmail.Email));
         }
 
-        [HttpPost("reset")]
         [AllowAnonymous]
+        [HttpPost("reset")]
         public async Task<ActionResult> ResetPasswordAsync(ResetPasswordDto newInfo)
         {
             await _userService.ResetPasswordAsync(newInfo);
@@ -46,6 +38,12 @@ namespace ChatApp.WebAPI.Controllers
         public async Task<ActionResult<UserDto>> UpdateUserAsync(UserEditDto user)
         {
             return Ok(await _userService.UpdateUserAsync(user));
+        }
+
+        [HttpPut("avatar")]
+        public async Task<ActionResult<UserAvatarDto>> UpdateAvatarAsync([FromForm] IFormFile newAvatar)
+        {
+            return Ok(await _userService.UpdateUserAvatarAsync(newAvatar));
         }
     }
 }
