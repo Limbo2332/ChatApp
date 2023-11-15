@@ -2,12 +2,12 @@
 {
     public static class SeedDefaults
     {
-        public static readonly int UserSeed = 1001;
+        public const int USER_SEED = 1001;
 
-        public static readonly int ChatSeed = 1010;
+        public const int CHAT_SEED = 1010;
 
-        public static readonly int MessageSeed = 1011;
+        public const int MESSAGE_SEED = 1011;
 
-        public static readonly int UserChatsSeed = 1100;
+        public const int USER_CHATS_SEED = 1100;
     }
 }

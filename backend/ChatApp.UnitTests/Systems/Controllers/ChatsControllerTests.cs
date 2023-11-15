@@ -3,9 +3,7 @@ using ChatApp.Common.DTO.Chat;
 using ChatApp.Common.DTO.Conversation;
 using ChatApp.Common.DTO.Message;
 using ChatApp.Common.DTO.Page;
-using ChatApp.Common.DTO.User;
 using ChatApp.WebAPI.Controllers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 

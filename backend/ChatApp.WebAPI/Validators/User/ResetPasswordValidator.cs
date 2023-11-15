@@ -14,7 +14,7 @@ namespace ChatApp.WebAPI.Validators.User
 
             RuleFor(ur => ur.EmailToken)
                 .NotEmpty()
-                    .WithMessage(ValidationMessages.EmailTokenIsEmpty);
+                    .WithMessage(ValidationMessages.EMAIL_TOKEN_IS_EMPTY);
 
             RuleFor(ur => ur.NewPassword)
                 .CustomPassword();

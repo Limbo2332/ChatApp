@@ -6,13 +6,8 @@ namespace ChatApp.DAL.Entities
     {
         private const int DAYS_TO_EXPIRE = 5;
 
-        public RefreshToken()
-        {
-            Expires = DateTime.UtcNow.AddDays(DAYS_TO_EXPIRE);
-        }
-
         public string Token { get; set; } = string.Empty;
-        public DateTime Expires { get; set; }
+        public DateTime Expires { get; set; } = DateTime.UtcNow.AddDays(DAYS_TO_EXPIRE);
 
         public bool IsActive => DateTime.UtcNow <= Expires;
 

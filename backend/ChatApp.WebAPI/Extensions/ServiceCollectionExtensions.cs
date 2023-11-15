@@ -47,7 +47,7 @@ namespace ChatApp.WebAPI.Extensions
             });
         }
 
-        public static void AddJWTAuthentication(this IServiceCollection services, IConfiguration config)
+        public static void AddJwtAuthentication(this IServiceCollection services, IConfiguration config)
         {
             var validAudience = config.GetRequiredSection("JWT:Audience").Value ?? "";
             var validIssuer = config.GetRequiredSection("JWT:Issuer").Value ?? "";
@@ -86,7 +86,7 @@ namespace ChatApp.WebAPI.Extensions
             services.AddDbContext<ChatAppContext>(options =>
                 options.UseSqlServer(
                     connectionString,
-                    options => options.MigrationsAssembly(typeof(ChatAppContext).Assembly.GetName().Name)
+                    opt => opt.MigrationsAssembly(typeof(ChatAppContext).Assembly.GetName().Name)
                 )
             );
         }
@@ -98,16 +98,12 @@ namespace ChatApp.WebAPI.Extensions
 
         public static void RegisterAzureServices(this IServiceCollection services, IConfiguration config)
         {
-            services.AddSingleton(_ =>
-            {
-                return new BlobServiceClient(config.GetValue<string>("BlobStorage:ConnectionString"))
-                    .GetBlobContainerClient(config.GetValue<string>("BlobStorage:ContainerName"));
-            });
+            services.AddSingleton(_ => 
+                new BlobServiceClient(config.GetValue<string>("BlobStorage:ConnectionString"))
+                .GetBlobContainerClient(config.GetValue<string>("BlobStorage:ContainerName")));
 
-            services.AddScoped(_ =>
-            {
-                return new EmailClient(config.GetValue<string>("EmailService:ConnectionString"));
-            });
+            services.AddScoped(_ => 
+                new EmailClient(config.GetValue<string>("EmailService:ConnectionString")));
         }
 
         public static void RegisterUserStorageServices(this IServiceCollection services)

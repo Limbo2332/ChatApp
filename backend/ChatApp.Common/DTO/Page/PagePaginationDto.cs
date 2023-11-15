@@ -4,13 +4,13 @@
     {
         public int PageNumber { get; set; } = 1;
 
-        const int maxPageSize = 100;
+        private const int MAX_PAGE_SIZE = 100;
         private int _pageSize = 30;
 
         public int PageSize
         {
-            get { return _pageSize; }
-            set { _pageSize = value > maxPageSize ? maxPageSize : value; }
+            get => _pageSize;
+            set => _pageSize = value > MAX_PAGE_SIZE ? MAX_PAGE_SIZE : value;
         }
     }
 }
