@@ -70,7 +70,7 @@ namespace ChatApp.UnitTests.Systems.Services
                 emailClaim!.Value.Should().BeEquivalentTo(email);
                 idClaim!.Value.Should().BeEquivalentTo(userId.ToString());
                 subClaim.Value.Should().BeEquivalentTo(userName);
-                Guid.TryParse(jtiClaim!.Value, out Guid guidResult).Should().BeTrue();
+                Guid.TryParse(jtiClaim!.Value, out Guid result).Should().BeTrue();
             }
         }
 

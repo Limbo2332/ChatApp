@@ -43,38 +43,38 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task LoginAsync_Should_ThrowException_WhenNoUser()
         {
             // Arrange
-            var userDto = new Mock<UserLoginDto>();
+            var exceptionMessage = new NotFoundException(nameof(User));
 
             // Act
-            var result = async () => await _sut.LoginAsync(userDto.Object);
+            var result = async () => await _sut.LoginAsync(It.IsAny<UserLoginDto>());
 
             // Assert
             await result
                 .Should()
                 .ThrowAsync<NotFoundException>()
-                .WithMessage("User was not found");
+                .WithMessage(exceptionMessage.Message);
         }
 
         [Fact]
         public async Task LoginAsync_Should_ThrowException_WhenWrongPassword()
         {
             // Arrange
-            var userDto = new Mock<UserLoginDto>();
-
-            var user = new Mock<User>();
+            var exceptionMessage = new InvalidEmailUsernameOrPasswordException();
+            var user = new User();
+            var userLogin = new UserLoginDto();
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(user.Object);
+                .ReturnsAsync(user);
 
             // Act
-            var result = async () => await _sut.LoginAsync(userDto.Object);
+            var result = async () => await _sut.LoginAsync(userLogin);
 
             // Assert
             await result
                 .Should()
                 .ThrowAsync<InvalidEmailUsernameOrPasswordException>()
-                .WithMessage("Invalid username/email or password");
+                .WithMessage(exceptionMessage.Message);
         }
 
         [Fact]
@@ -164,69 +164,69 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task RefreshTokenAsync_Should_ThrowException_WhenWrongUser()
         {
             // Arrange
-            var accessToken = new Mock<AccessTokenDto>();
+            var exceptionMessage = new NotFoundException(nameof(User));
+            var accessToken = new AccessTokenDto();
 
             // Act
-            var result = async () => await _sut.RefreshTokenAsync(accessToken.Object);
+            var result = async () => await _sut.RefreshTokenAsync(accessToken);
 
             // Assert
             await result
                 .Should()
-                .ThrowAsync<NotFoundException>("User was not found");
+                .ThrowAsync<NotFoundException>(exceptionMessage.Message);
         }
 
         [Fact]
         public async Task RefreshTokenAsync_Should_ThrowException_WhenNoSuchRefreshTokens()
         {
             // Arrange
-            var user = new Mock<User>();
-            var accessToken = new Mock<AccessTokenDto>();
+            var user = new User();
+            var accessToken = new AccessTokenDto();
+            var exceptionMessage = new InvalidTokenException(nameof(RefreshToken));
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(user.Object);
+                .ReturnsAsync(user);
 
             // Act
-            var result = async () => await _sut.RefreshTokenAsync(accessToken.Object);
+            var result = async () => await _sut.RefreshTokenAsync(accessToken);
 
             // Assert
             await result
                 .Should()
                 .ThrowAsync<InvalidTokenException>()
-                .WithMessage("Invalid RefreshToken.");
+                .WithMessage(exceptionMessage.Message);
         }
 
         [Fact]
         public async Task RefreshTokenAsync_Should_ThrowException_WhenRefreshTokenIsNotActive()
         {
             // Arrange
-            var refreshToken = new Mock<RefreshToken>
-            {
-                Object =
-                {
-                    Expires = DateTime.UtcNow.AddDays(-15)
-                }
+            var refreshToken = new RefreshToken
+            { 
+                Expires = DateTime.UtcNow.AddDays(-15)
             };
 
-            var user = new Mock<User>();
-            var accessToken = new Mock<AccessTokenDto>();
+            var user = new User();
+            var accessToken = new AccessTokenDto();
+            var exceptionMessage = new ExpiredRefreshTokenException();
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(user.Object);
+                .ReturnsAsync(user);
 
             _refreshTokenRepositoryMock
                 .Setup(rtr => rtr.GetByExpressionAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>()))
-                .ReturnsAsync(refreshToken.Object);
+                .ReturnsAsync(refreshToken);
 
             // Act
-            var result = async () => await _sut.RefreshTokenAsync(accessToken.Object);
+            var result = async () => await _sut.RefreshTokenAsync(accessToken);
 
             // Assert
             await result
                 .Should()
                 .ThrowAsync<ExpiredRefreshTokenException>()
-                .WithMessage("Refresh token expired.");
+                .WithMessage(exceptionMessage.Message);
         }
 
         [Fact]
@@ -235,9 +235,13 @@ namespace ChatApp.UnitTests.Systems.Services
             // Arrange
             var refreshTokens = DbContextTestData.RefreshTokens;
             var refreshToken = refreshTokens.First();
+            var user = new User();
 
-            var user = new Mock<User>();
-            var accessToken = new Mock<AccessTokenDto>();
+            var accessToken = new AccessTokenDto()
+            {
+                AccessToken = "accessToken",
+                RefreshToken = "refreshToken"
+            };
 
             var newRefreshToken = new RefreshToken
             {
@@ -248,7 +252,7 @@ namespace ChatApp.UnitTests.Systems.Services
 
             _userRepositoryMock
                 .Setup(ur => ur.GetByExpressionAsync(It.IsAny<Expression<Func<User, bool>>>()))
-                .ReturnsAsync(user.Object);
+                .ReturnsAsync(user);
 
             _refreshTokenRepositoryMock
                 .Setup(rtr => rtr.GetByExpressionAsync(It.IsAny<Expression<Func<RefreshToken, bool>>>()))
@@ -268,7 +272,7 @@ namespace ChatApp.UnitTests.Systems.Services
                 .ReturnsAsync(newRefreshToken);
 
             // Act
-            var result = await _sut.RefreshTokenAsync(accessToken.Object);
+            var result = await _sut.RefreshTokenAsync(accessToken);
 
             // Assert
             using (new AssertionScope())
@@ -277,8 +281,8 @@ namespace ChatApp.UnitTests.Systems.Services
                 result.AccessToken.Should().NotBeNull();
                 result.RefreshToken.Should().NotBeNull();
 
-                accessToken.Object.AccessToken.Should().NotBeEquivalentTo(result.AccessToken);
-                accessToken.Object.RefreshToken.Should().NotBeEquivalentTo(result.RefreshToken);
+                accessToken.AccessToken.Should().NotBeEquivalentTo(result.AccessToken);
+                accessToken.RefreshToken.Should().NotBeEquivalentTo(result.RefreshToken);
 
                 refreshTokens.Should().Contain(rt => rt.Id == newRefreshToken.Id);
             }
@@ -288,16 +292,16 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task RemoveRefreshTokenAsync_Should_ThrowException_WhenNoTokenInDatabase()
         {
             // Arrange
-            var refreshToken = It.IsAny<string>();
+            var exceptionMessage = new InvalidTokenException(nameof(RefreshToken));
 
             // Act
-            var result = async () => await _sut.RemoveRefreshTokenAsync(refreshToken);
+            var result = async () => await _sut.RemoveRefreshTokenAsync(It.IsAny<string>());
 
             // Assert
             await result
                 .Should()
                 .ThrowAsync<InvalidTokenException>()
-                .WithMessage("Invalid RefreshToken.");
+                .WithMessage(exceptionMessage.Message);
         }
 
         [Fact]
@@ -313,8 +317,7 @@ namespace ChatApp.UnitTests.Systems.Services
 
             _refreshTokenRepositoryMock
                 .Setup(rtr => rtr.DeleteAsync(It.IsAny<int>()))
-                .Callback(() => refreshTokens.Remove(refreshToken))
-                .Returns(Task.CompletedTask);
+                .Callback(() => refreshTokens.Remove(refreshToken));
 
             // Act
             await _sut.RemoveRefreshTokenAsync(refreshToken.Token);

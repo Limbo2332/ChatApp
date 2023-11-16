@@ -45,7 +45,7 @@ namespace ChatApp.UnitTests.Systems.Services
         public void IsEmailUnique_ShouldReturn_True_WhenNoEmail()
         {
             // Arrange
-            var uniqueEmail = It.IsNotNull<string>();
+            var uniqueEmail = "uniqueEmail";
 
             // Act
             var result = _sut.IsEmailUnique(uniqueEmail);
@@ -72,7 +72,7 @@ namespace ChatApp.UnitTests.Systems.Services
         public void IsUserNameUnique_Should_ReturnTrue_WhenNoUserName()
         {
             // Arrange
-            var uniqueUserName = It.IsNotNull<string>();
+            var uniqueUserName = "uniqueUserName";
 
             // Act
             var result = _sut.IsUserNameUnique(uniqueUserName);
@@ -83,7 +83,7 @@ namespace ChatApp.UnitTests.Systems.Services
 
         [Theory]
         [ClassData(typeof(UsersTestData))]
-        public void IsUserNamelUnique_Should_ReturnFalse_WhenUserName(User user)
+        public void IsUserNameUnique_Should_ReturnFalse_WhenUserName(User user)
         {
             // Arrange
             var notUniqueUserName = user.UserName;
@@ -99,7 +99,7 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task FindUserByUsernameAsync_Should_ThrowException_WhenNoUser()
         {
             // Arrange
-            var uniqueUserName = It.IsNotNull<string>();
+            var uniqueUserName ="uniqueUserName";
 
             // Act
             var action = async () => await _sut.FindUserByUsernameAsync(uniqueUserName);
