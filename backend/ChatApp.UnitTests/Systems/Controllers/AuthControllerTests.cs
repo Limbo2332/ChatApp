@@ -18,7 +18,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task RegisterAsync_Should_BeSuccess()
+        public async Task RegisterAsync_Is_Successful()
         {
             // Arrange
             var userRegister = Substitute.For<UserRegisterDto>();
@@ -44,7 +44,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task LoginAsync_Should_BeSuccess()
+        public async Task LoginAsync_Is_Successful()
         {
             // Arrange
             var userLogin = Substitute.For<UserLoginDto>();
@@ -70,7 +70,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task RefreshAsync_Should_BeSuccess()
+        public async Task RefreshAsync_Is_Successful()
         {
             // Arrange
             var accessToken = Substitute.For<AccessTokenDto>();
@@ -96,7 +96,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task RemoveRefreshTokenAsync_Should_BeSuccess()
+        public async Task RemoveRefreshTokenAsync_Is_Successful()
         {
             // Arrange
             var refreshToken = "refreshToken";

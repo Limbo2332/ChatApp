@@ -21,7 +21,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task SendEmailAsync_Should_BeSuccess()
+        public async Task SendEmailAsync_Is_Successful()
         {
             // Arrange
             var resetEmail = Substitute.For<ResetEmailDto>();
@@ -47,7 +47,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task ResetPasswordAsync_Should_BeSuccess()
+        public async Task ResetPasswordAsync_Is_Successful()
         {
             // Arrange
             var resetPassword = Substitute.For<ResetPasswordDto>();
@@ -71,7 +71,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task UpdateUserAsync_Should_BeSuccess()
+        public async Task UpdateUserAsync_Is_Successful()
         {
             // Arrange
             var userEdit = Substitute.For<UserEditDto>();
@@ -97,7 +97,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task UpdateAvatarAsync_Should_BeSuccess()
+        public async Task UpdateAvatarAsync_Is_Successful()
         {
             // Arrange
             var formFile = Substitute.For<IFormFile>();

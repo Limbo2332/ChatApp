@@ -22,7 +22,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task GetChatsAsync_Should_BeSuccess()
+        public async Task GetChatsAsync_Is_Successful()
         {
             // Arrange
             var pageSettings = Substitute.For<PageSettingsDto>();
@@ -48,7 +48,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task GetConversationAsync_Should_BeSuccess()
+        public async Task GetConversationAsync_Is_Successful()
         {
             // Arrange
             var chatId = 999;
@@ -75,7 +75,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task AddMessageAsync_Should_BeSuccess()
+        public async Task AddMessageAsync_Is_Successful()
         {
             // Arrange
             var newMessage = Substitute.For<NewMessageDto>();
@@ -101,7 +101,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task AddChatAsync_Should_BeSuccess()
+        public async Task AddChatAsync_Is_Successful()
         {
             // Arrange
             var newChat = Substitute.For<NewChatDto>();
@@ -127,7 +127,7 @@ namespace ChatApp.UnitTests.Systems.Controllers
         }
 
         [Fact]
-        public async Task ReadMessagesAsync_Should_BeSuccess()
+        public async Task ReadMessagesAsync_Is_Successful()
         {
             // Arrange
             var chatRead = Substitute.For<ChatReadDto>();
