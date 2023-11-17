@@ -66,5 +66,12 @@
         public const string ChatIsNullMessage = "Chat id is required";
 
         #endregion
+
+        #region ChatRead
+
+        public const string ID_IS_EMPTY_MESSAGE = "Id is required";
+        public const string USERID_IS_EMPTY_MESSAGE = "User id is required";
+
+        #endregion
     }
 }
