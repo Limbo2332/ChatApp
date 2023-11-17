@@ -13,6 +13,8 @@ namespace ChatApp.WebAPI.Validators.Chat
                 .CustomMessageValue();
 
             RuleFor(nm => nm.ChatId)
+                .GreaterThan(0)
+                    .WithMessage(ValidationMessages.ChatIsNullMessage)
                 .NotNull()
                     .WithMessage(ValidationMessages.ChatIsNullMessage);
         }
