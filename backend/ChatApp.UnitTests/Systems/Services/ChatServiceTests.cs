@@ -18,37 +18,42 @@ namespace ChatApp.UnitTests.Systems.Services
     public class ChatServiceTests : BaseServiceTests
     {
         private readonly IChatService _sut;
-        private readonly Mock<IHubContext<ChatHub, IChatHubClient>> _hubContextMock = new Mock<IHubContext<ChatHub, IChatHubClient>>();
-        private readonly Mock<IUserService> _userServiceMock = new Mock<IUserService>();
-        private readonly Mock<IChatRepository> _chatRepositoryMock = new Mock<IChatRepository>();
-        private readonly Mock<IUserChatsRepository> _userChatsRepositoryMock = new Mock<IUserChatsRepository>();
-        private readonly Mock<IMessageRepository> _messageRepositoryMock = new Mock<IMessageRepository>();
+        private readonly Mock<IHubContext<ChatHub, IChatHubClient>> _hubContextMock;
+        private readonly Mock<IUserService> _userServiceMock;
+        private readonly Mock<IUserChatsRepository> _userChatsRepositoryMock;
+        private readonly Mock<IMessageRepository> _messageRepositoryMock;
 
         public ChatServiceTests()
         {
-            SetUpHubContextMock();
-            SetUserChats();
-            SetUserGetter();
+            _hubContextMock = new Mock<IHubContext<ChatHub, IChatHubClient>>();
+            _userServiceMock = new Mock<IUserService>();
+            _userChatsRepositoryMock = new Mock<IUserChatsRepository>();
+            _messageRepositoryMock = new Mock<IMessageRepository>();
+
+            var chatRepositoryMock = new Mock<IChatRepository>();
 
             _sut = new ChatService(
                 _mapper,
                 _userIdGetterMock.Object,
                 _hubContextMock.Object,
                 _userServiceMock.Object,
-                _chatRepositoryMock.Object,
+                chatRepositoryMock.Object,
                 _userChatsRepositoryMock.Object,
                 _messageRepositoryMock.Object);
+
+            SetUpHubContextMock();
+            SetUserChats();
+            SetUserGetter();
         }
 
         [Fact]
         public async Task GetChatsAsync_Should_ReturnPreviewList_WhenNoPageSettings()
         {
             // Arrange
-            PageSettingsDto? pageSettings = null;
             var user = DbContextTestData.Users.First();
 
             // Act
-            var result = await _sut.GetChatsAsync(pageSettings);
+            var result = await _sut.GetChatsAsync(It.IsAny<PageSettingsDto>());
 
             // Assert
             using (new AssertionScope())
@@ -69,14 +74,15 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task GetChatsAsync_Should_ReturnPreviewList_WhenPageSettingsFiltering()
         {
             // Arrange
-            PageSettingsDto pageSettings = new PageSettingsDto()
+            var propertyValue = "123";
+
+            var pageSettings = new PageSettingsDto()
             {
                 Filter = new PageFilteringDto
                 {
                     PropertyName = "Interlocutor.UserName",
-                    PropertyValue = "123"
+                    PropertyValue = propertyValue
                 },
-                Pagination = null
             };
 
             // Act
@@ -88,7 +94,7 @@ namespace ChatApp.UnitTests.Systems.Services
                 result.Should().NotBeEmpty();
                 result.Should().ContainSingle();
 
-                result.Should().Contain(item => item.Interlocutor.UserName.Contains("123"));
+                result.Should().AllSatisfy(item => item.Interlocutor.UserName.Contains(propertyValue));
             }
         }
 
@@ -96,9 +102,8 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task GetChatsAsync_Should_ReturnPreviewList_WhenPageSettingsPagination()
         {
             // Arrange
-            PageSettingsDto pageSettings = new PageSettingsDto()
+            var pageSettings = new PageSettingsDto()
             {
-                Filter = null,
                 Pagination = new PagePaginationDto
                 {
                     PageNumber = 2,
@@ -121,12 +126,14 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task GetChatsAsync_Should_ReturnPreviewList_WhenPageSettingsAndOrdered()
         {
             // Arrange
-            PageSettingsDto pageSettings = new PageSettingsDto()
+            var propertyValue = "Test";
+
+            var pageSettings = new PageSettingsDto()
             {
                 Filter = new PageFilteringDto
                 {
                     PropertyName = "Interlocutor.UserName",
-                    PropertyValue = "Test"
+                    PropertyValue = propertyValue
                 },
                 Pagination = new PagePaginationDto
                 {
@@ -143,6 +150,7 @@ namespace ChatApp.UnitTests.Systems.Services
             {
                 result.Should().NotBeEmpty();
                 result.Should().BeInDescendingOrder(c => c.LastMessage.SentAt);
+                result.Should().AllSatisfy(item => item.Interlocutor.UserName.Contains(propertyValue));
             }
         }
 
@@ -150,26 +158,33 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task GetConversationAsync_Should_ThrowException_WhenNoChat()
         {
             // Arrange
-            var chatId = 999;
-            PageSettingsDto? pageSettingsDto = null;
+            var exceptionMessage = new NotFoundException(nameof(Chat));
 
             // Act
-            var action = async () => await _sut.GetConversationAsync(chatId, pageSettingsDto);
+            var action = async () => await _sut.GetConversationAsync(
+                It.IsAny<int>(), 
+                It.IsAny<PageSettingsDto>());
 
             // Assert
-            await action.Should().ThrowAsync<NotFoundException>();
+            await action
+                .Should()
+                .ThrowAsync<NotFoundException>()
+                .WithMessage(exceptionMessage.Message);
         }
 
         [Fact]
         public async Task GetConversationAsync_Should_ReturnConversation_WhenNoPageSettings()
         {
             // Arrange
+            var currentUser = DbContextTestData.Users
+                .First(user => user.Id == _userIdGetterMock.Object.CurrentUserId);
+
             var chatId = 1;
-            PageSettingsDto? pageSettingsDto = null;
-            var currentUser = DbContextTestData.Users.First(user => user.Id == _userIdGetterMock.Object.CurrentUserId);
 
             // Act
-            var result = await _sut.GetConversationAsync(chatId, pageSettingsDto);
+            var result = await _sut.GetConversationAsync(
+                chatId, 
+                It.IsAny<PageSettingsDto>());
 
             // Assert
             using (new AssertionScope())
@@ -187,14 +202,13 @@ namespace ChatApp.UnitTests.Systems.Services
         {
             // Arrange
             var chatId = 1;
-            PageSettingsDto pageSettingsDto = new PageSettingsDto()
+            var pageSettingsDto = new PageSettingsDto()
             {
                 Filter = new PageFilteringDto
                 {
                     PropertyName = "Value",
                     PropertyValue = "No message"
                 },
-                Pagination = null,
             };
 
             // Act
@@ -215,9 +229,8 @@ namespace ChatApp.UnitTests.Systems.Services
         {
             // Arrange
             var chatId = 1;
-            PageSettingsDto pageSettingsDto = new PageSettingsDto()
+            var pageSettingsDto = new PageSettingsDto()
             {
-                Filter = null,
                 Pagination = new PagePaginationDto
                 {
                     PageNumber = 2,
@@ -243,12 +256,13 @@ namespace ChatApp.UnitTests.Systems.Services
         {
             // Arrange
             var chatId = 1;
-            PageSettingsDto pageSettingsDto = new PageSettingsDto()
+            var propertyValue = "Hello";
+            var pageSettingsDto = new PageSettingsDto()
             {
                 Filter = new PageFilteringDto
                 {
                     PropertyName = "Value",
-                    PropertyValue = "Hello"
+                    PropertyValue = propertyValue
                 },
                 Pagination = new PagePaginationDto
                 {
@@ -266,6 +280,7 @@ namespace ChatApp.UnitTests.Systems.Services
                 result.Should().NotBeNull();
                 result.ChatId.Should().Be(chatId);
                 result.Messages.Count().Should().Be(2);
+                result.Messages.Should().AllSatisfy(m => m.Value.Contains(propertyValue));
             }
         }
 
@@ -302,23 +317,24 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task AddNewChatWithAsync_Should_ThrowException_WhenChatIsAlreadyCreated()
         {
             // Arrange
-            var newChat = new NewChatDto
+            var newChat = new NewChatDto();
+            var user = new User()
             {
-                NewMessage = "Hello!",
-                UserName = "TestUserName1"
+                Id = 1
             };
 
-            var user = DbContextTestData.Users.First(u => u.UserName == newChat.UserName);
-
             _userServiceMock
-                .Setup(us => us.FindUserByUsernameAsync(newChat.UserName))
+                .Setup(us => us.FindUserByUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
 
             // Act
             var action = async () => await _sut.AddNewChatWithAsync(newChat);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage("This chat is already created");
         }
 
         [Fact]
@@ -353,17 +369,17 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task ReadMessagesAsync_Should_ThrowException()
         {
             // Arrange
-            var chat = new ChatReadDto
-            {
-                Id = 3,
-                UserId = 4
-            };
+            var chat = new ChatReadDto();
+            var exceptionMessage = new NotFoundException(nameof(UserChats));
 
             // Act
             var action = async () => await _sut.ReadMessagesAsync(chat);
 
             // Assert
-            await action.Should().ThrowAsync<NotFoundException>();
+            await action
+                .Should()
+                .ThrowAsync<NotFoundException>()
+                .WithMessage(exceptionMessage.Message);
         }
 
         [Fact]
@@ -403,7 +419,7 @@ namespace ChatApp.UnitTests.Systems.Services
             await _sut.ReadMessagesAsync(chat);
 
             // Assert
-            var conversation = await _sut.GetConversationAsync(chat.Id, null);
+            var conversation = await _sut.GetConversationAsync(chat.Id, It.IsAny<PageSettingsDto>());
 
             conversation.Messages.Should().AllSatisfy(message => message.IsRead.Should().BeTrue());
         }

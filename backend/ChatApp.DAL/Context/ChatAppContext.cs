@@ -25,9 +25,7 @@ namespace ChatApp.DAL.Context
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var newEntries = ChangeTracker.Entries()
-                .Where(entryEntity => entryEntity.State == EntityState.Added
-                    && entryEntity.Entity != null
-                    && entryEntity.Entity as BaseEntity != null)
+                .Where(entryEntity => entryEntity is { State: EntityState.Added, Entity: BaseEntity })
                 .Select(entryEntity => entryEntity.Entity as BaseEntity);
 
             foreach (var newEntry in newEntries)

@@ -4,7 +4,7 @@ using ChatApp.Common.Middlewares;
 using ChatApp.WebAPI.Extensions;
 using FluentValidation.AspNetCore;
 
-namespace ChatApp
+namespace ChatApp.WebAPI
 {
     public class Program
     {
@@ -12,12 +12,13 @@ namespace ChatApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddCors(options => options.AddPolicy("ChatPolicy", builder =>
+            builder.Services.AddCors(options => options.AddPolicy("ChatPolicy", config =>
             {
-                builder.AllowAnyMethod()
-                       .AllowAnyHeader()
-                       .WithOrigins("http://localhost:4200")
-                       .AllowCredentials();
+                config
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithOrigins("http://localhost:4200")
+                    .AllowCredentials();
             }));
 
             builder.Services.AddControllers(options =>
@@ -27,7 +28,7 @@ namespace ChatApp
             });
 
             builder.Services.ConnectToDatabase(builder.Configuration);
-            builder.Services.AddJWTAuthentication(builder.Configuration);
+            builder.Services.AddJwtAuthentication(builder.Configuration);
 
             builder.Services.RegisterAzureServices(builder.Configuration);
 
