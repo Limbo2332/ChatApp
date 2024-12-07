@@ -13,7 +13,6 @@ namespace ChatApp.UnitTests.Systems.Services
         private readonly IJwtService _sut;
 
         public JwtServiceTests()
-            : base()
         {
             _sut = new JwtService(_configMock.Object);
         }
@@ -71,7 +70,7 @@ namespace ChatApp.UnitTests.Systems.Services
                 emailClaim!.Value.Should().BeEquivalentTo(email);
                 idClaim!.Value.Should().BeEquivalentTo(userId.ToString());
                 subClaim.Value.Should().BeEquivalentTo(userName);
-                Guid.TryParse(jtiClaim!.Value, out Guid guidResult).Should().BeTrue();
+                Guid.TryParse(jtiClaim!.Value, out Guid result).Should().BeTrue();
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using Azure.Communication.Email;
 using ChatApp.BLL.Interfaces;
 using ChatApp.BLL.Services;
+using ChatApp.Common.Constants;
 using ChatApp.Common.DTO.Mail;
 using ChatApp.Common.DTO.User;
 using ChatApp.Common.Exceptions;
@@ -18,13 +19,16 @@ namespace ChatApp.UnitTests.Systems.Services
     public class UserServiceTests : BaseServiceTests
     {
         private readonly IUserService _sut;
-        private readonly Mock<IBlobStorageService> _blobStorageServiceMock = new Mock<IBlobStorageService>();
-        private readonly Mock<IEmailService> _emailServiceMock = new Mock<IEmailService>();
-        private readonly Mock<IUserRepository> _userRepository = new Mock<IUserRepository>();
+        private readonly Mock<IBlobStorageService> _blobStorageServiceMock;
+        private readonly Mock<IEmailService> _emailServiceMock;
+        private readonly Mock<IUserRepository> _userRepository;
 
         public UserServiceTests()
-            : base()
         {
+            _blobStorageServiceMock = new Mock<IBlobStorageService>();
+            _emailServiceMock = new Mock<IEmailService>();
+            _userRepository = new Mock<IUserRepository>();
+
             _sut = new UserService(
                 _mapper,
                 _userIdGetterMock.Object,
@@ -41,7 +45,7 @@ namespace ChatApp.UnitTests.Systems.Services
         public void IsEmailUnique_ShouldReturn_True_WhenNoEmail()
         {
             // Arrange
-            var uniqueEmail = "uniqueEmail@hgf.net";
+            var uniqueEmail = "uniqueEmail";
 
             // Act
             var result = _sut.IsEmailUnique(uniqueEmail);
@@ -68,7 +72,7 @@ namespace ChatApp.UnitTests.Systems.Services
         public void IsUserNameUnique_Should_ReturnTrue_WhenNoUserName()
         {
             // Arrange
-            var uniqueUserName = "uniqueUSerName";
+            var uniqueUserName = "uniqueUserName";
 
             // Act
             var result = _sut.IsUserNameUnique(uniqueUserName);
@@ -79,7 +83,7 @@ namespace ChatApp.UnitTests.Systems.Services
 
         [Theory]
         [ClassData(typeof(UsersTestData))]
-        public void IsUserNamelUnique_Should_ReturnFalse_WhenUserName(User user)
+        public void IsUserNameUnique_Should_ReturnFalse_WhenUserName(User user)
         {
             // Arrange
             var notUniqueUserName = user.UserName;
@@ -95,13 +99,16 @@ namespace ChatApp.UnitTests.Systems.Services
         public async Task FindUserByUsernameAsync_Should_ThrowException_WhenNoUser()
         {
             // Arrange
-            var uniqueUserName = "uniqueUserName";
+            var uniqueUserName ="uniqueUserName";
 
             // Act
             var action = async () => await _sut.FindUserByUsernameAsync(uniqueUserName);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage($"User with username {uniqueUserName} doesn't exist");
         }
 
         [Theory]
@@ -131,13 +138,16 @@ namespace ChatApp.UnitTests.Systems.Services
         {
             // Arrange
             var fileMock = new Mock<IFormFile>();
-            fileMock.Setup(_ => _.ContentType).Returns("notImage");
+            fileMock.Setup(file => file.ContentType).Returns("notImage");
 
             // Act
             var action = async () => await _sut.UpdateUserAvatarAsync(fileMock.Object);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage("Image type is wrong.");
         }
 
         [Theory]
@@ -263,7 +273,9 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.UpdateUserAsync(userDto);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>(ValidationMessages.EMAIL_IS_NOT_UNIQUE_MESSAGE);
         }
 
         [Theory]
@@ -287,18 +299,17 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.UpdateUserAsync(userDto);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage(ValidationMessages.UsernameIsNotUniqueMessage);
         }
 
         [Fact]
         public async Task UpdateUserAsync_Should_UpdateUser()
         {
             // Arrange
-            var userDto = new UserEditDto
-            {
-                Email = "newEmail@gmail.com",
-                UserName = "newUserName"
-            };
+            var userDto = new Mock<UserEditDto>();
 
             var user = DbContextTestData.Users.First();
 
@@ -307,15 +318,15 @@ namespace ChatApp.UnitTests.Systems.Services
                 .ReturnsAsync(user);
 
             // Act
-            var result = await _sut.UpdateUserAsync(userDto);
+            var result = await _sut.UpdateUserAsync(userDto.Object);
 
             // Assert
             using (new AssertionScope())
             {
                 result.Should().NotBeNull();
 
-                result.Email.Should().BeEquivalentTo(userDto.Email);
-                result.UserName.Should().BeEquivalentTo(userDto.UserName);
+                result.Email.Should().BeEquivalentTo(user.Email);
+                result.UserName.Should().BeEquivalentTo(user.UserName);
             }
         }
 
@@ -379,8 +390,8 @@ namespace ChatApp.UnitTests.Systems.Services
                 result.Should().NotBeNull();
 
                 result!.Subject.Should().BeEquivalentTo(subject);
-                result!.To.Should().BeEquivalentTo(email);
-                result!.Content.Should().BeOfType<string>();
+                result.To.Should().BeEquivalentTo(email);
+                result.Content.Should().BeOfType<string>();
             }
         }
 
@@ -401,7 +412,10 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = async () => await _sut.ResetPasswordAsync(resetPasswordDto);
 
             // Assert
-            await action.Should().ThrowAsync<BadRequestException>();
+            await action
+                .Should()
+                .ThrowAsync<BadRequestException>()
+                .WithMessage($"User with email {resetPasswordDto.Email} doesn't exist");
         }
 
         [Theory]
@@ -446,7 +460,9 @@ namespace ChatApp.UnitTests.Systems.Services
             var action = _sut.GetCurrentUserAsync;
 
             // Assert
-            await action.Should().ThrowAsync<NotFoundException>();
+            await action
+                .Should()
+                .ThrowAsync<NotFoundException>($"User with id {_userIdGetterMock.Object.CurrentUserId} was not found");
         }
     }
 }

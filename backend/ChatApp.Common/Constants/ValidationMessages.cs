@@ -12,10 +12,10 @@
 
         #region Email
 
-        public const string EmailIsEmptyMessage = "Email is required";
-        public const string EmailWithWrongFormatMessage = "Email is in incorrect format";
-        public const string EmailIsNotUniqueMessage = "This email is already registered";
-        public const string EmailTokenIsEmpty = "Email token is required";
+        public const string EMAIL_IS_EMPTY_MESSAGE = "Email is required";
+        public const string EMAIL_WITH_WRONG_FORMAT_MESSAGE = "Email is in incorrect format";
+        public const string EMAIL_IS_NOT_UNIQUE_MESSAGE = "This email is already registered";
+        public const string EMAIL_TOKEN_IS_EMPTY = "Email token is required";
 
         public static string EmailWithWrongMinimumLengthMessage(int length)
             => $"Email must have at least {length} symbols";
@@ -64,6 +64,13 @@
         public const string NewMessageIsEmptyMessage = "Message cannot be empty";
         public const string NewMessageMaxLengthMessage = "Message is too long";
         public const string ChatIsNullMessage = "Chat id is required";
+
+        #endregion
+
+        #region ChatRead
+
+        public const string ID_IS_EMPTY_MESSAGE = "Id is required";
+        public const string USERID_IS_EMPTY_MESSAGE = "User id is required";
 
         #endregion
     }

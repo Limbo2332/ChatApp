@@ -1,5 +1,4 @@
-﻿using ChatApp.Common.Security;
-using ChatApp.DAL.Entities;
+﻿using ChatApp.DAL.Entities;
 
 namespace ChatApp.UnitTests.TestData
 {
@@ -13,7 +12,7 @@ namespace ChatApp.UnitTests.TestData
                 CreatedAt = DateTime.Now,
                 Email = "Test@gmail.com",
                 UserName = "TestUserName",
-                Password = SecurityHelper.HashPassword("Test123!$", Convert.FromBase64String("Test")),
+                Password = "Test123!$",
                 Salt = "Test",
                 ImagePath = null,
             },
@@ -23,7 +22,7 @@ namespace ChatApp.UnitTests.TestData
                 CreatedAt = DateTime.Now,
                 Email = "Test1@gmail.com",
                 UserName = "TestUserName1",
-                Password = SecurityHelper.HashPassword("Test1231!$", Convert.FromBase64String("Test")),
+                Password = "Test1231!$",
                 Salt = "Test",
                 ImagePath = "testImagePath",
             },
@@ -33,7 +32,7 @@ namespace ChatApp.UnitTests.TestData
                 CreatedAt = DateTime.Now,
                 Email = "Test123@gmail.com",
                 UserName = "TestUserName123",
-                Password = SecurityHelper.HashPassword("Test123123!$", Convert.FromBase64String("Test")),
+                Password = "Test123123!$",
                 Salt = "Test",
                 ImagePath = null,
             },
@@ -43,7 +42,7 @@ namespace ChatApp.UnitTests.TestData
                 CreatedAt = DateTime.Now,
                 Email = "Test1234@gmail.com",
                 UserName = "TestUserName1234",
-                Password = SecurityHelper.HashPassword("Test123123123!$", Convert.FromBase64String("Test")),
+                Password = "Test123123123!$",
                 Salt = "Test",
                 ImagePath = null,
             },
