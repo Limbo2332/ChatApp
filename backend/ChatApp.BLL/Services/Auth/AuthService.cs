@@ -18,6 +18,7 @@ namespace ChatApp.BLL.Services.Auth
         private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
         private readonly IRefreshTokenRepository _refreshTokenRepository;
+        private readonly IImageRepository _imageRepository;
 
         public AuthService(
             IMapper mapper,
@@ -25,13 +26,15 @@ namespace ChatApp.BLL.Services.Auth
             IJwtService jwtService,
             IConfiguration config,
             IUserRepository userRepository,
-            IRefreshTokenRepository refreshTokenRepository)
+            IRefreshTokenRepository refreshTokenRepository,
+            IImageRepository imageRepository)
             : base(mapper, userIdGetter)
         {
             _jwtService = jwtService;
             _config = config;
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
+            _imageRepository = imageRepository;
         }
 
         public async Task<AuthUserDto> LoginAsync(UserLoginDto userDto)
@@ -47,6 +50,7 @@ namespace ChatApp.BLL.Services.Auth
             }
 
             var token = await GenerateAccessToken(userEntity.Id, userEntity.UserName, userEntity.Email);
+
             var user = _mapper.Map<UserDto>(userEntity);
 
             return new AuthUserDto

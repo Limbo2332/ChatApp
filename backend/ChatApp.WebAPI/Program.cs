@@ -2,6 +2,7 @@ using ChatApp.BLL.Hubs;
 using ChatApp.Common.Filters;
 using ChatApp.Common.Middlewares;
 using ChatApp.WebAPI.Extensions;
+using DotNetEnv;
 using FluentValidation.AspNetCore;
 
 namespace ChatApp
@@ -10,6 +11,11 @@ namespace ChatApp
     {
         public static void Main(string[] args)
         {
+            Env.Load();
+            Env.TraversePath().Load();
+
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddCors(options => options.AddPolicy("ChatPolicy", builder =>
@@ -20,16 +26,30 @@ namespace ChatApp
                        .AllowCredentials();
             }));
 
+            var configuration = builder.Configuration
+             .SetBasePath(Directory.GetCurrentDirectory())
+             .AddJsonFile($"appsettings.json", optional: false, true)
+             .AddJsonFile($"appsettings.{env}.json", optional: true, true)
+             .AddEnvironmentVariables()
+             .Build();
+
             builder.Services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(ValidateFilterAttribute));
                 options.Filters.Add(typeof(CustomExceptionFilterAttribute));
             });
 
-            builder.Services.ConnectToDatabase(builder.Configuration);
-            builder.Services.AddJWTAuthentication(builder.Configuration);
+            builder.Services.AddLogging(logging =>
+            {
+                logging.AddConsole();
+                logging.AddDebug();
+            });
 
-            builder.Services.RegisterAzureServices(builder.Configuration);
+            builder.Services.ConnectToSqlDatabase(configuration);
+            builder.Services.ConnectToMongoDatabase();
+            builder.Services.AddJWTAuthentication(configuration);
+
+            builder.Services.RegisterAzureServices(configuration);
 
             builder.Services.RegisterUserStorageServices();
             builder.Services.RegisterAutoMapper();
@@ -60,11 +80,11 @@ namespace ChatApp
 
             app.MapControllers();
 
-            app.UseChatAppContext();
-
             app.UseMiddleware<UserIdMiddleware>();
 
             app.MapHub<ChatHub>("/chatHub");
+
+            app.UseChatAppContext();
 
             app.Run();
         }

@@ -73,14 +73,27 @@ namespace ChatApp.WebAPI.Extensions
             });
         }
 
-        public static void ConnectToDatabase(this IServiceCollection services, IConfiguration config)
+        public static void ConnectToSqlDatabase(this IServiceCollection services, IConfiguration config)
         {
+            var dbServer = Environment.GetEnvironmentVariable("SQL_DB_SERVER") ?? "localhost";
+            var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "ChatAppDb";
+            var dbUser = Environment.GetEnvironmentVariable("SQL_DB_USER") ?? "SA";
+            var dbPassword = Environment.GetEnvironmentVariable("SQL_SA_PASSWORD") ?? "MySecretPassword!";
+            var dbTrustCertificate = bool.Parse(Environment.GetEnvironmentVariable("SQL_DB_TRUST_CERT") ?? "true");
+
+            var connectionString = $"Server={dbServer};Database={dbName};User ID={dbUser};Password={dbPassword};TrustServerCertificate={dbTrustCertificate}";
+
             services.AddDbContext<ChatAppContext>(options =>
                 options.UseSqlServer(
-                    config.GetConnectionString("ChatAppConnection"),
+                    connectionString,
                     options => options.MigrationsAssembly(typeof(ChatAppContext).Assembly.GetName().Name)
                 )
             );
+        }
+
+        public static void ConnectToMongoDatabase(this IServiceCollection services)
+        {
+            services.AddSingleton<MongoDbService>();
         }
 
         public static void RegisterAzureServices(this IServiceCollection services, IConfiguration config)
@@ -115,6 +128,7 @@ namespace ChatApp.WebAPI.Extensions
 
         public static void RegisterRepositories(this IServiceCollection services)
         {
+            services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IChatRepository, ChatRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();

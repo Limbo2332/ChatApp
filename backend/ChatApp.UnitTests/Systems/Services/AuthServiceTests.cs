@@ -31,7 +31,8 @@ namespace ChatApp.UnitTests.Systems.Services
                 _jwtService,
                 _configMock.Object,
                 _userRepositoryMock.Object,
-                _refreshTokenRepositoryMock.Object);
+                _refreshTokenRepositoryMock.Object,
+                new Mock<IImageRepository>().Object);
         }
 
         [Fact]
@@ -125,7 +126,7 @@ namespace ChatApp.UnitTests.Systems.Services
             {
                 Email = userDto.Email,
                 UserName = userDto.UserName,
-                ImagePath = null,
+                ImageId = null,
             };
 
             _userRepositoryMock

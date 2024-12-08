@@ -8,9 +8,12 @@ using ChatApp.Common.Exceptions;
 using ChatApp.Common.Helpers;
 using ChatApp.Common.Logic.Abstract;
 using ChatApp.Common.Security;
+using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using ChatApp.DAL.Repositories.Abstract;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
 using System.Security.Cryptography;
 
 namespace ChatApp.BLL.Services
@@ -20,18 +23,21 @@ namespace ChatApp.BLL.Services
         private readonly IUserRepository _userRepository;
         private readonly IBlobStorageService _blobStorageService;
         private readonly IEmailService _emailService;
+        private readonly IImageRepository _imageRepository;
 
         public UserService(
             IMapper mapper,
             IUserIdGetter userIdGetter,
             IBlobStorageService blobStorageService,
             IEmailService emailService,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IImageRepository imageRepository)
             : base(mapper, userIdGetter)
         {
             _blobStorageService = blobStorageService;
             _emailService = emailService;
             _userRepository = userRepository;
+            _imageRepository = imageRepository;
         }
 
         public bool IsEmailUnique(string email)
@@ -62,12 +68,15 @@ namespace ChatApp.BLL.Services
 
             var newImagePath = await _blobStorageService.UploadNewFileAsync(newAvatar);
 
-            if (user.ImagePath is not null)
+            if (!user.ImageId.IsNullOrEmpty())
             {
-                await _blobStorageService.DeleteProfileAvatarAsync(user.ImagePath);
+                var image = await _imageRepository.DeleteAsync(user.ImageId!);
+
+                await _blobStorageService.DeleteProfileAvatarAsync(image.ImagePath);
             }
 
-            user.ImagePath = newImagePath;
+            var newImage = await _imageRepository.AddAsync(newImagePath);
+            user.ImageId = newImage.Id;
 
             await _userRepository.UpdateAsync(user);
 
@@ -94,6 +103,9 @@ namespace ChatApp.BLL.Services
             }
 
             currentUser.UserName = user.UserName;
+
+            var userImage = await _imageRepository.GetAsync(currentUser.ImageId);
+            currentUser.ImageId = userImage?.Id;
 
             await _userRepository.UpdateAsync(currentUser);
 
@@ -139,7 +151,7 @@ namespace ChatApp.BLL.Services
             int currentUserId = _userIdGetter.CurrentUserId;
 
             return await _userRepository
-                .GetByExpressionAsync(user => user.Id == currentUserId)
+                .GetByExpressionAsync(u => u.Id == currentUserId)
                  ?? throw new NotFoundException(nameof(User), currentUserId);
         }
 

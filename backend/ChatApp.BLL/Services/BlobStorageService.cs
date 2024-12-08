@@ -31,9 +31,15 @@ namespace ChatApp.BLL.Services
             var blobHttpHeaders = new BlobHttpHeaders
             {
                 ContentType = newAvatar.ContentType,
+                ContentDisposition = newAvatar.ContentDisposition,
             };
 
-            await blobInstance.UploadAsync(newAvatar.OpenReadStream(), blobHttpHeaders);
+            var uploadOptions = new BlobUploadOptions
+            {
+                HttpHeaders = blobHttpHeaders,
+            };
+
+            await blobInstance.UploadAsync(newAvatar.OpenReadStream(), uploadOptions);
 
             return uniqueImageName;
         }

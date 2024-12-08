@@ -1,6 +1,7 @@
 ﻿using ChatApp.DAL.Context;
 using ChatApp.DAL.Entities;
 using ChatApp.DAL.Repositories.Abstract;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp.DAL.Repositories
 {

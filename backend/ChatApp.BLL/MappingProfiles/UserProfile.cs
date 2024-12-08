@@ -2,6 +2,8 @@
 using ChatApp.BLL.MappingProfiles.Resolvers;
 using ChatApp.Common.DTO.User;
 using ChatApp.DAL.Entities;
+using ChatApp.DAL.Repositories.Abstract;
+using Microsoft.Extensions.Configuration;
 
 namespace ChatApp.BLL.MappingProfiles
 {
@@ -11,11 +13,9 @@ namespace ChatApp.BLL.MappingProfiles
         {
             CreateMap<UserRegisterDto, User>();
 
-            CreateMap<User, UserDto>()
-                .ForMember(dest => dest.ImagePath, src => src.ConvertUsing<ImagePathResolver, string>(src => src.ImagePath!));
+            CreateMap<User, UserDto>().ConvertUsing<UserToUserDtoConverter>();
 
-            CreateMap<User, UserPreviewDto>()
-                .ForMember(dest => dest.ImagePath, src => src.ConvertUsing<ImagePathResolver, string>(src => src.ImagePath!));
+            CreateMap<User, UserPreviewDto>().ConvertUsing<UserToUserPreviewConverter>();
         }
     }
 }

@@ -181,15 +181,7 @@ namespace ChatApp.BLL.Services
 
         public async Task ReadMessagesAsync(ChatReadDto chat)
         {
-            var messages = await _messageRepository
-                .GetAllAsync();
-
-            messages = messages
-                .Where(message => message.ChatId == chat.Id
-                    && message.UserId != chat.UserId
-                    && !message.IsRead);
-
-            await _messageRepository.UpdateEveryMessageByExpressionAsync(message => message.IsRead, true);
+            await _messageRepository.UpdateAllUnreadMessagesFromChatAsync(chat.Id, chat.UserId);
 
             var userChat = await GetUserChatAsync(chat.Id, chat.UserId);
 

@@ -383,7 +383,7 @@ namespace ChatApp.UnitTests.Systems.Services
                 .ReturnsAsync(userChats.First());
 
             _messageRepositoryMock
-                .Setup(mr => mr.UpdateEveryMessageByExpressionAsync(It.IsAny<Func<Message, object>>(), It.IsAny<object>()))
+                .Setup(mr => mr.UpdateAllUnreadMessagesFromChatAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .Callback(() =>
                 {
                     foreach (var userChat in userChats)

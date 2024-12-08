@@ -15,7 +15,7 @@ namespace ChatApp.UnitTests.TestData
                 UserName = "TestUserName",
                 Password = SecurityHelper.HashPassword("Test123!$", Convert.FromBase64String("Test")),
                 Salt = "Test",
-                ImagePath = null,
+                ImageId = null,
             },
             new User
             {
@@ -25,7 +25,7 @@ namespace ChatApp.UnitTests.TestData
                 UserName = "TestUserName1",
                 Password = SecurityHelper.HashPassword("Test1231!$", Convert.FromBase64String("Test")),
                 Salt = "Test",
-                ImagePath = "testImagePath",
+                ImageId = "1",
             },
             new User
             {
@@ -35,7 +35,7 @@ namespace ChatApp.UnitTests.TestData
                 UserName = "TestUserName123",
                 Password = SecurityHelper.HashPassword("Test123123!$", Convert.FromBase64String("Test")),
                 Salt = "Test",
-                ImagePath = null,
+                ImageId = null,
             },
             new User
             {
@@ -45,7 +45,7 @@ namespace ChatApp.UnitTests.TestData
                 UserName = "TestUserName1234",
                 Password = SecurityHelper.HashPassword("Test123123123!$", Convert.FromBase64String("Test")),
                 Salt = "Test",
-                ImagePath = null,
+                ImageId = null,
             },
         };
 

@@ -2,6 +2,7 @@
 using ChatApp.DAL.Entities;
 using ChatApp.DAL.Repositories.Abstract;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace ChatApp.DAL.Repositories
 {
@@ -11,11 +12,13 @@ namespace ChatApp.DAL.Repositories
         {
         }
 
-        public async Task UpdateEveryMessageByExpressionAsync(Func<Message, object> func, object value)
+        public async Task UpdateAllUnreadMessagesFromChatAsync(int chatId, int userId)
         {
-            await _dbSet.ExecuteUpdateAsync(message => message.SetProperty(func, value));
-
-            await SaveChangesAsync();
+            await _context.Messages
+                .Where(message => message.ChatId == chatId
+                    && message.UserId != userId
+                    && !message.IsRead)
+                .ExecuteUpdateAsync(message => message.SetProperty(m => m.IsRead, true));
         }
     }
 }

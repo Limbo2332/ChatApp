@@ -43,7 +43,7 @@ namespace ChatApp.UnitTests.Systems.Services.Abstract
                         return new MessagePreviewResolver(_userIdGetterMock.Object);
                     }
 
-                    return new ImagePathResolver(_configMock.Object);
+                    return new MessagePreviewResolver(_userIdGetterMock.Object);
                 });
                 mc.AddProfile<UserProfile>();
                 mc.AddProfile<ChatsProfile>();

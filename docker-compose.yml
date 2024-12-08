@@ -5,7 +5,7 @@ networks:
     driver: bridge
 
 services:
-  db:
+  sqldb:
     image: "mcr.microsoft.com/mssql/server:2022-latest"
     ports:
       - "1433:1433"
@@ -13,8 +13,22 @@ services:
     networks:
       - default
     environment:
-      SA_PASSWORD: "MySecretPassword!"
+      SA_PASSWORD: ${SQL_SA_PASSWORD}
       ACCEPT_EULA: "Y"
+    volumes:
+      - mssql_data:/var/opt/mssql
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    restart: always
+    networks:
+      - default
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: ${DB_NAME}
 
   backend:
     build:
@@ -25,18 +39,27 @@ services:
     networks:
       - default
     depends_on:
-      - db
+      - sqldb
+      - mongodb
     environment:
-      ConnectionStrings__ChatAppConnection: "Server=db;Database=LeetWarsCoreDB;User ID=SA;Password=MySecretPassword!;TrustServerCertificate=True"
+      SQL_DB_SERVER: ${SQL_DB_SERVER}
+      SQL_DB_USER: ${SQL_DB_USER}
+      SQL_SA_PASSWORD: ${SQL_SA_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      SQL_DB_TRUST_CERT: ${SQL_DB_TRUST_CERT}
+      MONGO_DB_SERVER: ${MONGO_DB_SERVER}
 
   frontend:
     build:
       context: frontend/
     ports:
       - "4200:80"
-    links:
-      - db
+    depends_on:
       - backend
     restart: always
     networks:
       - default
+
+volumes:
+  mssql_data:
+  mongo_data:
