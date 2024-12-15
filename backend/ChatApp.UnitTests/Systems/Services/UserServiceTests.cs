@@ -275,7 +275,7 @@ namespace ChatApp.UnitTests.Systems.Services
             // Assert
             await action
                 .Should()
-                .ThrowAsync<BadRequestException>(ValidationMessages.EmailIsNotUniqueMessage);
+                .ThrowAsync<BadRequestException>(ValidationMessages.EMAIL_IS_NOT_UNIQUE_MESSAGE);
         }
 
         [Theory]
