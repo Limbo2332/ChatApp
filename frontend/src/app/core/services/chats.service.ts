@@ -16,33 +16,31 @@ import { Client } from '@stomp/stompjs';
 })
 export class ChatsService {
   private baseUrl: string = `${environment.apiUrl}/chats`;
-  
-  
-  //private stompClient: Client;
+  private stompClient: Client;
 
   constructor(private http: HttpClient) {
-    // this.stompClient = new Client({
-    //   brokerURL: 'ws://localhost:15674/ws', // RabbitMQ Web STOMP URL
-    //   connectHeaders: {
-    //     login: 'user',
-    //     passcode: 'password',
-    //   },
-    //   //debug: (str) => console.log(str),
-    //   reconnectDelay: 5000,
-    // });
+    this.stompClient = new Client({
+      brokerURL: 'ws://localhost:15674/ws', // RabbitMQ Web STOMP URL
+      connectHeaders: {
+        login: 'user',
+        passcode: 'password',
+      },
+      //debug: (str) => console.log(str),
+      reconnectDelay: 5000,
+    });
 
-    // this.stompClient.onConnect = () => {
-    //   this.subscribeToChatEvents();
-    // };
+    this.stompClient.onConnect = () => {
+      this.subscribeToChatEvents();
+    };
 
-    // this.stompClient.activate();
+    this.stompClient.activate();
   }
 
-  // private subscribeToChatEvents(): void {
-  //   this.stompClient.subscribe('/queue/message_events', (message) => {
-  //     console.log('Received message:', message.body);
-  //   }, { durable: 'true' });
-  // }
+  private subscribeToChatEvents(): void {
+    this.stompClient.subscribe('/queue/message_events', (message) => {
+      console.log('Received message:', message.body);
+    }, { durable: 'true' });
+  }
 
   getChats(pageSettings?: IPageSettings): Observable<IChatPreview[]> {
     return this.http.get<IChatPreview[]>(this.baseUrl, {

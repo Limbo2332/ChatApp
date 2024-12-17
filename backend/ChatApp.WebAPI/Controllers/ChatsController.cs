@@ -67,8 +67,8 @@ namespace ChatApp.WebAPI.Controllers
             var factory = new ConnectionFactory { HostName = "rabbitmq", UserName = "user", Password = "password" };
             using var connection = await factory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
-            
-            await channel.QueueDeclareAsync(queue: "message_events", durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+            await channel.QueueDeclareAsync(queue: "message_events", durable: true, exclusive: false, autoDelete: false, arguments: null);
 
             var message = JsonConvert.SerializeObject(newMessage);
             var body = Encoding.UTF8.GetBytes(message);
