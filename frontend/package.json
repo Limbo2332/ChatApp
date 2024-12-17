@@ -25,6 +25,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@microsoft/signalr": "^7.0.12",
+    "@stomp/stompjs": "^7.0.0",
     "angular-animations": "^0.11.0",
     "angular-resizable-element": "^7.0.2",
     "ngx-infinite-scroll": "^16.0.0",

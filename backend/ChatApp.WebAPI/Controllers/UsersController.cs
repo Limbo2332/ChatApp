@@ -40,7 +40,7 @@ namespace ChatApp.WebAPI.Controllers
             return Ok(await _userService.UpdateUserAsync(user));
         }
 
-        [HttpPut("avatar")]
+        [HttpPost("avatar")]
         public async Task<ActionResult<UserAvatarDto>> UpdateAvatarAsync([FromForm] IFormFile newAvatar)
         {
             return Ok(await _userService.UpdateUserAvatarAsync(newAvatar));
