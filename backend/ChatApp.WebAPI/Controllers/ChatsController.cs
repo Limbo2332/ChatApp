@@ -1,10 +1,13 @@
-﻿using ChatApp.BLL.Interfaces;
+﻿using System.Text;
+using ChatApp.BLL.Interfaces;
 using ChatApp.Common.DTO.Chat;
 using ChatApp.Common.DTO.Conversation;
 using ChatApp.Common.DTO.Message;
 using ChatApp.Common.DTO.Page;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
 
 namespace ChatApp.WebAPI.Controllers
 {
@@ -38,6 +41,8 @@ namespace ChatApp.WebAPI.Controllers
         {
             var messagePreview = await _chatService.AddMessageAsync(newMessage);
 
+            await PublishToRabbitMQ(newMessage);
+
             return Created("message", messagePreview);
         }
 
@@ -55,6 +60,20 @@ namespace ChatApp.WebAPI.Controllers
             await _chatService.ReadMessagesAsync(chat);
 
             return Ok();
+        }
+
+        private async Task PublishToRabbitMQ(NewMessageDto newMessage)
+        {
+            var factory = new ConnectionFactory { HostName = "rabbitmq", UserName = "user", Password = "password" };
+            using var connection = await factory.CreateConnectionAsync();
+            using var channel = await connection.CreateChannelAsync();
+
+            await channel.QueueDeclareAsync(queue: "message_events", durable: true, exclusive: false, autoDelete: false, arguments: null);
+
+            var message = JsonConvert.SerializeObject(newMessage);
+            var body = Encoding.UTF8.GetBytes(message);
+
+            await channel.BasicPublishAsync(exchange: "", routingKey: "message_events", body: body);
         }
     }
 }

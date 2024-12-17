@@ -39,9 +39,12 @@ services:
     networks:
       - default
     depends_on:
+      - rabbitmq
       - sqldb
       - mongodb
     environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
       SQL_DB_SERVER: ${SQL_DB_SERVER}
       SQL_DB_USER: ${SQL_DB_USER}
       SQL_SA_PASSWORD: ${SQL_SA_PASSWORD}
@@ -59,6 +62,20 @@ services:
     restart: always
     networks:
       - default
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"      # AMQP protocol port
+      - "15672:15672"    # RabbitMQ management dashboard
+      - "15674:15674"    # Web STOMP protocol port
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+      RABBITMQ_PLUGINS: "rabbitmq_management rabbitmq_web_stomp"
+    command: >
+      bash -c "rabbitmq-plugins enable --offline rabbitmq_web_stomp &&
+               rabbitmq-server"
 
 volumes:
   mssql_data:
