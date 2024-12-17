@@ -13,6 +13,19 @@
         />
       </div>
     </label>
+    <label for="new-sql-picture">
+      <div class="paste-img">
+        <img [src]="blobAvatarPreviewUrl" />
+        <fa-icon [icon]="['far', 'pen-to-square']" [size]="'xl'"></fa-icon>
+        <input
+          id="new-sql-picture"
+          type="file"
+          [ngStyle]="{ display: 'none' }"
+          accept="image/png, image/jpg, image/jpeg"
+          (change)="blobImageUploaded($event)"
+        />
+      </div>
+    </label>
     <div class="input-form d-flex flex-column gap-3">
       <div class="w-100 d-flex flex-column">
         <div class="inputs d-flex flex-column gap-3">

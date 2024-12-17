@@ -40,10 +40,18 @@ namespace ChatApp.WebAPI.Controllers
             return Ok(await _userService.UpdateUserAsync(user));
         }
 
-        [HttpPut("avatar")]
+        [HttpPost("avatar")]
         public async Task<ActionResult<UserAvatarDto>> UpdateAvatarAsync([FromForm] IFormFile newAvatar)
         {
             return Ok(await _userService.UpdateUserAvatarAsync(newAvatar));
+        }
+
+        [HttpPost("sql-avatar")]
+        public async Task<ActionResult<BlobImageDto>> UpdateSqlAvatarAsync([FromForm] IFormFile newAvatar)
+        {
+            var blobImage = await _userService.UpdateUserSqlAvatarAsync(newAvatar);
+            
+            return Ok(blobImage);
         }
     }
 }

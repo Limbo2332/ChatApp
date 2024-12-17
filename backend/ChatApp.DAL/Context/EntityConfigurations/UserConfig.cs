@@ -2,6 +2,7 @@
 using ChatApp.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace ChatApp.DAL.Context.EntityConfigurations
 {
@@ -36,6 +37,11 @@ namespace ChatApp.DAL.Context.EntityConfigurations
                 .WithOne(userChat => userChat.User)
                 .HasForeignKey(userChat => userChat.UserId)
                 .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasOne(user => user.BlobImage)
+                .WithOne()
+                .HasForeignKey<User>(user => user.BlobImageId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

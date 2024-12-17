@@ -1,9 +1,10 @@
+/* eslint-disable function-paren-newline */
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { finalize, map, of, switchMap } from 'rxjs';
+import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { IUser } from 'src/app/shared/models/user/user';
@@ -15,10 +16,15 @@ import {
   userNameMaxLength,
   userNameMinLength,
 } from 'src/app/shared/utils/validation/constants';
-import { emailRegex, noSpacesRegex } from 'src/app/shared/utils/validation/regex-patterns';
+import {
+  emailRegex,
+  noSpacesRegex,
+} from 'src/app/shared/utils/validation/regex-patterns';
 import { getValidationErrors } from 'src/app/shared/utils/validation/validation-helper';
 
 import { defaultImagePath } from '../../chat/chat-utils';
+import { IBlobImage } from 'src/app/shared/models/user/blob-image';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-user-profile',
@@ -29,6 +35,8 @@ export class UserProfileComponent implements OnInit {
   currentUser: IUser;
 
   avatarPreview = defaultImagePath;
+
+  blobAvatarPreviewUrl: SafeUrl = defaultImagePath;
 
   editProfileForm = new FormGroup({
     email: new FormControl('', [
@@ -44,6 +52,7 @@ export class UserProfileComponent implements OnInit {
       Validators.maxLength(userNameMaxLength),
     ]),
     avatar: new FormControl<File>(null!),
+    sqlAvatar: new FormControl<File>(null!),
   });
 
   private validationErrorsFromBackend: string[] = [];
@@ -54,12 +63,22 @@ export class UserProfileComponent implements OnInit {
     private toastrService: ToastrService,
     private router: Router,
     private spinner: NgxSpinnerService,
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit(): void {
     this.authService.getUser().subscribe((user: IUser) => {
       this.currentUser = user;
       this.avatarPreview = this.currentUser.imagePath ?? this.avatarPreview;
+
+      if (this.currentUser.sqlImage) {
+        const objectURL = `data:${this.currentUser.sqlImage.contentType};base64,${this.currentUser.sqlImage.data}`;
+
+        this.blobAvatarPreviewUrl =
+          this.sanitizer.bypassSecurityTrustUrl(objectURL);
+      } else {
+        this.blobAvatarPreviewUrl = defaultImagePath;
+      }
     });
   }
 
@@ -93,6 +112,24 @@ export class UserProfileComponent implements OnInit {
     this.updateAvatarPreview();
   }
 
+  blobImageUploaded(event: Event) {
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files || !input.files.length || !input.files.item(0)) {
+      return;
+    }
+
+    const fileValue = input.files.item(0);
+
+    if (!this.validateImageFormat(fileValue!.type)) {
+      return;
+    }
+
+    this.editProfileForm.patchValue({ sqlAvatar: fileValue });
+
+    this.updateSqlAvatarPreview();
+  }
+
   updateInfo() {
     if (this.editProfileForm.valid) {
       this.spinner.show();
@@ -104,10 +141,29 @@ export class UserProfileComponent implements OnInit {
       this.userService
         .update(userEdit)
         .pipe(
-          switchMap((user: IUser) =>
-            (this.editProfileForm.value.avatar
-              ? this.updateUserAvatar(user)
-              : of(user))),
+          // eslint-disable-next-line no-confusing-arrow
+          switchMap((user: IUser) => {
+            const shouldUpdateAvatar = !!this.editProfileForm.value.avatar;
+            const shouldUpdateSqlAvatar =
+              !!this.editProfileForm.value.sqlAvatar;
+
+            if (shouldUpdateAvatar && shouldUpdateSqlAvatar) {
+              return forkJoin({
+                userAvatar: this.updateUserAvatar(user),
+                userSqlAvatar: this.updateSqlUserAvatar(user),
+              }).pipe(map((result) => result.userAvatar));
+            }
+
+            if (shouldUpdateAvatar) {
+              return this.updateUserAvatar(user);
+            }
+
+            if (shouldUpdateSqlAvatar) {
+              return this.updateSqlUserAvatar(user);
+            }
+
+            return of(user);
+          }),
           finalize(() => {
             this.spinner.hide();
           }),
@@ -139,6 +195,20 @@ export class UserProfileComponent implements OnInit {
     );
   }
 
+  updateSqlUserAvatar(user: IUser) {
+    const formData = new FormData();
+
+    formData.append('newAvatar', this.editProfileForm.value.sqlAvatar!);
+
+    return this.userService.updateSqlAvatar(formData).pipe(
+      map((blobImage: IBlobImage) => {
+        user.sqlImage = blobImage;
+
+        return user;
+      }),
+    );
+  }
+
   private updateAvatarPreview() {
     const reader = new FileReader();
     const fileValue = this.editProfileForm.value.avatar;
@@ -149,6 +219,21 @@ export class UserProfileComponent implements OnInit {
 
     reader.onload = () => {
       this.avatarPreview = reader.result as string;
+    };
+
+    reader.readAsDataURL(fileValue);
+  }
+
+  private updateSqlAvatarPreview() {
+    const reader = new FileReader();
+    const fileValue = this.editProfileForm.value.sqlAvatar;
+
+    if (!fileValue) {
+      return;
+    }
+
+    reader.onload = () => {
+      this.blobAvatarPreviewUrl = reader.result as string;
     };
 
     reader.readAsDataURL(fileValue);

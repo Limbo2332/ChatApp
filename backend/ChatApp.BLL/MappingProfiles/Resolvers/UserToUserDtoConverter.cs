@@ -32,6 +32,15 @@ namespace ChatApp.BLL.MappingProfiles.Resolvers
                 Email = source.Email,
                 UserName = source.UserName,
                 ImagePath = imagePath,
+                SqlImage = source.BlobImageId.HasValue ?
+                    new BlobImageDto
+                    {
+                        Id = source.BlobImageId.Value,
+                        ContentType = source.BlobImage!.ContentType,
+                        Data = source.BlobImage!.Data,
+                        Name = source.BlobImage!.Name,
+                    }
+                    : null
             };
         }
     }

@@ -7,11 +7,11 @@ namespace ChatApp.WebAPI.Extensions
     {
         public static void UseChatAppContext(this IApplicationBuilder app)
         {
-            using var scope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope();
+            using var scope = app.ApplicationServices.CreateScope();
 
-            using var context = scope?.ServiceProvider.GetRequiredService<ChatAppContext>();
-
-            context?.Database.Migrate();
+            using var context = scope.ServiceProvider.GetRequiredService<ChatAppContext>();
+            
+            context.Database.Migrate();
         }
     }
 }

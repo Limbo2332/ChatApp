@@ -13,7 +13,7 @@ services:
     networks:
       - default
     environment:
-      SA_PASSWORD: ${SQL_SA_PASSWORD}
+      MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD}
       ACCEPT_EULA: "Y"
     volumes:
       - mssql_data:/var/opt/mssql
