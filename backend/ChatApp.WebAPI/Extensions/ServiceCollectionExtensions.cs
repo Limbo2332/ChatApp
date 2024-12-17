@@ -75,7 +75,7 @@ namespace ChatApp.WebAPI.Extensions
 
         public static void ConnectToSqlDatabase(this IServiceCollection services, IConfiguration config)
         {
-            var dbServer = Environment.GetEnvironmentVariable("SQL_DB_SERVER") ?? "localhost";
+            var dbServer = Environment.GetEnvironmentVariable("SQL_DB_SERVER") ?? "sqldb";
             var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "ChatAppDb";
             var dbUser = Environment.GetEnvironmentVariable("SQL_DB_USER") ?? "SA";
             var dbPassword = Environment.GetEnvironmentVariable("SQL_SA_PASSWORD") ?? "MySecretPassword!";
@@ -130,6 +130,7 @@ namespace ChatApp.WebAPI.Extensions
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             services.AddScoped<IUserChatsRepository, UserChatsRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IBlobImageRepository, BlobImageRepository>();
         }
 
         public static void RegisterCustomServices(this IServiceCollection services)

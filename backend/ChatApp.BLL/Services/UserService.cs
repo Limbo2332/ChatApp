@@ -24,6 +24,7 @@ namespace ChatApp.BLL.Services
         private readonly IBlobStorageService _blobStorageService;
         private readonly IEmailService _emailService;
         private readonly IImageRepository _imageRepository;
+        private readonly IBlobImageRepository _blobImageRepository;
 
         public UserService(
             IMapper mapper,
@@ -31,13 +32,15 @@ namespace ChatApp.BLL.Services
             IBlobStorageService blobStorageService,
             IEmailService emailService,
             IUserRepository userRepository,
-            IImageRepository imageRepository)
+            IImageRepository imageRepository, 
+            IBlobImageRepository blobImageRepository)
             : base(mapper, userIdGetter)
         {
             _blobStorageService = blobStorageService;
             _emailService = emailService;
             _userRepository = userRepository;
             _imageRepository = imageRepository;
+            _blobImageRepository = blobImageRepository;
         }
 
         public bool IsEmailUnique(string email)
@@ -84,6 +87,32 @@ namespace ChatApp.BLL.Services
             {
                 ImagePath = _blobStorageService.GetFullAvatarPath(newImagePath)
             };
+        }
+
+        public async Task<BlobImage> UpdateUserSqlAvatarAsync(IFormFile newAvatar)
+        {
+            if (!ValidateImageFormat(newAvatar.ContentType))
+            {
+                throw new BadRequestException("Image type is wrong.");
+            }
+            
+            using var memoryStream = new MemoryStream();
+            await newAvatar.CopyToAsync(memoryStream);
+
+            var sqlImage = new BlobImage
+            {
+                Name = FileNameGeneratorHelper.GenerateUniqueFileName(newAvatar.FileName),
+                ContentType = newAvatar.ContentType,
+                Data = memoryStream.ToArray(),
+            };
+            
+            await _blobImageRepository.AddAsync(sqlImage);
+            
+            var user = await GetCurrentUserAsync();
+            user.BlobImageId = sqlImage.Id;
+            await _userRepository.UpdateAsync(user);
+
+            return sqlImage;
         }
 
         public async Task<UserDto> UpdateUserAsync(UserEditDto user)

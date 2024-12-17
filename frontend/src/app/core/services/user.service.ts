@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IResetEmail } from 'src/app/shared/models/mail/reset-email';
+import { IBlobImage } from 'src/app/shared/models/user/blob-image';
 import { IResetPassword } from 'src/app/shared/models/user/reset-password';
 import { IUser } from 'src/app/shared/models/user/user';
 import { IUserAvatar } from 'src/app/shared/models/user/user-avatar';
@@ -18,6 +19,10 @@ export class UserService {
 
   updateAvatar(form: FormData): Observable<IUserAvatar> {
     return this.http.post<IUserAvatar>(`${this.baseUrl}/avatar`, form);
+  }
+
+  updateSqlAvatar(form: FormData): Observable<IBlobImage> {
+    return this.http.post<IBlobImage>(`${this.baseUrl}/sql-avatar`, form);
   }
 
   sendResetPasswordEmail(resetEmail: IResetEmail): Observable<void> {
